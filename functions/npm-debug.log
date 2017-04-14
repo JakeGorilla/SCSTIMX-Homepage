@@ -1,0 +1,52 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@2.15.9
+3 info using node@v4.5.0
+4 verbose readDependencies loading dependencies from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\package.json
+5 verbose install where, deps [ 'C:\\Users\\Weihua\\Desktop\\testSCSTIMXweb\\functions',
+5 verbose install   [ 'firebase-admin', 'firebase-functions' ] ]
+6 verbose install where, peers [ 'C:\\Users\\Weihua\\Desktop\\testSCSTIMXweb\\functions', [] ]
+7 verbose installManyTop reading for lifecycle C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\package.json
+8 info preinstall functions@
+9 verbose installManyTop reading scoped package data from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\node_modules\firebase-admin\package.json
+10 verbose installManyTop reading scoped package data from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\node_modules\firebase-functions\package.json
+11 info package.json firebase-admin@4.2.0 No repository field.
+12 verbose readDependencies loading dependencies from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\package.json
+13 verbose targetResolver reading package data from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\node_modules\firebase-admin\package.json
+14 verbose targetResolver reading package data from C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\node_modules\firebase-functions\package.json
+15 verbose already installed skipping firebase-admin@^4.1.2 C:\Users\Weihua\Desktop\testSCSTIMXweb\functions
+16 verbose already installed skipping firebase-functions@^0.5 C:\Users\Weihua\Desktop\testSCSTIMXweb\functions
+17 silly install resolved []
+18 info build C:\Users\Weihua\Desktop\testSCSTIMXweb\functions
+19 info linkStuff functions@
+20 silly linkStuff functions@ has C:\Users\Weihua\Desktop\testSCSTIMXweb as its parent node_modules
+21 verbose linkBins functions@
+22 verbose linkMans functions@
+23 verbose rebuildBundles functions@
+24 verbose rebuildBundles [ 'firebase-admin', 'firebase-functions' ]
+25 info install functions@
+26 info postinstall functions@
+27 info prepublish functions@
+28 verbose validateInstall loading C:\Users\Weihua\Desktop\testSCSTIMXweb\functions\package.json for validation
+29 verbose stack Error: The package firebase-admin@4.2.0 does not satisfy its siblings' peerDependencies requirements!
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\install.js:125:32
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\install.js:268:7
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:142:5
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:263:14
+29 verbose stack     at cb (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:263:14
+29 verbose stack     at cb (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:263:14
+29 verbose stack     at cb (C:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
+29 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:263:14
+30 verbose cwd C:\Users\Weihua\Desktop\testSCSTIMXweb\functions
+31 error Windows_NT 10.0.14393
+32 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+33 error node v4.5.0
+34 error npm  v2.15.9
+35 error code EPEERINVALID
+36 error peerinvalid The package firebase-admin@4.2.0 does not satisfy its siblings' peerDependencies requirements!
+36 error peerinvalid Peer firebase-functions@0.5.4 wants firebase-admin@~4.1.2
+37 verbose exit [ 1, true ]
