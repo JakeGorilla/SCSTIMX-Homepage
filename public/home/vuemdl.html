@@ -23,12 +23,12 @@
       <!-- Tabs -->
       <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
         <a id="news" href="#news" class="mdl-layout__tab" v-bind:class="{ 'is-active': activeFlag }">NEWS</a>
-        <a id="reports" href="#reports" class="mdl-layout__tab" v-bind:class="{ 'is-active': activeFlag }">Reports</a>
-        <a id="operational" href="#operational" class="mdl-layout__tab two-line" v-bind:class="{ 'is-active': activeFlag }">Operational<br>Products</a>
-        <a id="modelfcst" href="#modelfcst" class="mdl-layout__tab two-line" v-bind:class="{ 'is-active': activeFlag }">Model/Forecast<br>Products</a>
-        <a id="research" href="#research" class="mdl-layout__tab two-line" v-bind:class="{ 'is-active': activeFlag }">Research<br>Products</a>
-        <a id="missions" href="#missions" class="mdl-layout__tab" v-bind:class="{ 'is-active': activeFlag }">Missions</a>
-        <a id="links" href="#links" class="mdl-layout__tab" v-bind:class="{ 'is-active': activeFlag }">Links &amp; Tools</a>
+        <a id="reports" href="#reports" class="mdl-layout__tab">Reports</a>
+        <a id="operational" href="#operational" class="mdl-layout__tab two-line">Operational<br>Products</a>
+        <a id="modelfcst" href="#modelfcst" class="mdl-layout__tab two-line">Model/Forecast<br>Products</a>
+        <a id="research" href="#research" class="mdl-layout__tab two-line">Research<br>Products</a>
+        <a id="missions" href="#missions" class="mdl-layout__tab">Missions</a>
+        <a id="links" href="#links" class="mdl-layout__tab">Links &amp; Tools</a>
         <div class="mdl-layout-spacer"></div>
       </div>
     </header>
@@ -121,7 +121,7 @@
           consequat lacus ac, ornare metus. Ut diam ex, sodales ac elit venenatis, auctor iaculis elit.
         </div>
       </section>
-      <section class="mdl-layout__tab-panel" id="reports">
+      <section class="mdl-layout__tab-panel" id="fixed-tab-2">
         <div class="page-content">
           <!-- Your content goes here -->
           AABBABC1234567
@@ -135,6 +135,7 @@
     </main>
   </div>
   <script src="https://unpkg.com/vue"></script>
+  <script src="//rawgit.com/posva/vue-mdl/master/dist/vue-mdl.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.js"></script>
   <script defer src="project.js"></script>
 </body>

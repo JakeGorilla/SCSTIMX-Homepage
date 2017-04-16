@@ -56,6 +56,15 @@ body {
   background: transparent;
 }
 
+.mdl-layout__tab {
+  padding: 0px 16px;
+}
+
+.mdl-layout__tab.two-line {
+  line-height: 16px;
+  padding-top: 6px;
+}
+
 .mdl-layout__tab-bar-button {
   background: transparent;
 }
