@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SCSTIMX Homepage</title>
+  <link rel="shortcut icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="css/project.css">
+</head>
+
+<body>
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <div class="header-vspacer"></div>
+        <span class="mdl-layout-title"><a id="logo" href="index.html">SCSTIMX</a></span>
+        <span class="layout-subtitle">South-China Sea Twin Island Monsoon Experiment</span>
+      </div>
+      <!-- Tabs -->
+      <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <a id="t-news" href="#news" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">NEWS</a>
+        <a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>
+        <a id="t-operational" href="#operational" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Operational<br>Products</a>
+        <a id="t-modelfcst" href="#modelfcst" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Model/Forecast<br>Products</a>
+        <a id="t-research" href="#research" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Research<br>Products</a>
+        <a id="t-missions" href="#missions" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Missions</a>
+        <a id="t-links" href="#links" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Links &amp; Tools</a>
+        <div class="mdl-layout-spacer" style="min-width:60px;"></div>
+      </div>
+    </header>
+     <!--Drawer 
+    <div class="mdl-layout__drawer mdl-layout--small-screen-only">
+      <span class="mdl-layout-title"></span>
+    </div>-->
+    <!-- Main -->
+    <main class="mdl-layout__content">
+      <section id="news" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          news
+        </div>
+      </section>
+      <section id="reports" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          report
+        </div>
+      </section>
+      <section id="operational" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          oper
+        </div>
+      </section>
+      <section id="modelfcst" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          model
+        </div>
+      </section>
+      <section id="research" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          res
+        </div>
+      </section>
+      <section id="missions" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          miss
+        </div>
+      </section>
+      <section id="links" class="mdl-layout__tab-panel" :class="{ 'is-active': activeFlag }">
+        <div class="wait-tabs page-content">
+          <!-- Your content goes here -->
+          link
+        </div>
+      </section>
+      <div id="loading-panel"> </div>
+    </main>
+  </div>
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script defer src="js/project.js"></script>
+</body>
+
+</html>

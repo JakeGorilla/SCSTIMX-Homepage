@@ -1,0 +1,110 @@
+/*@media screen and (min-width: 900px) {*/
+body {
+  background: #333344;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: initial;
+}
+
+#dialog {
+  background-image: url("../img/intro.jpg");
+  width: 900px;
+  height: 400px;
+  margin: 100px auto 16px;
+  border-radius: 3px;
+  position: relative;
+}
+
+#dialog h1 {
+  color: #ef8000;
+  font-weight: 900;
+  font-size: 24px;
+  margin: 0;
+  line-height: 1.8;
+}
+
+#dialog h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 16px;
+  line-height: 1.35;
+}
+
+#dim-box {
+  background: rgba(10, 10, 30, 0.5);
+  width: 900px;
+  height: 400px;
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.89);
+}
+
+#intro-box {
+  font-weight: bold;
+  text-shadow: 2px 1px #000000;
+  width: 600px;
+  height: 360px;
+  margin: 20px 20px 20px 24px;
+  position: absolute;
+  left: 0px;
+}
+
+#intro-box p {
+  line-height: 140%;
+  margin: 8px 0 8px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+#intro-box a {
+  margin: 16px 0 16px;
+  display: inline-block;
+  text-align: center;
+  background: #ef8000;
+  text-transform: uppercase;
+  text-shadow: initial;
+  text-decoration: none;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 4px;
+}
+/*#intro-box a { margin: 16px 0 16px; display: block; text-align: center; background: #039be5; text-transform: uppercase; text-shadow: initial; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }*/
+#dialog,
+#intro-box a {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#news {
+  background: #cac9d3;
+  color: rgba(0, 0, 0, 0.89);
+  width: 226px;
+  height: 336px;
+  margin: 20px 24px 0px 0px;
+  padding: 0px 3px;
+  position: absolute;
+  left: 644px;
+  overflow: auto;
+}
+
+#news-history {
+  line-height: 20px;
+  font-size: 18px;
+  text-align: right;
+  width: 226px;
+  position: absolute;
+  left: 644px;
+  bottom: 20px;
+}
+
+#load {
+  text-align: center;
+  font-size: 13px;
+}
+/*}*/
+
+
+/*@media (max-width: 900px) {
+    body, #intro-box { margin-top: 0; background: white; box-shadow: none; }
+    body { border-top: 16px solid #ffa100; }
+}*/
