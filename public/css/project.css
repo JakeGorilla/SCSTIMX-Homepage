@@ -1,3 +1,16 @@
+#javascriptDetector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 55vh;
+  z-index: 1000;
+  background-color: white;
+  text-align: center;
+  padding-top: 45vh;
+  font-size: 16px;
+}
+
 body {
   background-color: #000011;
   /*background-image: url("../../Nock-ten_2016-12-25_0210Z.jpg");*/
@@ -134,19 +147,17 @@ body {
   vertical-align: middle;
 }
 
+.mdl-mini-footer__right-section {
+  margin-left: auto;
+  margin-right: 0;
+}
+
 .t-bottom::before {
   content: '';
   height: 100%;
   display: inline-block;
   vertical-align: bottom;
 }
-
-/*footer  {
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  position: absolute;
-}*/
 
 .mdl-logo {
   margin-bottom: 0;

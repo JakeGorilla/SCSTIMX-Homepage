@@ -15,6 +15,10 @@
 </head>
 
 <body>
+  <div id="javascriptDetector">Please enable <span style="color:red;font-size:20px;">"Javascript"</span> in your browser for viewing this site</div>
+  <script>
+    document.getElementById('javascriptDetector').style.display = 'none';
+  </script>
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
       <div class="mdl-layout__header-row">
@@ -48,8 +52,6 @@
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           <h1>NEWS</h1>
-
-
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at aliquet dui, in cursus augue. Cras justo orci, ullamcorper
           luctus accumsan id, gravida sed magna. Integer commodo blandit erat quis consectetur. Etiam vel suscipit felis,
           sed viverra libero. Mauris iaculis, risus et vestibulum vulputate, lacus nulla molestie felis, sed laoreet elit
@@ -165,7 +167,7 @@
       </footer>
     </main>
   </div>
-  <script async defer src="js/project.js"></script>
+  <script defer src="js/project.js"></script>
 </body>
 
 </html>

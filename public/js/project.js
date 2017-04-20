@@ -1,4 +1,4 @@
-console.log('*my script on')
+// console.log('*my script on')
 // important vars
 var panels = {};  // contains names and Vue instances for tab contents
 var tabNames = [];  // names available tabs
@@ -20,23 +20,36 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
     el: element,
     data: {
       activeFlag: false
+    },
+    watch: {
+      activeFlag: function () {
+        // show content panel when activated first time
+        if (this.activeFlag && this.$el.querySelector('.wait-tabs')) {
+          this.$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+          // console.log('removed');
+        }
+      }
     }
   });
 });
 
 // if there is no hashtag or illegal, give #news
-if (location.hash == '' || tabNames.indexOf(location.hash.split('#')[1]) == -1) location.hash = 'news';
+if (location.hash == '' || tabNames.indexOf(location.hash.split('#')[1]) == -1) {
+  location.hash = 'news';
+}
 
 //  init Vue instance for tabs
 var tabs = {};
 forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index) {
   // function to decide the first tab to use
   function aornot() {
-    if (!location.hash && index == 1) {
+    if (!location.hash && index == 0) {
       panels[hashtag].$data.activeFlag = true;
+      // panels[hashtag].$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else if (location.hash == '#' + hashtag) {
       panels[hashtag].$data.activeFlag = true;
+      // panels[hashtag].$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else {
       return false;
@@ -59,13 +72,13 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
 });
 
 // show all hidden panels when they're ready
-function showContents() {
-  forEach(document.querySelectorAll('.wait-tabs'), function (element) {
-    element.classList.remove('wait-tabs');
-  });
-  // let loadingPanel = document.getElementById('loading-panel');
-  // loadingPanel.style.display = 'none';
-}
+// function showContents() {
+//   forEach(document.querySelectorAll('.wait-tabs'), function (element) {
+//     element.classList.remove('wait-tabs');
+//   });
+//   // let loadingPanel = document.getElementById('loading-panel');
+//   // loadingPanel.style.display = 'none';
+// }
 
 // init drawer functions
 keyFunctions['login'] = new Vue({
@@ -77,6 +90,7 @@ keyFunctions['login'] = new Vue({
   },
   methods: {
     trigger: function () {
+      // @TODO: Login system
       console.log('a');
     }
   }
@@ -99,15 +113,15 @@ if (!window.HashChangeEvent) (function () {
 window.onhashchange = function (e) {
   let befor = e.oldURL.split('#')[1];
   let after = e.newURL.split('#')[1];
-  console.log('* detected hashtag change');
-  console.log('from:' + befor);
-  console.log('chto:' + after);
+  // console.log('* detected hashtag change');
+  // console.log('from:' + befor);
+  // console.log('chto:' + after);
 
   if (location.hash == '' || tabNames.indexOf(after) == -1) {
     // check for case 3 & 4
     // location.hash = befor;
     history.back();
-    if (keyFunctions[after].hasOwnProperty('trigger')) {
+    if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
       // case 3
       keyFunctions[after].trigger();
     }
@@ -127,22 +141,3 @@ window.onhashchange = function (e) {
   tabs[after].activeFlag = true;
   // loadingPanel.style.display = 'none';
 };
-
-let footer = new Vue ({
-  el: 'footer',
-  methods: {
-     showContents: showContents
-  },
-  destroyed: showContents
-});
-let link = new Vue({
-  el: '#links',
-  mounted: function () {
-    window.setTimeout(function() {
-      link.$destroy();
-    }, 150);
-  },
-  destroyed: function () {
-    footer.$destroy();
-  }
-});
