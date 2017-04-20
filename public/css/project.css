@@ -29,7 +29,7 @@ body {
   .mdl-layout__drawer-button {
     left: 0;
     top: 0;
-    margin: 9px 0px;
+    margin: 9px 0px !important;
     background-color: transparent !important;
   }
 
@@ -42,6 +42,7 @@ body {
   .header-vspacer {
     height: 12px;
   }
+
   .mdl-layout__drawer-button {
     top: 0;
     left: 0;
@@ -106,6 +107,10 @@ body {
   background-color: rgba(255, 255, 255, 0.24);
 }
 
+.mdl-layout__tab-panel {
+  min-height: calc(100vh - 112px - 138px);
+}
+
 .mdl-layout__content {
   background-color: rgba(255, 255, 255, 0.97);
 }
@@ -123,8 +128,32 @@ body {
   text-decoration: none;
 }
 
-.func>.material-icons {
+.func > .material-icons {
   font-size: 24px;
   padding-right: 5px;
   vertical-align: middle;
+}
+
+.t-bottom::before {
+  content: '';
+  height: 100%;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/*footer  {
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  position: absolute;
+}*/
+
+.mdl-logo {
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 1024px) {
+  footer {
+    margin-top: 8px;
+  }
 }

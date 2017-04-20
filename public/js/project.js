@@ -59,11 +59,13 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
 });
 
 // show all hidden panels when they're ready
-forEach(document.querySelectorAll('.wait-tabs'), function (element) {
-  element.classList.remove('wait-tabs');
-});
-// let loadingPanel = document.getElementById('loading-panel');
-// loadingPanel.style.display = 'none';
+function showContents() {
+  forEach(document.querySelectorAll('.wait-tabs'), function (element) {
+    element.classList.remove('wait-tabs');
+  });
+  // let loadingPanel = document.getElementById('loading-panel');
+  // loadingPanel.style.display = 'none';
+}
 
 // init drawer functions
 keyFunctions['login'] = new Vue({
@@ -74,20 +76,20 @@ keyFunctions['login'] = new Vue({
     message: 'Login'
   },
   methods: {
-    trigger: function (){
+    trigger: function () {
       console.log('a');
     }
   }
 });
 
 // oldURL,newURL patch for ie9+
-if(!window.HashChangeEvent)(function(){
-	var lastURL=document.URL;
-	window.addEventListener("hashchange",function(event){
-		Object.defineProperty(event,"oldURL",{enumerable:true,configurable:true,value:lastURL});
-		Object.defineProperty(event,"newURL",{enumerable:true,configurable:true,value:document.URL});
-		lastURL=document.URL;
-	});
+if (!window.HashChangeEvent) (function () {
+  var lastURL = document.URL;
+  window.addEventListener("hashchange", function (event) {
+    Object.defineProperty(event, "oldURL", { enumerable: true, configurable: true, value: lastURL });
+    Object.defineProperty(event, "newURL", { enumerable: true, configurable: true, value: document.URL });
+    lastURL = document.URL;
+  });
 }());
 // handle hashtag change for 4 case
 // 1. user change url -> change activeFlag -> jump to new tab
@@ -105,7 +107,7 @@ window.onhashchange = function (e) {
     // check for case 3 & 4
     // location.hash = befor;
     history.back();
-    if (keyFunctions[after].hasOwnProperty('trigger')){
+    if (keyFunctions[after].hasOwnProperty('trigger')) {
       // case 3
       keyFunctions[after].trigger();
     }
@@ -125,3 +127,22 @@ window.onhashchange = function (e) {
   tabs[after].activeFlag = true;
   // loadingPanel.style.display = 'none';
 };
+
+let footer = new Vue ({
+  el: 'footer',
+  methods: {
+     showContents: showContents
+  },
+  destroyed: showContents
+});
+let link = new Vue({
+  el: '#links',
+  mounted: function () {
+    window.setTimeout(function() {
+      link.$destroy();
+    }, 150);
+  },
+  destroyed: function () {
+    footer.$destroy();
+  }
+});
