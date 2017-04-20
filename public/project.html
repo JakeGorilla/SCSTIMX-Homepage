@@ -17,7 +17,8 @@
 <body>
   <div id="javascriptDetector">Please enable <span style="color:red;font-size:20px;">"Javascript"</span> in your browser for viewing this site</div>
   <script>
-    document.getElementById('javascriptDetector').style.display = 'none';
+    let jsbarrier = document.getElementById('javascriptDetector');
+    jsbarrier.parentNode.removeChild(jsbarrier);
   </script>
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
