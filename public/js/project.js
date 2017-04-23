@@ -1,8 +1,17 @@
-// console.log('*my script on')
 // important vars
 var panels = {};  // contains names and Vue instances for tab contents
 var tabNames = [];  // names available tabs
 var keyFunctions = {};  // drawer functions name(hashtag) with Vue inst to sync state
+
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY",
+  authDomain: "scstimx-b5bb8.firebaseapp.com",
+  databaseURL: "https://scstimx-b5bb8.firebaseio.com",
+  projectId: "scstimx-b5bb8",
+  storageBucket: "scstimx-b5bb8.appspot.com"
+};
+firebase.initializeApp(config);
 
 // for querySelectorAll
 // forEach method, could be shipped as part of an Object Literal/Module
