@@ -7,15 +7,25 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>SCSTIMX Homepage</title>
   <link rel="shortcut icon" href="favicon.png" type="image/png" />
+
+  <!-- MDL -->
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
   <link rel="stylesheet" href="css/project.css">
+
   <script src="js/vue.min.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+  <!-- firebase sdk -->
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-app.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-auth.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-database.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-storage.js"></script>
+
+  <!-- firebaseui -->
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.css" />
+  <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>
 </head>
 
 <body>
@@ -170,8 +180,13 @@
           <span class="t-bottom">website build by <a target="_blank" href="mailto:j255121@gmail.com">Wei-hua, Hsu</a></span>
         </div>
       </footer>
+
     </main>
   </div>
+  <div id="dim">
+    <div id="firebaseui-auth-container"><a href="#dimOff" class="topRight"><i class="material-icons">clear</i></a></div>
+  </div>
+
   <script defer src="js/project.js"></script>
 </body>
 
