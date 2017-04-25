@@ -1,17 +1,17 @@
 // important vars
 var panels = {};  // contains names and Vue instances for tab contents
-var tabNames = [];  // names available tabs
-var keyFunctions = {};  // drawer functions name(hashtag) with Vue inst to sync state
+var tabHashes = [];  // names available tabs
+var keyFunctions = {};  // key functions and their Vue inst 
 var userName, userEmail, userEmailVerified, userPhotoURL, userId, userProviderData; // firebase
 var singleFunctions = {
   singinSuccess: function () {
     // console.log('in success');
-    singleFunctions['dimOff']();
-    keyFunctions['login'].loginState = true;
+    this.dimOff();
+    keyFunctions.drawerAuth.loginState = true;
   },
   dimOff: function () {
     document.getElementById('dim').style.display = 'none';
-  }
+  },
 };
 
 // Initialize Firebase
@@ -23,24 +23,6 @@ var config = {
   storageBucket: "scstimx-b5bb8.appspot.com"
 };
 firebase.initializeApp(config);
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    // User is signed in.
-    var userName = user.displayName;
-    var userEmail = user.email;
-    var userEmailVerified = user.emailVerified;
-    var userPhotoURL = user.photoURL;
-    var userId = user.uid;
-    var userProviderData = user.providerData;
-  } else {
-    userName = undefined;
-    userEmail = undefined;
-    userEmailVerified = undefined;
-    userPhotoURL = undefined;
-    userId = undefined;
-    userProviderData = undefined;
-  }
-});
 
 // for querySelectorAll
 // forEach method, could be shipped as part of an Object Literal/Module
@@ -53,7 +35,7 @@ var forEach = function (array, callback, scope) {
 
 //  init Vue instance for panels
 forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, index) {
-  tabNames.push(element.id);
+  tabHashes.push(element.id);
   panels[element.id] = new Vue({
     el: element,
     data: {
@@ -71,9 +53,10 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
   });
 });
 
-// if there is no hashtag or illegal, give #news
-if (location.hash == '' || tabNames.indexOf(location.hash.split('#')[1]) == -1) {
-  location.hash = 'news';
+// if there is no hashtag or illegal, jump to first panel
+if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
+  var to = location.toString().split('#')[0] + '#' + tabHashes[0];
+  location.replace(to);
 }
 
 //  init Vue instance for tabs
@@ -93,7 +76,7 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
       return false;
     }
   }
-  let hashtag = element.getAttribute('href').split('#')[1];
+  let hashtag = element.getAttribute('href').slice(1);
   tabs[hashtag] = new Vue({
     el: element,
     data: {
@@ -109,39 +92,10 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
   });
 });
 
-// show all hidden panels when they're ready
-// function showContents() {
-//   forEach(document.querySelectorAll('.wait-tabs'), function (element) {
-//     element.classList.remove('wait-tabs');
-//   });
-//   // let loadingPanel = document.getElementById('loading-panel');
-//   // loadingPanel.style.display = 'none';
-// }
-
 // init login functions
-// FirebaseUI config.
-var uiConfig = {
-  signInSuccessUrl: '#singinSuccess',
-  signInOptions: [
-    // Leave the lines as is for the providers you want to offer your users.
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-    // firebase.auth.GithubAuthProvider.PROVIDER_ID,
-    firebase.auth.EmailAuthProvider.PROVIDER_ID
-  ],
-  // Terms of service url.
-  tosUrl: '#accountTOS',
-  credentialHelper: firebaseui.auth.CredentialHelper.NONE,
-  signInFlow: 'popup',
-};
-// Initialize the FirebaseUI Widget using Firebase.
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
-// The start method will wait until the DOM is loaded.
-
-// login button
-keyFunctions['login'] = new Vue({
-  el: document.querySelector('.func[href="#login"]'),
+// drawer login button
+keyFunctions.drawerAuth = new Vue({
+  el: '#drawerAuth',
   data: {
     loginState: false, // true for logged in, false for not
     message: '',
@@ -152,20 +106,18 @@ keyFunctions['login'] = new Vue({
   },
   methods: {
     trigger: function () {
-      // @TODO: Login system
       if (this.loginState) {
         // logout sequence
         // console.log("trigger out");
         firebase.auth().signOut().then(function () {
           // Sign-out successful.
-          keyFunctions['login'].loginState = false;
+          keyFunctions.drawerAuth.loginState = false;
         }).catch(function (error) {
           // An error happened.
         });
       } else {
         //  login sequence
         // console.log("trigger in");
-        ui.start('#firebaseui-auth-container', uiConfig);
         document.getElementById('dim').style.display = 'block';
       }
     }
@@ -181,6 +133,159 @@ keyFunctions['login'] = new Vue({
     loginState: function () {
       console.log('dec');
       this.message = this.s2m[this.loginState]
+    }
+  }
+});
+// login intro
+keyFunctions.loginIntro = new Vue({
+  el: '#loginIntro',
+  data: {
+    show: true,
+  },
+  methods: {
+    goLogin: function () {
+      console.log('show login dialog');
+      this.show = false;
+      keyFunctions.loginDialog.show = true;
+    },
+    goSignup: function () {
+      // TODO: show sign up dialog
+      console.log('show signup dialog');
+      this.show = false;
+      keyFunctions.signupDialog.show = true;
+    }
+  }
+});
+// login dialog
+keyFunctions.loginDialog = new Vue({
+  el: '#loginDialog',
+  data: {
+    show: false,
+    email: '',
+    pass: '',
+  },
+  methods: {
+    login: function () {
+      // log in to firebase
+      console.log('actual login');
+      firebase.auth().signInWithEmailAndPassword(this.email, this.pass).then(function (){
+        singleFunctions.dimOff();
+        this.cancel();
+      }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
+    },
+    cancel: function () {
+      // clear fields and back to intro
+      this.pass = '';
+      this.email = '';
+      this.$el.querySelector('form').reset();
+      forEach(this.$el.querySelectorAll('.mdl-textfield'), function (element) {
+        element.classList.remove('is-focused', 'is-dirty', 'is-invalid');
+      });
+      this.show = false;
+      keyFunctions.loginIntro.show = true;
+    }
+  }
+});
+// signup dialog
+keyFunctions.signupDialog = new Vue({
+  el: '#signupDialog',
+  data: {
+    show: false,
+    dim: false,
+    name: '',
+    email: '',
+    pass: '',
+    confirmPass: '',
+  },
+  methods: {
+    checkData: function () {
+      var res = true;
+      if (this.name == '') {
+        this.$el.querySelector('#signupName').parentElement.classList.add('is-invalid');
+        res = false;
+      }
+      // var emailRE = '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
+      // if (!emailRE.match(this.email)) {
+      //   this.$el.querySelector('#signupEmail').parentElement.classList.add('is-invalid');
+      //   res = false;
+      // }
+      if (this.pass == '') {
+        this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
+        res = false;
+      }
+      if (this.pass.length < 6) {
+        this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
+        var notification = document.querySelector('#infoToast');
+        notification.MaterialSnackbar.showSnackbar(
+          {
+            message: 'Password need longer then 6 chars'
+          }
+        );
+        res = false;
+      }
+      if (this.confirmPass != this.pass) {
+        this.$el.querySelector('#signupPassConfirm').parentElement.classList.add('is-invalid');
+        res = false;
+      }
+      return res;
+    },
+    confirmSignup: function () {
+      if (this.checkData()) {
+        this.dim = true;
+        keyFunctions.signupConfirm.show = true;
+      }
+    },
+    cancel: function () {
+      // clear fields and back to intro
+      this.pass = '';
+      this.email = '';
+      this.name = '';
+      this.confirmPass = '';
+      this.$el.querySelector('form').reset();
+      forEach(this.$el.querySelectorAll('.mdl-textfield'), function (element) {
+        element.classList.remove('is-focused', 'is-dirty', 'is-invalid');
+      });
+      this.show = false;
+      keyFunctions.loginIntro.show = true;
+    }
+  }
+});
+// signup confirm
+keyFunctions.signupConfirm = new Vue({
+  el: '#signupConfirm',
+  data: {
+    show: false,
+  },
+  methods: {
+    signup: function () {
+      // sign up to firebase
+      console.log('actual signup');
+      firebase.auth().createUserWithEmailAndPassword(keyFunctions.signupDialog.email, keyFunctions.signupDialog.pass).then(function () {
+        keyFunctions.signupConfirm.cancel();
+        keyFunctions.signupDialog.cancel();
+        singleFunctions.dimOff();
+      }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorCode + ':' + errorMessage);
+        var notification = document.querySelector('#infoToast');
+        notification.MaterialSnackbar.showSnackbar(
+          {
+            message: errorMessage
+          }
+        );
+      });
+    },
+    cancel: function () {
+      // hide and un-dim signupDialog
+      this.show = false;
+      keyFunctions.signupDialog.dim = false;
     }
   }
 });
@@ -201,25 +306,30 @@ if (!window.HashChangeEvent) (function () {
 // 3. other changes triggered by <a> (as a button to invoke function, not adding to history)
 // 4. illegal hashtag change
 window.onhashchange = function (e) {
-  let befor = e.oldURL.split('#')[1];
-  let after = e.newURL.split('#')[1];
-  // console.log('* detected hashtag change');
-  // console.log('from:' + befor);
-  // console.log('chto:' + after);
-
-  if (location.hash == '' || tabNames.indexOf(after) == -1) {
+  function trimHead(a) {
+    var b = a.split('#');
+    b.shift();
+    return b.join('#');
+  }
+  let befor = trimHead(e.oldURL);
+  let after = trimHead(e.newURL);
+  console.log('* detected hashtag change');
+  console.log('from:' + befor);
+  console.log('chto:' + after);
+  if (location.hash == '' || tabHashes.indexOf(after) == -1) {
     // check for case 3 & 4
     // location.hash = befor;
     history.back();
-    if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
-      // case 3
-      keyFunctions[after].trigger();
-    } else if (singleFunctions[after]) {
+    // if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
+    //   // case 3
+    //   keyFunctions[after].trigger();
+    // } else 
+    if (singleFunctions[after]) {
       singleFunctions[after]();
     }
     return (0);
   }
-  if (tabNames.indexOf(befor) == -1) {
+  if (tabHashes.indexOf(befor) == -1) {
     // after case 3 & 4 happened, prevent useless operation
     return (0);
   } else {
@@ -234,3 +344,28 @@ window.onhashchange = function (e) {
   // loadingPanel.style.display = 'none';
 };
 
+// detect firebase login status
+firebase.auth().onAuthStateChanged(function (user) {
+  if (user) {
+    // User is signed in.
+    var userName = user.displayName;
+    var userEmail = user.email;
+    var userEmailVerified = user.emailVerified;
+    var userPhotoURL = user.photoURL;
+    var userId = user.uid;
+    var userProviderData = user.providerData;
+    if (keyFunctions.drawerAuth) {
+      keyFunctions.drawerAuth.loginState = true;
+    }
+  } else {
+    userName = undefined;
+    userEmail = undefined;
+    userEmailVerified = undefined;
+    userPhotoURL = undefined;
+    userId = undefined;
+    userProviderData = undefined;
+    if (keyFunctions.drawerAuth) {
+      keyFunctions.drawerAuth.loginState = false;
+    }
+  }
+});

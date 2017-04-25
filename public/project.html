@@ -23,9 +23,9 @@
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-database.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/3.8.0/firebase-storage.js"></script>
 
-  <!-- firebaseui -->
+  <!--firebaseui 
   <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.css" />
-  <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>-->
 </head>
 
 <body>
@@ -58,7 +58,7 @@
     <div class="mdl-layout__drawer">
       <span class="mdl-layout-title">Control panel</span>
       <div class="header-vspacer"></div>
-      <a class="func" href="#login"><i class="material-icons">account_box</i>  {{ message }}</a>
+      <a id="drawerAuth" v-on:click="trigger" href="#" class="func"><i class="material-icons">account_box</i>  {{ message }}</a>
     </div>
     <!-- Main -->
     <main class="mdl-layout__content">
@@ -184,7 +184,122 @@
     </main>
   </div>
   <div id="dim">
-    <div id="firebaseui-auth-container"><a href="#dimOff" class="topRight"><i class="material-icons">clear</i></a></div>
+    <div id="auth-container">
+      <!-- login intro -->
+      <div id="loginIntro" v-show="show" class="mdl-card">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Login</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Log in with your <span class="font B">e-mail</span>.<br> For the first time, sign up please.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a v-on:click="goLogin" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Log in
+          </a>
+          <a v-on:click="goSignup" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Sign up
+          </a>
+        </div>
+        <div class="mdl-card__menu">
+          <a href="#dimOff"><i class="material-icons">clear</i></a>
+        </div>
+      </div>
+      <!-- login dialog -->
+      <div id="loginDialog" v-show="show" class="mdl-card">
+        <div class="mdl-card__title">
+          <h2 class="mdl-card__title-text">Login</h2>
+        </div>
+        <div class="mdl-card__supporting-text mdl-card--expand">
+          <form action="#">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="loginEmail" v-model:value="email" class="mdl-textfield__input" type="email">
+              <label for="loginEmail" class="mdl-textfield__label">E-mail</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="loginPass" v-model:value="pass" class="mdl-textfield__input" type="password">
+              <label for="loginPass" class="mdl-textfield__label">Password</label>
+            </div>
+          </form>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a v-on:click="login" class="mdl-button mdl-button--colored mdl-button--raised mdl-js-button mdl-js-ripple-effect">
+            Log in
+          </a>
+          <a v-on:click="cancel" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Cancel
+          </a>
+        </div>
+        <div class="mdl-card__menu">
+          <a href="#dimOff" v-on:click="cancel"><i class="material-icons">clear</i></a>
+        </div>
+      </div>
+      <!-- signup dialog -->
+      <div id="signupDialog" v-show="show" class="mdl-card">
+        <div class="mdl-card__title">
+          <h2 class="mdl-card__title-text">Signup</h2>
+        </div>
+        <div class="mdl-card__supporting-text mdl-card--expand">
+          <form action="#">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupName" v-model:value="name" class="mdl-textfield__input" type="text">
+              <label for="signupName" class="mdl-textfield__label">Your Name</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupEmail" v-model:value="email" class="mdl-textfield__input" type="email">
+              <label for="signupEmail" class="mdl-textfield__label">E-mail</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupPass" v-model:value="pass" class="mdl-textfield__input" type="password">
+              <label for="signupPass" class="mdl-textfield__label">Password</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupPassConfirm" v-model:value="confirmPass" class="mdl-textfield__input" type="password">
+              <label for="signupPassConfirm" class="mdl-textfield__label">Confirm password</label>
+            </div>
+          </form>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a v-on:click="confirmSignup" class="mdl-button mdl-button--colored mdl-button--raised mdl-js-button mdl-js-ripple-effect">
+            Sign up
+          </a>
+          <a v-on:click="cancel" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Cancel
+          </a>
+        </div>
+        <div class="mdl-card__menu">
+          <a href="#dimOff" v-on:click="cancel"><i class="material-icons">clear</i></a>
+        </div>
+        <div id="confirmDimer" v-show="dim"></div>
+      </div>
+      <!-- sign up confirm -->
+      <div id="signupConfirm" v-show="show" class="mdl-card">
+        <div class="mdl-card__title">
+          <h2 class="mdl-card__title-text">Check again...</h2>
+        </div>
+        <div class="mdl-card__supporting-text mdl-card--expand">
+          The <span class="font B">EMAIL</span> will be used as your account.<br>
+          Your <span class="font B">NAME</span> will be used for readers to know who the author is.<br>
+          Are you sure to sign up?<br>
+          Tip: Name can be changed afterward.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a v-on:click="signup" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Confirm
+          </a>
+          <a v-on:click="cancel" class="mdl-button mdl-button__raised mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Cancel
+          </a>
+        </div>
+        <div class="mdl-card__menu">
+          <a href="#dimOff" v-on:click="cancel"><i class="material-icons">clear</i></a>
+        </div>
+      </div>
+      <div id="infoToast" class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+      </div>
+    </div>
   </div>
 
   <script defer src="js/project.js"></script>
