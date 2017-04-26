@@ -96,6 +96,7 @@ body {
   height: 72px;
   width: calc(100% - 72px);
   padding-left: 36px;
+  padding-right: 36px;
   /*overflow: hidden;*/
   background-color: transparent;
 }
@@ -236,6 +237,29 @@ body {
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
   border-radius: 3px;
+}
+
+#loginLoading,
+#signupLoading {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+#loginLoading::before,
+#signupLoading::before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+#loginLoading>.mdl-spinner,
+#signupLoading>.mdl-spinner {
+  display: inline-block;
 }
 
 .mdl-card__supporting-text {

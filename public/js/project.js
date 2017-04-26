@@ -2,7 +2,7 @@
 var panels = {};  // contains names and Vue instances for tab contents
 var tabHashes = [];  // names available tabs
 var keyFunctions = {};  // key functions and their Vue inst 
-var userName, userEmail, userEmailVerified, userPhotoURL, userId, userProviderData; // firebase
+var fbaseUser = undefined; // firebase
 var singleFunctions = {
   singinSuccess: function () {
     // console.log('in success');
@@ -47,6 +47,8 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
         if (this.activeFlag && this.$el.querySelector('.wait-tabs')) {
           this.$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
           // console.log('removed');
+        } else {
+          this.$el.getElementsByClassName('page-content')[0].scrollIntoView();
         }
       }
     }
@@ -123,7 +125,7 @@ keyFunctions.drawerAuth = new Vue({
     }
   },
   beforeMount: function () {
-    if (userName) {
+    if (fbaseUser) {
       console.log("beforeMount");
       this.loginState = true;
     }
@@ -161,33 +163,56 @@ keyFunctions.loginDialog = new Vue({
   el: '#loginDialog',
   data: {
     show: false,
+    loading: false,
     email: '',
     pass: '',
   },
   methods: {
+    checkData: function () {
+      let res = true;
+      let emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!emailRE.test(this.email)) {
+        this.$el.querySelector('#loginEmail').parentElement.classList.add('is-invalid');
+        res = false;
+      }
+      if (this.pass == '') {
+        this.$el.querySelector('#loginPass').parentElement.classList.add('is-invalid');
+        res = false;
+      }
+      return res;
+    },
     login: function () {
       // log in to firebase
-      console.log('actual login');
-      firebase.auth().signInWithEmailAndPassword(this.email, this.pass).then(function (){
-        singleFunctions.dimOff();
-        this.cancel();
-      }).catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
+      if (this.checkData()) {
+        console.log('actual login');
+        this.loading = true;
+        firebase.auth().signInWithEmailAndPassword(this.email, this.pass).then(function () {
+          singleFunctions.dimOff();
+          keyFunctions.loginDialog.close();
+        }).catch(function (error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          keyFunctions.loginDialog.loading = false;
+          let notification = document.querySelector('#infoToast'); notification.MaterialSnackbar.showSnackbar(
+            {
+              message: errorMessage
+            }
+          );
+        });
+      }
     },
-    cancel: function () {
+    close: function () {
       // clear fields and back to intro
+      this.loading = false;
+      this.show = false;
+      keyFunctions.loginIntro.show = true;
       this.pass = '';
       this.email = '';
       this.$el.querySelector('form').reset();
       forEach(this.$el.querySelectorAll('.mdl-textfield'), function (element) {
         element.classList.remove('is-focused', 'is-dirty', 'is-invalid');
       });
-      this.show = false;
-      keyFunctions.loginIntro.show = true;
     }
   }
 });
@@ -204,26 +229,26 @@ keyFunctions.signupDialog = new Vue({
   },
   methods: {
     checkData: function () {
-      var res = true;
+      let res = true;
+      let notification = document.querySelector('#infoToast');
       if (this.name == '') {
         this.$el.querySelector('#signupName').parentElement.classList.add('is-invalid');
         res = false;
       }
-      // var emailRE = '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
-      // if (!emailRE.match(this.email)) {
-      //   this.$el.querySelector('#signupEmail').parentElement.classList.add('is-invalid');
-      //   res = false;
-      // }
+      let emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!emailRE.test(this.email)) {
+        this.$el.querySelector('#signupEmail').parentElement.classList.add('is-invalid');
+        res = false;
+      }
       if (this.pass == '') {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
         res = false;
       }
       if (this.pass.length < 6) {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
-        var notification = document.querySelector('#infoToast');
         notification.MaterialSnackbar.showSnackbar(
           {
-            message: 'Password need longer then 6 chars'
+            message: 'Password need 6 chars at least'
           }
         );
         res = false;
@@ -240,7 +265,7 @@ keyFunctions.signupDialog = new Vue({
         keyFunctions.signupConfirm.show = true;
       }
     },
-    cancel: function () {
+    close: function () {
       // clear fields and back to intro
       this.pass = '';
       this.email = '';
@@ -260,20 +285,35 @@ keyFunctions.signupConfirm = new Vue({
   el: '#signupConfirm',
   data: {
     show: false,
+    loading: false,
   },
   methods: {
     signup: function () {
       // sign up to firebase
       console.log('actual signup');
+      this.loading = true;
       firebase.auth().createUserWithEmailAndPassword(keyFunctions.signupDialog.email, keyFunctions.signupDialog.pass).then(function () {
-        keyFunctions.signupConfirm.cancel();
-        keyFunctions.signupDialog.cancel();
-        singleFunctions.dimOff();
+        let wait = setInterval(() => {
+          // wait for auto login
+          if (fbaseUser) {
+            // loged in
+            clearInterval(wait);
+            fbaseUser.updateProfile({
+              displayName: keyFunctions.signupDialog.name,
+            }).then(() => {
+              // successed update user name
+              keyFunctions.signupConfirm.close();
+              keyFunctions.signupDialog.close();
+              singleFunctions.dimOff();
+            }, (error) => { });
+          }
+        }, 10);
       }).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorCode + ':' + errorMessage);
+        keyFunctions.signupConfirm.loading = false;
         var notification = document.querySelector('#infoToast');
         notification.MaterialSnackbar.showSnackbar(
           {
@@ -282,9 +322,10 @@ keyFunctions.signupConfirm = new Vue({
         );
       });
     },
-    cancel: function () {
+    close: function () {
       // hide and un-dim signupDialog
       this.show = false;
+      this.loading = false;
       keyFunctions.signupDialog.dim = false;
     }
   }
@@ -348,22 +389,24 @@ window.onhashchange = function (e) {
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
-    var userName = user.displayName;
-    var userEmail = user.email;
-    var userEmailVerified = user.emailVerified;
-    var userPhotoURL = user.photoURL;
-    var userId = user.uid;
-    var userProviderData = user.providerData;
+    fbaseUser = user;
+    // var userName = user.displayName;
+    // var userEmail = user.email;
+    // var userEmailVerified = user.emailVerified;
+    // var userPhotoURL = user.photoURL;
+    // var userId = user.uid;
+    // var userProviderData = user.providerData;
     if (keyFunctions.drawerAuth) {
       keyFunctions.drawerAuth.loginState = true;
     }
   } else {
-    userName = undefined;
-    userEmail = undefined;
-    userEmailVerified = undefined;
-    userPhotoURL = undefined;
-    userId = undefined;
-    userProviderData = undefined;
+    fbaseUser = undefined;
+    // userName = undefined;
+    // userEmail = undefined;
+    // userEmailVerified = undefined;
+    // userPhotoURL = undefined;
+    // userId = undefined;
+    // userProviderData = undefined;
     if (keyFunctions.drawerAuth) {
       keyFunctions.drawerAuth.loginState = false;
     }
