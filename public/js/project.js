@@ -78,7 +78,7 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
       return false;
     }
   }
-  let hashtag = element.getAttribute('href').slice(1);
+  var hashtag = element.getAttribute('href').slice(1);
   tabs[hashtag] = new Vue({
     el: element,
     data: {
@@ -169,8 +169,8 @@ keyFunctions.loginDialog = new Vue({
   },
   methods: {
     checkData: function () {
-      let res = true;
-      let emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      var res = true;
+      var emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!emailRE.test(this.email)) {
         this.$el.querySelector('#loginEmail').parentElement.classList.add('is-invalid');
         res = false;
@@ -194,7 +194,7 @@ keyFunctions.loginDialog = new Vue({
           var errorCode = error.code;
           var errorMessage = error.message;
           keyFunctions.loginDialog.loading = false;
-          let notification = document.querySelector('#infoToast'); notification.MaterialSnackbar.showSnackbar(
+          var notification = document.querySelector('#infoToast'); notification.MaterialSnackbar.showSnackbar(
             {
               message: errorMessage
             }
@@ -229,13 +229,13 @@ keyFunctions.signupDialog = new Vue({
   },
   methods: {
     checkData: function () {
-      let res = true;
-      let notification = document.querySelector('#infoToast');
+      var res = true;
+      var notification = document.querySelector('#infoToast');
       if (this.name == '') {
         this.$el.querySelector('#signupName').parentElement.classList.add('is-invalid');
         res = false;
       }
-      let emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      var emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!emailRE.test(this.email)) {
         this.$el.querySelector('#signupEmail').parentElement.classList.add('is-invalid');
         res = false;
@@ -293,7 +293,7 @@ keyFunctions.signupConfirm = new Vue({
       console.log('actual signup');
       this.loading = true;
       firebase.auth().createUserWithEmailAndPassword(keyFunctions.signupDialog.email, keyFunctions.signupDialog.pass).then(function () {
-        let wait = setInterval(() => {
+        var wait = setInterval(() => {
           // wait for auto login
           if (fbaseUser) {
             // loged in
@@ -352,8 +352,8 @@ window.onhashchange = function (e) {
     b.shift();
     return b.join('#');
   }
-  let befor = trimHead(e.oldURL);
-  let after = trimHead(e.newURL);
+  var befor = trimHead(e.oldURL);
+  var after = trimHead(e.newURL);
   console.log('* detected hashtag change');
   console.log('from:' + befor);
   console.log('chto:' + after);

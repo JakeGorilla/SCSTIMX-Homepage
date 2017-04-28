@@ -22,22 +22,17 @@
             authDomain: "scstimx-b5bb8.firebaseapp.com",
             databaseURL: "https://scstimx-b5bb8.firebaseio.com",
             projectId: "scstimx-b5bb8",
-            storageBucket: "scstimx-b5bb8.appspot.com"
+            storageBucket: "scstimx-b5bb8.appspot.com",
         };
         firebase.initializeApp(config);
         // FirebaseUI config.
         var uiConfig = {
-            signInSuccessUrl: '<url-to-redirect-to-on-success>',
+            credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+            signInFlow: 'popup',
             signInOptions: [
                 // Leave the lines as is for the providers you want to offer your users.
-                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-                firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-                firebase.auth.GithubAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID
             ],
-            // Terms of service url.
-            tosUrl: '<your-tos-url>'
         };
 
         // Initialize the FirebaseUI Widget using Firebase.
@@ -45,12 +40,18 @@
         // The start method will wait until the DOM is loaded.
         ui.start('#firebaseui-auth-container', uiConfig);
     </script>
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="firebaseui-auth-container"></div>
-    <!--<textarea name="at" id="a" cols="30" rows="10"></textarea>
-    <button onclick="show()" style="display:block;">show</button>
+    <div id="firebaseui-auth-container" style="position: fixed;top: 50%;left: 50%;transform: translateY(-50%) translateX(-50%);z-index: 100;" class="hide"></div>
+    <textarea name="at" id="a" cols="30" rows="15"></textarea>
+    <button onclick="show()" style="display:inline-block;">show</button>
+    <button onclick="document.getElementById('firebaseui-auth-container').classList.toggle('hide');" style="display:inline-block;">login panel</button>
     <div id="p" style="display:inline-block;width:45%;border:1px;border-color:black;overflow: auto;word-wrap: break-word;"></div>
     <div id="q" style="display:inline-block;width:45%;border:1px;border-color:black;overflow: auto;word-wrap: break-word;"></div>
     <script>
@@ -64,7 +65,7 @@
             document.getElementById('p').innerHTML = a;
             document.getElementById('q').innerHTML = b;
         }
-    </script>-->
+    </script>
 </body>
 
 </html>
