@@ -11,7 +11,12 @@
   font-size: 16px;
 }
 
+html {
+  font-size: 15px;
+}
+
 body {
+  font-size: 1rem;
   background-color: #000011;
   /*background-image: url("../../Nock-ten_2016-12-25_0210Z.jpg");*/
 }
@@ -179,6 +184,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  text-align: center;
 }
 
 #auth-container {
@@ -218,7 +224,8 @@ body {
 #loginIntro,
 #loginDialog,
 #signupDialog,
-#signupConfirm {
+#signupConfirm,
+#verifyEmailSent {
   transform: perspective(1px);
 }
 
@@ -257,6 +264,7 @@ body {
   text-align: center;
 }
 
+#dim::before,
 #loginLoading::before,
 #signupLoading::before {
   content: '';
@@ -266,11 +274,24 @@ body {
   vertical-align: middle;
 }
 
-#loginLoading>.mdl-spinner,
-#signupLoading>.mdl-spinner {
+/*#loginLoading>.mdl-spinner,
+#signupLoading>*/
+.mdl-spinner {
   display: inline-block;
 }
 
 .mdl-card__supporting-text {
   text-align: left;
+}
+
+/*#verifyEmailSent .mdl-card__supporting-text {
+  font-size: 1.2rem;
+}*/
+
+#verifyEmailSent strong {
+  color: rgba(255, 0, 0, 0.89);
+}
+
+#verifyEmailSent__CB {
+  margin: 0 auto 16px;
 }

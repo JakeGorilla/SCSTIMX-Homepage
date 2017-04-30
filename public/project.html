@@ -184,6 +184,7 @@
     </main>
   </div>
   <div id="dim">
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
     <div id="auth-container">
       <!-- login intro -->
       <!-- =============================== -->
@@ -235,7 +236,9 @@
         <div class="mdl-card__menu">
           <a href="#dimOff" v-on:click="close"><i class="material-icons">clear</i></a>
         </div>
-        <div id="loginLoading" v-show="loading"><div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div></div>
+        <div id="loginLoading" v-show="loading">
+          <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+        </div>
       </div>
       <!-- signup dialog -->
       <!-- =============================== -->
@@ -283,10 +286,8 @@
           <h2 class="mdl-card__title-text">Check again...</h2>
         </div>
         <div class="mdl-card__supporting-text mdl-card--expand">
-          The <span class="font B">EMAIL</span> will be used as your account.<br>
-          Your <span class="font B">NAME</span> will be used for readers to know who the author is.<br>
-          Are you sure to sign up?<br>
-          Tip: Name can be changed afterward.
+          The <span class="font B">EMAIL</span> will be used as your account.<br> Your <span class="font B">NAME</span> will
+          be used for readers to know who the author is.<br> Are you sure to sign up?<br> Tip: Name can be changed afterward.
         </div>
         <div class="mdl-card__actions mdl-card--border">
           <a v-on:click="signup" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
@@ -299,7 +300,28 @@
         <div class="mdl-card__menu">
           <a href="#dimOff" v-on:click="close"><i class="material-icons">clear</i></a>
         </div>
-        <div id="signupLoading" v-show="loading"><div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div></div>
+        <div id="signupLoading" v-show="loading">
+          <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+        </div>
+      </div>
+      <!-- varify email sent message -->
+      <!-- =============================== -->
+      <div id="verifyEmailSent" v-show="show" class="mdl-card">
+        <div class="mdl-card__title">
+          <h2 class="mdl-card__title-text">{{ title }}</h2>
+        </div>
+        <div v-html="message" class="mdl-card__supporting-text mdl-card--expand"></div>
+        <div id="verifyEmailSent__CB">
+          <label for="verifyConfirmBox" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+            <input id="verifyConfirmBox" v-model:value="OK" type="checkbox" class="mdl-checkbox__input">
+            <span class="mdl-checkbox__label">OK, I see.</span>
+          </label>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a disabled id="closeVEDialog" v-on:click="close" class="mdl-button mdl-button__raised mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Close
+          </a>
+        </div>
       </div>
       <div id="infoToast" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>

@@ -1,7 +1,7 @@
 // important vars
-var panels = {};  // contains names and Vue instances for tab contents
-var tabHashes = [];  // names available tabs
-var keyFunctions = {};  // key functions and their Vue inst 
+var panels = {}; // contains names and Vue instances for tab contents
+var tabHashes = []; // names available tabs
+var keyFunctions = {}; // key functions and their Vue inst 
 var fbaseUser = undefined; // firebase
 var singleFunctions = {
   singinSuccess: function () {
@@ -55,12 +55,6 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
   });
 });
 
-// if there is no hashtag or illegal, jump to first panel
-if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
-  var to = location.toString().split('#')[0] + '#' + tabHashes[0];
-  location.replace(to);
-}
-
 //  init Vue instance for tabs
 var tabs = {};
 forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index) {
@@ -93,6 +87,12 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
     }
   });
 });
+
+// if there is no hashtag or illegal, jump to first panel
+if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
+  var to = location.toString().split('#')[0] + '#' + tabHashes[0];
+  location.replace(to);
+}
 
 // init login functions
 // drawer login button
@@ -194,11 +194,10 @@ keyFunctions.loginDialog = new Vue({
           var errorCode = error.code;
           var errorMessage = error.message;
           keyFunctions.loginDialog.loading = false;
-          var notification = document.querySelector('#infoToast'); notification.MaterialSnackbar.showSnackbar(
-            {
-              message: errorMessage
-            }
-          );
+          var notification = document.querySelector('#infoToast');
+          notification.MaterialSnackbar.showSnackbar({
+            message: errorMessage
+          });
         });
       }
     },
@@ -246,11 +245,9 @@ keyFunctions.signupDialog = new Vue({
       }
       if (this.pass.length < 6) {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
-        notification.MaterialSnackbar.showSnackbar(
-          {
-            message: 'Password need 6 chars at least'
-          }
-        );
+        notification.MaterialSnackbar.showSnackbar({
+          message: 'Password need 6 chars at least'
+        });
         res = false;
       }
       if (this.confirmPass != this.pass) {
@@ -298,28 +295,49 @@ keyFunctions.signupConfirm = new Vue({
           if (fbaseUser) {
             // loged in
             clearInterval(wait);
+            keyFunctions.signupConfirm.close();
+            keyFunctions.signupDialog.close();
+            keyFunctions.loginIntro.show = false;
             fbaseUser.updateProfile({
               displayName: keyFunctions.signupDialog.name,
             }).then(() => {
-              // successed update user name
-              keyFunctions.signupConfirm.close();
-              keyFunctions.signupDialog.close();
-              singleFunctions.dimOff();
-            }, (error) => { });
+              // succeeded update user name
+              // send verify email
+              fbaseUser.sendEmailVerification().then(function () {
+                // Email sent.
+                keyFunctions.verifyEmailSent.open(
+                  'Success!',
+                  'Signup succeed.<br>\
+                  We had sent a <strong>VERIFY EMAIL</strong> to you.<br>\
+                  Please check your mail box.<br><br>\
+                  And please fill this form to get the privilege for posting things on website.<br>\
+                  You can also find the form in the control panel later.'
+                );
+              }, function (error) {
+                // Sent Verify Email FAILED
+                keyFunctions.verifyEmailSent.open(
+                  'Oops',
+                  'Singup succeed, but we failed to send a verify email to you.<br>'+
+                  'Here is the error message:<br>'+
+                  error.message+
+                  ''
+                );
+              });
+            }, (error) => {
+              // Auto Login FAILED while Create User SUCCESS
+            });
           }
         }, 10);
       }).catch(function (error) {
-        // Handle Errors here.
+        // Create User failed
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorCode + ':' + errorMessage);
         keyFunctions.signupConfirm.loading = false;
         var notification = document.querySelector('#infoToast');
-        notification.MaterialSnackbar.showSnackbar(
-          {
-            message: errorMessage
-          }
-        );
+        notification.MaterialSnackbar.showSnackbar({
+          message: errorMessage
+        });
       });
     },
     close: function () {
@@ -330,13 +348,55 @@ keyFunctions.signupConfirm = new Vue({
     }
   }
 });
+// varify email message
+keyFunctions.verifyEmailSent = new Vue({
+  el: '#verifyEmailSent',
+  data: {
+    show: false,
+    title: '',
+    message: '',
+    OK: false
+  },
+  methods: {
+    open: function (title, message) {
+      this.title = title;
+      this.message = message;
+      this.show = true;
+    },
+    close: function () {
+      if (!this.OK) return;
+      this.show = false;
+      singleFunctions.dimOff();
+      keyFunctions.loginIntro.show = true;
+      this.title = '';
+      this.message = '';
+      this.OK = false;
+    }
+  },
+  watch: {
+    OK: function () {
+      var close = this.$el.querySelector('#closeVEDialog');
+      var input = this.$el.querySelector('#verifyConfirmBox');
+      this.OK ? close.removeAttribute('disabled') : close.setAttribute('disabled','');
+      this.OK ? input.parentElement.classList.add('is-checked') : input.parentElement.classList.remove('is-checked');
+    }
+  }
+});
 
 // oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent) (function () {
+if (!window.HashChangeEvent)(function () {
   var lastURL = document.URL;
   window.addEventListener("hashchange", function (event) {
-    Object.defineProperty(event, "oldURL", { enumerable: true, configurable: true, value: lastURL });
-    Object.defineProperty(event, "newURL", { enumerable: true, configurable: true, value: document.URL });
+    Object.defineProperty(event, "oldURL", {
+      enumerable: true,
+      configurable: true,
+      value: lastURL
+    });
+    Object.defineProperty(event, "newURL", {
+      enumerable: true,
+      configurable: true,
+      value: document.URL
+    });
     lastURL = document.URL;
   });
 }());

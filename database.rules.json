@@ -2,9 +2,16 @@
   "rules": {
     "users": {
       "$uid": {
+        ".write": "$uid === auth.uid",
         "info": {
           ".read": true,
-          ".write": "$uid === auth.uid"
+          ".write": "$uid === auth.uid",
+          ".validate": "newData.isString()"
+        },
+        "privileged": {
+          ".read": "$uid === auth.uid",
+          ".write": false,
+          ".validate": "newData.isBoolean()"
         }
       }
     }
