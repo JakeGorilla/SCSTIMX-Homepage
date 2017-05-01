@@ -16,11 +16,11 @@ var singleFunctions = {
 
 // Initialize Firebase
 var config = {
-  apiKey: "AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY",
-  authDomain: "scstimx-b5bb8.firebaseapp.com",
-  databaseURL: "https://scstimx-b5bb8.firebaseio.com",
-  projectId: "scstimx-b5bb8",
-  storageBucket: "scstimx-b5bb8.appspot.com"
+  apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
+  authDomain: 'scstimx-b5bb8.firebaseapp.com',
+  databaseURL: 'https://scstimx-b5bb8.firebaseio.com',
+  projectId: 'scstimx-b5bb8',
+  storageBucket: 'scstimx-b5bb8.appspot.com'
 };
 firebase.initializeApp(config);
 
@@ -110,7 +110,7 @@ keyFunctions.drawerAuth = new Vue({
     trigger: function () {
       if (this.loginState) {
         // logout sequence
-        // console.log("trigger out");
+        // console.log('trigger out');
         firebase.auth().signOut().then(function () {
           // Sign-out successful.
           keyFunctions.drawerAuth.loginState = false;
@@ -119,14 +119,14 @@ keyFunctions.drawerAuth = new Vue({
         });
       } else {
         //  login sequence
-        // console.log("trigger in");
+        // console.log('trigger in');
         document.getElementById('dim').style.display = 'block';
       }
     }
   },
   beforeMount: function () {
     if (fbaseUser) {
-      console.log("beforeMount");
+      console.log('beforeMount');
       this.loginState = true;
     }
     this.message = this.s2m[this.loginState];
@@ -317,9 +317,9 @@ keyFunctions.signupConfirm = new Vue({
                 // Sent Verify Email FAILED
                 keyFunctions.verifyEmailSent.open(
                   'Oops',
-                  'Singup succeed, but we failed to send a verify email to you.<br>'+
-                  'Here is the error message:<br>'+
-                  error.message+
+                  'Singup succeed, but we failed to send a verify email to you.<br>' +
+                  'Here is the error message:<br>' +
+                  error.message +
                   ''
                 );
               });
@@ -377,22 +377,22 @@ keyFunctions.verifyEmailSent = new Vue({
     OK: function () {
       var close = this.$el.querySelector('#closeVEDialog');
       var input = this.$el.querySelector('#verifyConfirmBox');
-      this.OK ? close.removeAttribute('disabled') : close.setAttribute('disabled','');
+      this.OK ? close.removeAttribute('disabled') : close.setAttribute('disabled', '');
       this.OK ? input.parentElement.classList.add('is-checked') : input.parentElement.classList.remove('is-checked');
     }
   }
 });
 
 // oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent)(function () {
+if (!window.HashChangeEvent) (function () {
   var lastURL = document.URL;
-  window.addEventListener("hashchange", function (event) {
-    Object.defineProperty(event, "oldURL", {
+  window.addEventListener('hashchange', function (event) {
+    Object.defineProperty(event, 'oldURL', {
       enumerable: true,
       configurable: true,
       value: lastURL
     });
-    Object.defineProperty(event, "newURL", {
+    Object.defineProperty(event, 'newURL', {
       enumerable: true,
       configurable: true,
       value: document.URL

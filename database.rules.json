@@ -2,7 +2,6 @@
   "rules": {
     "users": {
       "$uid": {
-        ".write": "$uid === auth.uid",
         "info": {
           ".read": true,
           ".write": "$uid === auth.uid",
@@ -10,9 +9,23 @@
         },
         "privileged": {
           ".read": "$uid === auth.uid",
-          ".write": false,
+          ".write": "root.child('admin').child(auth.uid)",
           ".validate": "newData.isBoolean()"
+        },
+        "$others": {
+          ".read": false,
+          ".write": false
         }
+      }
+    },
+    "admin": {},
+    "privilegedUsers": {},
+    "posts": {
+      ".read": true,
+      ".write": "root.child('users').child(auth.uid).child('privileged')",
+      "$pid": {
+        ".read": true,
+        ".write": "if no-Old-Data or user==author || root.child('admin').child(auth.uid)"
       }
     }
   }

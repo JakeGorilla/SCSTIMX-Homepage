@@ -2,70 +2,188 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-    <script src="js/marked.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-storage.js"></script>
-    <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>
-    <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.css" />
-    <script type="text/javascript">
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY",
-            authDomain: "scstimx-b5bb8.firebaseapp.com",
-            databaseURL: "https://scstimx-b5bb8.firebaseio.com",
-            projectId: "scstimx-b5bb8",
-            storageBucket: "scstimx-b5bb8.appspot.com",
-        };
-        firebase.initializeApp(config);
-        // FirebaseUI config.
-        var uiConfig = {
-            credentialHelper: firebaseui.auth.CredentialHelper.NONE,
-            signInFlow: 'popup',
-            signInOptions: [
-                // Leave the lines as is for the providers you want to offer your users.
-                firebase.auth.EmailAuthProvider.PROVIDER_ID
-            ],
-        };
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-storage.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.css" />
 
-        // Initialize the FirebaseUI Widget using Firebase.
-        var ui = new firebaseui.auth.AuthUI(firebase.auth());
-        // The start method will wait until the DOM is loaded.
-        ui.start('#firebaseui-auth-container', uiConfig);
-    </script>
-    <style>
-        .hide {
-            display: none;
-        }
-    </style>
+  <style>
+    body {
+      margin: 0;
+      padding: 8px 8px 24px;
+      max-width: 1024px;
+      transform: translateX(calc(50vw - 50%));
+    }
+    
+    .hide {
+      display: none !important;
+    }
+    
+    #firebaseui-auth-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translateY(-50%) translateX(-50%);
+      z-index: 100;
+    }
+    
+    #title {
+      margin-bottom: 8px;
+    }
+    
+    .sc {
+      /*display: inline-block;
+      width: 45%;
+      border: 1px;
+      border-color: black;
+      overflow: auto;
+      word-wrap: break-word;*/
+      margin-top: 16px;
+    }
+    
+    h1 {
+      margin: 20px auto 0;
+    }
+    
+    .hr__main {
+      margin-top: 20px;
+    }
+    
+    .article-card {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .mdl-card__title {
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    
+    .mdl-card__title-text,
+    .mdl-card__subtitle-text {
+      align-self: flex-start;
+    }
+    
+    .mdl-card__subtitle-text {
+      align-self: flex-start;
+    }
+    
+    .mdl-card__supporting-text {
+      padding: 0 16px;
+      overflow: hidden;
+    }
+    
+    .mdl-card__actions {
+      margin-top: 16px;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="firebaseui-auth-container" style="position: fixed;top: 50%;left: 50%;transform: translateY(-50%) translateX(-50%);z-index: 100;" class="hide"></div>
-    <textarea name="at" id="a" cols="30" rows="15"></textarea>
-    <button onclick="show()" style="display:inline-block;">show</button>
-    <button onclick="document.getElementById('firebaseui-auth-container').classList.toggle('hide');" style="display:inline-block;">login panel</button>
-    <div id="p" style="display:inline-block;width:45%;border:1px;border-color:black;overflow: auto;word-wrap: break-word;"></div>
-    <div id="q" style="display:inline-block;width:45%;border:1px;border-color:black;overflow: auto;word-wrap: break-word;"></div>
-    <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("a") });
-        function show() {
-            console.log('1');
-            var raw = JSON.stringify(simplemde.value());
-            console.log(raw);
-            var a = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
-            var b = marked(JSON.parse(raw));
-            document.getElementById('p').innerHTML = a;
-            document.getElementById('q').innerHTML = b;
-        }
-    </script>
+  <div id="firebaseui-auth-container" class="hide"></div>
+  <label for="title">Title</label>
+  <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
+  <textarea name="at" id="a" cols="30" rows="15"></textarea>
+  <button onclick="show()" style="display:inline-block;">show</button>
+  <button id="login" onclick="document.getElementById('firebaseui-auth-container').classList.toggle('hide');" style="display:inline-block;">Login</button>
+  <button id="logout" onclick="logout()" class="hide" style="display:inline-block;">Logout</button>
+  <div id="p" class="sc"></div>
+
+
+  <script>
+    // important vars
+    var panels = {}; // contains names and Vue instances for tab contents
+    var tabHashes = []; // names available tabs
+    var keyFunctions = {}; // key functions and their Vue inst 
+    var fbaseUser = undefined; // firebase
+    var loginBtn = document.querySelector('#login');
+    var logoutBtn = document.querySelector('#logout');
+    var simplemde = new SimpleMDE({ element: document.getElementById('a') });
+    function show() {
+      var raw = JSON.stringify(simplemde.value());
+      console.log(raw);
+      var title = document.querySelector('#title');
+      var a = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
+      document.getElementById('p').innerHTML =
+        '<div class="article-card mdl-card mdl-shadow--2dp">\
+          <div class="mdl-card__title">\
+            <h2 class="mdl-card__title-text">'+ title.value + '</h2>\
+            <h3 class="mdl-card__subtitle-text">Auther: ' + fbaseUser.displayName + '</h3>\
+          </div>\
+          <div class="mdl-card__supporting-text mdl-card--expand">' + a + '</div>\
+          <div class="mdl-card__actions mdl-card--border">\
+            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+              Read full content\
+            </a>\
+          </div>\
+        </div>';
+      componentHandler.upgradeDom();
+    }
+    // Initialize Firebase
+    var config = {
+      apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
+      authDomain: 'scstimx-b5bb8.firebaseapp.com',
+      databaseURL: 'https://scstimx-b5bb8.firebaseio.com',
+      projectId: 'scstimx-b5bb8',
+      storageBucket: 'scstimx-b5bb8.appspot.com',
+      messagingSenderId: '322690969915'
+    };
+    firebase.initializeApp(config);
+    // detect firebase login status
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        // User is signed in.
+        fbaseUser = user;
+        // var userName = user.displayName;
+        // var userEmail = user.email;
+        // var userEmailVerified = user.emailVerified;
+        // var userPhotoURL = user.photoURL;
+        // var userId = user.uid;
+        // var userProviderData = user.providerData;
+        if (ui) ui.reset();
+        loginBtn.classList.add('hide');
+        logoutBtn.classList.remove('hide');
+      } else {
+        fbaseUser = undefined;
+        logoutBtn.classList.add('hide');
+        loginBtn.classList.remove('hide');
+      }
+    });
+    // FirebaseUI config.
+    var uiConfig = {
+      credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+      signInFlow: 'popup',
+      signInOptions: [
+        // Leave the lines as is for the providers you want to offer your users.
+        firebase.auth.EmailAuthProvider.PROVIDER_ID
+      ],
+      signInSuccessUrl: '#'
+    };
+    // Initialize the FirebaseUI Widget using Firebase.
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    // The start method will wait until the DOM is loaded.
+    ui.start('#firebaseui-auth-container', uiConfig);
+
+    function logout() {
+      firebase.auth().signOut().then(function () {
+        // Sign-out successful.
+      }).catch(function (error) {
+        // An error happened.
+        console.log(error.message);
+      });
+    }
+  </script>
 </body>
 
 </html>
