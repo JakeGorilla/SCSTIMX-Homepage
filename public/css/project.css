@@ -284,9 +284,9 @@ body {
   text-align: left;
 }
 
-/*#verifyEmailSent .mdl-card__supporting-text {
-  font-size: 1.2rem;
-}*/
+#verifyEmailSent {
+  min-height: 330px;
+}
 
 #verifyEmailSent strong {
   color: rgba(255, 0, 0, 0.89);

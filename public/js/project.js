@@ -100,8 +100,13 @@ keyFunctions.drawerAuth = new Vue({
   el: '#drawerAuth',
   data: {
     loginState: false, // true for logged in, false for not
-    message: '',
-    s2m: {
+    icon: '',
+    label: '',
+    s2icon: {
+      true: 'cloud_off',
+      false: 'account_box',
+    },
+    s2label: {
       true: 'Logout',
       false: 'Login',
     },
@@ -129,12 +134,14 @@ keyFunctions.drawerAuth = new Vue({
       console.log('beforeMount');
       this.loginState = true;
     }
-    this.message = this.s2m[this.loginState];
+    this.label = this.s2label[this.loginState];
+    this.icon = this.s2icon[this.loginState];
   },
   watch: {
     loginState: function () {
       console.log('dec');
-      this.message = this.s2m[this.loginState]
+      this.label = this.s2label[this.loginState]
+      this.icon = this.s2icon[this.loginState];
     }
   }
 });
