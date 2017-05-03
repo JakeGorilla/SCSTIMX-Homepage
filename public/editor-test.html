@@ -225,6 +225,7 @@
         fbaseData.ref('/content/' + newPostId).set(postContent);
       }).then(function () {
         alert('Post succeed! post id:' + newPostId);
+        document.getElementById('p').innerHTML = '';
       }).catch(function (error) {
         console.log(error);
       });
