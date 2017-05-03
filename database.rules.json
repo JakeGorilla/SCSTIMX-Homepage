@@ -56,7 +56,11 @@
         ".read": "data.child('public').val() === true",
         ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
         ".validate": "newData.hasChildren(['time','title','content','authorId','public'])",
-        "time": {},
+        "time": {
+          ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
+          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
+          ".validate": "newData.val() <= now"
+        },
         "title": {
           ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
           ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",

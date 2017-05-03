@@ -295,3 +295,13 @@ body {
 #verifyEmailSent__CB {
   margin: 0 auto 16px;
 }
+
+.mdl-snackbar {
+  opacity: 0;
+  transition: opacity 0.1s linear, transform .25s cubic-bezier(.4,0,1,1);
+}
+
+.mdl-snackbar.mdl-snackbar--active {
+  opacity: 1;
+  transition: opacity 0.1s linear, transform .25s cubic-bezier(0,0,.2,1);
+}

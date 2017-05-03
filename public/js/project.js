@@ -1,17 +1,37 @@
 // important vars
+var fbaseUser = undefined; // Firebase current user
+var fbaseData = undefined; // Firebase database ref
+
+// DOM, Vue, functions
 var panels = {}; // contains names and Vue instances for tab contents
-var tabHashes = []; // names available tabs
+var tabHashes = []; // names of available tabs (their #hashvalue)
 var keyFunctions = {}; // key functions and their Vue inst 
-var fbaseUser = undefined; // firebase
 var singleFunctions = {
   singinSuccess: function () {
     // console.log('in success');
     this.dimOff();
     keyFunctions.drawerAuth.loginState = true;
   },
+  dimOn: function () {
+    document.getElementById('dim').style.display = 'block';
+  },
   dimOff: function () {
     document.getElementById('dim').style.display = 'none';
   },
+  authNotification: {
+    bar: document.querySelector('#infoToast'),
+    show: function (message, time) {
+      this.bar.MaterialSnackbar.showSnackbar({
+        message: message,
+        timeout: time,
+        actionHandler: singleFunctions.authNotification.hide,
+        actionText: 'X'
+      });
+    },
+    hide: function () {
+      singleFunctions.authNotification.bar.classList.remove('mdl-snackbar--active');
+    }
+  }
 };
 
 // Initialize Firebase
@@ -23,6 +43,9 @@ var config = {
   storageBucket: 'scstimx-b5bb8.appspot.com'
 };
 firebase.initializeApp(config);
+
+// Firebase database ref
+var fbaseData = firebase.database();
 
 // for querySelectorAll
 // forEach method, could be shipped as part of an Object Literal/Module
@@ -125,7 +148,7 @@ keyFunctions.drawerAuth = new Vue({
       } else {
         //  login sequence
         // console.log('trigger in');
-        document.getElementById('dim').style.display = 'block';
+        singleFunctions.dimOn();
       }
     }
   },
@@ -201,10 +224,7 @@ keyFunctions.loginDialog = new Vue({
           var errorCode = error.code;
           var errorMessage = error.message;
           keyFunctions.loginDialog.loading = false;
-          var notification = document.querySelector('#infoToast');
-          notification.MaterialSnackbar.showSnackbar({
-            message: errorMessage
-          });
+          singleFunctions.authNotification.show(errorMessage, 5000);
         });
       }
     },
@@ -236,7 +256,6 @@ keyFunctions.signupDialog = new Vue({
   methods: {
     checkData: function () {
       var res = true;
-      var notification = document.querySelector('#infoToast');
       if (this.name == '') {
         this.$el.querySelector('#signupName').parentElement.classList.add('is-invalid');
         res = false;
@@ -252,9 +271,8 @@ keyFunctions.signupDialog = new Vue({
       }
       if (this.pass.length < 6) {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
-        notification.MaterialSnackbar.showSnackbar({
-          message: 'Password need 6 chars at least'
-        });
+        var h = function () { };
+        singleFunctions.authNotification.show('Password need 6 chars at least', 5000);
         res = false;
       }
       if (this.confirmPass != this.pass) {
@@ -302,13 +320,13 @@ keyFunctions.signupConfirm = new Vue({
           if (fbaseUser) {
             // loged in
             clearInterval(wait);
-            keyFunctions.signupConfirm.close();
-            keyFunctions.signupDialog.close();
-            keyFunctions.loginIntro.show = false;
             fbaseUser.updateProfile({
               displayName: keyFunctions.signupDialog.name,
             }).then(() => {
               // succeeded update user name
+              keyFunctions.signupConfirm.close();
+              keyFunctions.signupDialog.close();
+              keyFunctions.loginIntro.show = false;
               // send verify email
               fbaseUser.sendEmailVerification().then(function () {
                 // Email sent.
@@ -327,11 +345,11 @@ keyFunctions.signupConfirm = new Vue({
                   'Singup succeed, but we failed to send a verify email to you.<br>' +
                   'Here is the error message:<br>' +
                   error.message +
-                  ''
+                  '<br>Please manualy do it again.'
                 );
               });
             }, (error) => {
-              // Auto Login FAILED while Create User SUCCESS
+              // Update display name FAILED while Create User SUCCESS
             });
           }
         }, 10);
@@ -341,10 +359,7 @@ keyFunctions.signupConfirm = new Vue({
         var errorMessage = error.message;
         console.log(errorCode + ':' + errorMessage);
         keyFunctions.signupConfirm.loading = false;
-        var notification = document.querySelector('#infoToast');
-        notification.MaterialSnackbar.showSnackbar({
-          message: errorMessage
-        });
+        singleFunctions.authNotification.show(errorMessage, 5000);
       });
     },
     close: function () {
