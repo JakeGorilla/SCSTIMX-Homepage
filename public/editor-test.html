@@ -17,6 +17,7 @@
   <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase-storage.js"></script>
   <script src="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.js"></script>
   <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/1.0.1/firebaseui.css" />
+  <script src="js/vue.min.js"></script>
 
   <style>
     body {
@@ -25,11 +26,11 @@
       max-width: 1024px;
       transform: translateX(calc(50vw - 50%));
     }
-
+    
     .hide {
       display: none !important;
     }
-
+    
     #firebaseui-auth-container {
       position: fixed;
       top: 50%;
@@ -37,11 +38,11 @@
       transform: translateY(-50%) translateX(-50%);
       z-index: 100;
     }
-
+    
     #title {
       margin-bottom: 8px;
     }
-
+    
     .sc {
       /*display: inline-block;
     width: 45%;
@@ -51,20 +52,22 @@
     word-wrap: break-word;*/
       margin-top: 16px;
     }
-
+    
     h1 {
       margin: 20px auto 0;
     }
-
+    
     .hr__main {
       margin-top: 20px;
     }
-
+    
     .article-card {
       width: 300px;
       height: 300px;
+      margin: 6px;
+      display: inline-flex;
     }
-
+    
     .mdl-card__title {
       flex-direction: column;
       justify-content: flex-end;
@@ -73,24 +76,53 @@
       margin-bottom: 16px;
       flex: none;
     }
-
+    
     .mdl-card__title-text,
     .mdl-card__subtitle-text {
       align-self: flex-start;
     }
-
+    
     .mdl-card__title-text {
       line-height: 32px;
     }
-
+    
     .mdl-card__subtitle-text {
       line-height: 24px;
     }
-
+    
     .mdl-card__supporting-text {
       padding-top: 0;
     }
-
+    
+    .mdl-card__supporting-text h1 {
+      font-size: 20px;
+    }
+    
+    .mdl-card__supporting-text h2 {
+      font-size: 18px;
+    }
+    
+    .mdl-card__supporting-text h3 {
+      font-size: 17px;
+    }
+    
+    .mdl-card__supporting-text h4 {
+      font-size: 16px;
+    }
+    
+    .mdl-card__supporting-text h5 {
+      font-size: 15px;
+    }
+    
+    .mdl-card__supporting-text h6 {
+      font-size: 14px;
+    }
+    
+    .mdl-card__supporting-text img {
+      max-width: 80%;
+      max-height: 80%;
+    }
+    
     .mdl-card__actions {
       margin-top: 16px;
     }
@@ -102,10 +134,12 @@
   <label for="title">Title</label>
   <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
   <textarea name="at" id="a" cols="30" rows="15"></textarea>
-  <button onclick="show()" style="display:inline-block;">show</button>
+  <button onclick="preview()" style="display:inline-block;">Preview</button>
+  <button onclick="post()" style="display:inline-block;">Post</button>
   <button id="login" onclick="document.getElementById('firebaseui-auth-container').classList.remove('hide');" style="display:inline-block;">Login</button>
   <button id="logout" onclick="logout()" class="hide" style="display:inline-block;">Logout</button>
   <div id="p" class="sc"></div>
+  <div id="oldPosts" class="sc" v-html="content"></div>
 
 
   <script>
@@ -114,34 +148,14 @@
     var tabHashes = []; // names available tabs
     var keyFunctions = {}; // key functions and their Vue inst 
     var fbaseUser = undefined; // firebase
+    var fbaseData = undefined; // firebase
+    var userPublicData = undefined;
     var loginBtn = document.querySelector('#login');
     var logoutBtn = document.querySelector('#logout');
     var simplemde = new SimpleMDE({
       element: document.getElementById('a')
     });
 
-    function show() {
-      var raw = JSON.stringify(simplemde.value());
-      console.log(raw);
-      var title = document.querySelector('#title');
-      var a = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
-      var st = '';
-      if (fbaseUser) st = 'Auther: ' + fbaseUser.displayName;
-      document.getElementById('p').innerHTML =
-        '<div class="article-card mdl-card mdl-shadow--2dp">\
-          <div class="mdl-card__title mdl-card--border">\
-            <h2 class="mdl-card__title-text">' + title.value + '</h2>' + '\
-            <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
-          </div>\
-          <div class="mdl-card__supporting-text mdl-card--expand">' + a + '</div>\
-          <div class="mdl-card__actions mdl-card--border">\
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-            Read full content\
-          </a>\
-          </div>\
-        </div>';
-      componentHandler.upgradeDom();
-    }
     // Initialize Firebase
     var config = {
       apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
@@ -152,21 +166,19 @@
       messagingSenderId: '322690969915'
     };
     firebase.initializeApp(config);
-    // detect firebase login status
+    fbaseData = firebase.database();
     firebase.auth().onAuthStateChanged(function (user) {
+      // detect firebase login status
       if (user) {
         // User is signed in.
         fbaseUser = user;
-        // var userName = user.displayName;
-        // var userEmail = user.email;
-        // var userEmailVerified = user.emailVerified;
-        // var userPhotoURL = user.photoURL;
-        // var userId = user.uid;
-        // var userProviderData = user.providerData;
         document.getElementById('firebaseui-auth-container').classList.add('hide');
         if (ui) ui.reset();
         loginBtn.classList.add('hide');
         logoutBtn.classList.remove('hide');
+        fbaseData.ref('/users/' + fbaseUser.uid).once('value').then(dataSnapshot => {
+          userPublicData = dataSnapshot.val();
+        });
       } else {
         fbaseUser = undefined;
         logoutBtn.classList.add('hide');
@@ -174,6 +186,49 @@
         ui.start('#firebaseui-auth-container', uiConfig);
       }
     });
+    function preview() {
+      var raw = JSON.stringify(simplemde.value());
+      var title = document.querySelector('#title');
+      var content = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
+      var st = '';
+      if (userPublicData) st = 'Auther: ' + userPublicData.name;
+      document.getElementById('p').innerHTML =
+        '<div class="article-card mdl-card mdl-shadow--2dp">\
+          <div class="mdl-card__title mdl-card--border">\
+            <h2 class="mdl-card__title-text">' + title.value + '</h2>' + '\
+            <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
+          </div>\
+          <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
+          <div class="mdl-card__actions mdl-card--border">\
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+            Read full content\
+          </a>\
+          </div>\
+        </div>';
+      componentHandler.upgradeDom();
+    }
+    function post() {
+      if (!fbaseUser) {
+        alert("Login to post");
+        return;
+      }
+      var postData = {
+        time: firebase.database.ServerValue.TIMESTAMP,
+        title: document.querySelector('#title').value,
+        authorId: fbaseUser.uid
+      };
+      var postContent = JSON.stringify(simplemde.value());
+      var newPostId = fbaseData.ref('/publicPosts').push().key;
+      var updates = {};
+      fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + newPostId).set(true).then(function () {
+        fbaseData.ref('/publicPosts/' + newPostId).set(postData);
+        fbaseData.ref('/content/' + newPostId).set(postContent);
+      }).then(function () {
+        alert('Post succeed! post id:' + newPostId);
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }
     // FirebaseUI config.
     var uiConfig = {
       credentialHelper: firebaseui.auth.CredentialHelper.NONE,
@@ -195,6 +250,63 @@
         console.log(error.message);
       });
     }
+
+    var content = new Vue({
+      el: '#oldPosts',
+      data: {
+        content: ''
+      }
+    });
+
+    var latestPosts = [];
+    fbaseData.ref('/publicPosts').limitToLast(6).on('value', dataSnapshot => {
+      var newContent = '';
+      var articleList = dataSnapshot.val();
+      function show(pidList) {
+        var pid;
+        if (pidList.length > 0) pid = pidList.pop();
+        else {
+          content.content = newContent;
+          return;
+        }
+        var title = articleList[pid].title;
+        var authorId = articleList[pid].authorId;
+        fbaseData.ref('/users/' + authorId).once('value').then(function (dataSnapshot) {
+          var authorInfo = dataSnapshot.val();
+          console.log(title);
+          console.log(pid);
+          console.log(authorInfo.name);
+          fbaseData.ref('/content/' + pid).once('value').then(function (dataSnapshot) {
+            var raw = dataSnapshot.val();
+            var content = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
+            var st = 'Auther: ' + authorInfo.name;
+            newContent +=
+              '<div class="article-card mdl-card mdl-shadow--2dp">\
+              <div class="mdl-card__title mdl-card--border">\
+                <h2 class="mdl-card__title-text">' + title + '</h2>' + '\
+                <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
+              </div>\
+              <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
+              <div class="mdl-card__actions mdl-card--border">\
+              <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+                Read full content\
+              </a>\
+              </div>\
+            </div>';
+            componentHandler.upgradeDom();
+            show(pidList);
+          });
+        });
+      }
+      console.log(Object.keys(articleList));
+      if (latestPosts.toString() === Object.keys(articleList).toString()) {
+        console.log('repeat');
+        return;
+      } else {
+        latestPosts = Object.keys(articleList);
+        show(Object.keys(articleList));
+      }
+    });
   </script>
 </body>
 

@@ -1,90 +1,107 @@
 {
   "rules": {
     "admin": {
-      ".read": "root.child('admin').child(auth.uid).val() === true",
+      ".read": "root.child('admin').val() === auth.uid",
       ".validate": "newData.isString()"
     },
     "privilegedUsers": {
       "$uid": {
-        "privileged": {
-          ".read": "$uid === auth.uid",
-          ".write": "root.child('admin').child(auth.uid).val() === true",
-          ".validate": "newData.isString()"
-        }
+        ".read": "$uid === auth.uid",
+        ".write": "root.child('admin').val() === auth.uid",
+        ".validate": "newData.isBoolean()"
       }
     },
     "userList": {
-      ".read": "root.child('admin').child(auth.uid).val() === true",
-      ".validate": "newData.isString()"
+      ".read": "root.child('admin').val() === auth.uid",
+      ".write": "auth != null",
+      ".validate": "newData.hasChild(auth.uid) && newData.child(auth.uid).isString() && newData.child(auth.uid).val().contains('@')",
+      "$uid": {
+        ".validate": "$uid === auth.uid && newData.val().contains('@') && newData.val().contains('.')"
+      }
     },
     "users": {
+      ".read": "root.child('admin').val() === auth.uid",
+      ".write": "auth != null",
       "$uid": {
-        ".validate": "newData.isString()",
-        "privileged": {
-          ".read": "$uid === auth.uid",
-          ".write": "root.child('admin').child(auth.uid).val() === true",
-          ".validate": "newData.isBoolean()"
+        ".read": true,
+        ".validate": "$uid === auth.uid",
+        "name": {
+          ".validate": "$uid === auth.uid && newData.isString()"
         },
-        "publicName": {
-          ".read": true,
-          ".write": "$uid === auth.uid",
-          ".validate": "newData.isString()"
+        "icon": {
+          ".validate": "$uid === auth.uid && newData.isString()"
         },
-        "publicIcon": {
-          ".read": true,
-          ".write": "$uid === auth.uid",
-          ".validate": "newData.isString()"
+        "info": {
+          ".validate": "$uid === auth.uid && newData.isString()"
         },
-        "publicInfo": {
-          ".read": true,
-          ".write": "$uid === auth.uid",
-          ".validate": "newData.isString()"
+        "email": {
+          ".validate": "$uid === auth.uid && newData.isString() && newData.val().contains('@') && newData.val().contains('.')"
         },
-        "publicEmail": {
-          ".read": true,
-          ".write": "$uid === auth.uid",
-          ".validate": "newData.isString() && newData.val().contains('@')"
+        "posts": {
+          ".validate": "$uid === auth.uid",
+          "$pid": {
+            ".validate": "$uid === auth.uid && newData.isBoolean()"
+          }
         },
         "$others": {
-          ".read": false,
-          ".write": false
+          ".validate": false
         }
       }
     },
-    "posts": {
+    "publicPosts": {
+      ".read": true,
+      ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
       "$pid": {
         ".read": "data.child('public').val() === true",
-        ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
-        ".validate": "newData.hasChildren(['time','title','content','authorId','public'])",
+        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : auth != null",
+        ".validate": "newData.hasChildren(['time','title','authorId'])",
         "time": {
-          ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
-          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
+          ".read": "auth.uid === data.parent().child('authorId').val()",
           ".validate": "newData.val() <= now"
         },
         "title": {
-          ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
-          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
-          ".validate": "newData.isString()"
-        },
-        "content": {
-          ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
-          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
+          ".read": "auth.uid === data.parent().child('authorId').val()",
           ".validate": "newData.isString()"
         },
         "authorId": {
-          ".read": "data.parent().child('public').val() === true || auth.uid === data.parent().child('authorId').val()",
-          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
-          ".validate": "newData.isString()"
-        },
-        "public": {
           ".read": "auth.uid === data.parent().child('authorId').val()",
-          ".write": "root.child('admin').child(auth.uid).val() === true || data.exists() ? auth.uid === data.child('authorId').val() : true",
-          ".validate": "newData.isBoolean()"
+          ".validate": "newData.val() === auth.uid"
         },
         "$others": {
-          ".read": false,
-          ".write": false
+          ".validate": false
         }
+      }
+    },
+    "privatePosts": {
+      ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".validate": "$uid === auth.uid",
+        "$pid": {
+          ".validate": "newData.hasChildren(['time','title','authorId'])",
+          "time": {
+            ".read": "auth.uid === data.parent().child('authorId').val()",
+            ".validate": "newData.val() <= now"
+          },
+          "title": {
+            ".read": "auth.uid === data.parent().child('authorId').val()",
+            ".validate": "newData.isString()"
+          },
+          "authorId": {
+            ".read": "auth.uid === data.parent().child('authorId').val()",
+            ".validate": "newData.val() === auth.uid"
+          },
+          "$others": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "content": {
+      "$pid": {
+        ".read": true,
+        ".write": "root.child('publicPosts').child($pid).child('authorId').val() === auth.uid || root.child('privatePosts').child($pid).child('authorId').val() === auth.uid",
+        ".validate": "newData.isString()"
       }
     }
   }
