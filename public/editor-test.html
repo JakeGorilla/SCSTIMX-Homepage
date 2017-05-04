@@ -20,11 +20,17 @@
   <script src="js/vue.min.js"></script>
 
   <style>
-    body {
+    body{
+      display: flex;
+      justify-content: center;
+    }
+
+    main {
       margin: 0;
       padding: 8px 8px 24px;
-      max-width: 1024px;
-      transform: translateX(calc(50vw - 50%));
+      width: 1024px;
+      max-width: 100%;
+      /*transform: translateX(calc(50vw - 50%));*/
     }
     
     .hide {
@@ -33,8 +39,8 @@
     
     #firebaseui-auth-container {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50vh;
+      left: 50vw;
       transform: translateY(-50%) translateX(-50%);
       z-index: 100;
     }
@@ -61,11 +67,35 @@
       margin-top: 20px;
     }
     
+    #p>.article-card {
+      background-color: rgb(255, 192, 203);
+    }
+    
     .article-card {
+      background-color: rgb(150, 200, 255);
       width: 300px;
       height: 300px;
       margin: 6px;
       display: inline-flex;
+    }
+    
+    .article-card.expand {
+      background-color: white;
+      width: 75vw;
+      height: 85vh;
+      margin: 0;
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
+      z-index: 1000;
+      transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    }
+
+    .expand > .mdl-card__supporting-text {
+      width: 95%;
+      overflow-y: auto;
     }
     
     .mdl-card__title {
@@ -130,17 +160,18 @@
 </head>
 
 <body>
-  <div id="firebaseui-auth-container" class="hide"></div>
-  <label for="title">Title</label>
-  <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
-  <textarea name="at" id="a" cols="30" rows="15"></textarea>
-  <button onclick="preview()" style="display:inline-block;">Preview</button>
-  <button onclick="post()" style="display:inline-block;">Post</button>
-  <button id="login" onclick="document.getElementById('firebaseui-auth-container').classList.remove('hide');" style="display:inline-block;">Login</button>
-  <button id="logout" onclick="logout()" class="hide" style="display:inline-block;">Logout</button>
-  <div id="p" class="sc"></div>
-  <div id="oldPosts" class="sc" v-html="content"></div>
-
+  <main>
+    <div id="firebaseui-auth-container" class="hide"></div>
+    <label for="title">Title</label>
+    <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
+    <textarea name="at" id="a" cols="30" rows="15"></textarea>
+    <button onclick="preview()" style="display:inline-block;">Preview</button>
+    <button onclick="post()" style="display:inline-block;">Post</button>
+    <button id="login" onclick="document.getElementById('firebaseui-auth-container').classList.remove('hide');" style="display:inline-block;">Login</button>
+    <button id="logout" onclick="logout()" class="hide" style="display:inline-block;">Logout</button>
+    <div id="p" class="sc"></div>
+    <div id="oldPosts" class="sc" v-html="content"></div>
+  </main>
 
   <script>
     // important vars
@@ -176,11 +207,13 @@
         if (ui) ui.reset();
         loginBtn.classList.add('hide');
         logoutBtn.classList.remove('hide');
-        fbaseData.ref('/users/' + fbaseUser.uid).once('value').then(dataSnapshot => {
+        fbaseData.ref('/users/' + fbaseUser.uid).on('value', function (dataSnapshot) {
           userPublicData = dataSnapshot.val();
         });
       } else {
         fbaseUser = undefined;
+        if (userPublicData) fbaseData.ref('/users/' + fbaseUser.uid).off();
+        userPublicData = undefined;
         logoutBtn.classList.add('hide');
         loginBtn.classList.remove('hide');
         ui.start('#firebaseui-auth-container', uiConfig);
@@ -200,9 +233,9 @@
           </div>\
           <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
           <div class="mdl-card__actions mdl-card--border">\
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-            Read full content\
-          </a>\
+            <a onclick="expand(event)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+              Read full content\
+            </a>\
           </div>\
         </div>';
       componentHandler.upgradeDom();
@@ -230,6 +263,17 @@
         console.log(error);
       });
     }
+
+    function expand(event) {
+      console.log(event.currentTarget.parentElement);
+      event.currentTarget.parentElement.parentElement.classList.toggle('expand');
+    }
+    
+    function deletePost(event) {
+      console.log(event.currentTarget.parentElement);
+      event.currentTarget.parentElement.parentElement.classList.toggle('expand');
+    }
+
     // FirebaseUI config.
     var uiConfig = {
       credentialHelper: firebaseui.auth.CredentialHelper.NONE,
@@ -260,7 +304,7 @@
     });
 
     var latestPosts = [];
-    fbaseData.ref('/publicPosts').limitToLast(6).on('value', dataSnapshot => {
+    fbaseData.ref('/publicPosts').limitToLast(6).on('value', function (dataSnapshot) {
       var newContent = '';
       var articleList = dataSnapshot.val();
       function show(pidList) {
@@ -282,18 +326,21 @@
             var content = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
             var st = 'Auther: ' + authorInfo.name;
             newContent +=
-              '<div class="article-card mdl-card mdl-shadow--2dp">\
-              <div class="mdl-card__title mdl-card--border">\
-                <h2 class="mdl-card__title-text">' + title + '</h2>' + '\
-                <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
-              </div>\
-              <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
-              <div class="mdl-card__actions mdl-card--border">\
-              <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-                Read full content\
-              </a>\
-              </div>\
-            </div>';
+              '<div id="' + pid + '" class="article-card mdl-card mdl-shadow--2dp">\
+                <div class="mdl-card__title mdl-card--border">\
+                  <h2 class="mdl-card__title-text">' + title + '</h2>' + '\
+                  <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
+                </div>\
+                <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
+                <div class="mdl-card__actions mdl-card--border">\
+                  <a onclick="expand(event)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+                    Read full content\
+                  </a>\
+                </div>\
+                <div class="mdl-card__menu">\
+                  <a onclick="deletePost(event)"><i class="material-icons">clear</i></a>\
+                </div>\
+              </div>';
             componentHandler.upgradeDom();
             show(pidList);
           });
