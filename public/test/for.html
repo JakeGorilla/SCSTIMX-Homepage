@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/vue.js"></script>
+
+</head>
+
+<body>
+
+  <div id="yo">
+    <my v-for="a in as" :a="a" :key="a.id"></my>
+  </div>
+
+  <script>
+    var test = new Vue({
+      el: '#yo',
+      data: {
+        as: [{ name: 'Jake', id: 6 }, { name: 'Jun', id: 4 }]
+      },
+      components: {
+        my: {
+          props: ['a'],
+          template: '\
+            <div :id="a.name">{{a.id}}: {{a.name}}</div>\
+          '
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

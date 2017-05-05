@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCSTIMX Project</title>
+  <link rel="shortcut icon" href="favicon.png" type="image/png" />
+
+  <!-- update the version number as needed -->
+  <script defer src="/__/firebase/3.7.5/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script defer src="/__/firebase/3.7.5/firebase-auth.js"></script>
+  <script defer src="/__/firebase/3.7.5/firebase-database.js"></script>
+  <script defer src="/__/firebase/3.7.5/firebase-messaging.js"></script>
+  <script defer src="/__/firebase/3.7.5/firebase-storage.js"></script>
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script defer src="/__/firebase/init.js"></script>
+
+  <!-- css files -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.light_blue-orange.min.css" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+  <div id="dialog">
+    <div id="dim-box">
+      <div id="intro-box">
+        <h1>SCSTIMX</h1>
+        <h2>South-China Sea Twin Island Monsoon Experiment</h2>
+        <p>some text can be placed here</p>
+        <a href="project.html#operational">Operational<br>Products</a>
+        <a href="project.html#modelfcst">Model/Forecast<br>Products</a>
+        <a href="project.html#research">Research<br>Products</a>
+      </div>
+      <div id="news">
+        <h2>NEWS</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sagittis erat ut eros dignissim ornare. Sed eu
+          mauris vehicula, finibus quam a, ultrices risus. Nunc fermentum urna libero. Pellentesque hendrerit hendrerit nunc
+          vel egestas. Praesent id mauris velit. Mauris suscipit risus quis mattis iaculis. In hac habitasse platea dictumst.
+          In hac habitasse platea dictumst. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla at efficitur nisi,
+          et gravida quam. Sed semper nisi sapien, eget pharetra risus molestie eu. Class aptent taciti sociosqu ad litora
+          torquent per conubia nostra, per inceptos himenaeos. Pellentesque dictum, nulla sit amet commodo aliquet, erat
+          odio mollis nisl, sollicitudin lobortis urna nulla eget odio. Vestibulum at lobortis elit, nec scelerisque lacus.
+          Aenean bibendum tortor ipsum, et laoreet dolor condimentum id. Quisque egestas est sit amet varius interdum. Etiam
+          elementum blandit velit, sed tempor est ultrices sed. Integer diam tellus, posuere eget libero feugiat, ullamcorper
+          pharetra nisi. Phasellus semper, orci et pulvinar finibus, risus mi lacinia mauris, accumsan porttitor eros velit
+          dapibus risus. Phasellus tincidunt efficitur arcu ac convallis. Pellentesque quis fringilla sem, a volutpat turpis.
+          Mauris aliquet luctus tincidunt. Fusce eu magna ipsum. Vestibulum cursus nulla aliquam, viverra nunc id, tincidunt
+          odio. Sed magna nulla, aliquet quis interdum consequat, iaculis vel nulla. Nam id dignissim massa. Donec eleifend
+          semper elit ac dignissim. Nulla rhoncus erat ac porttitor condimentum. Nullam tincidunt massa sem, eget dictum
+          nulla malesuada tempus. Nunc id dui commodo arcu lacinia laoreet eget ac lacus. Integer mollis at ante vel laoreet.
+          Vestibulum enim diam, tincidunt non arcu nec, convallis tincidunt massa. Integer sed pulvinar dui. Pellentesque
+          faucibus accumsan bibendum. Integer ultricies eros placerat velit blandit ornare. Donec tincidunt dui at purus
+          euismod, ut ultrices mi dignissim. Ut pretium blandit lacus, eleifend porta dolor molestie sed. Quisque sit amet
+          velit ullamcorper, efficitur massa ut, ornare mauris. Suspendisse viverra, lorem vel tincidunt congue, nulla mi
+          tincidunt odio, in volutpat magna justo sagittis sapien. Mauris vestibulum, neque et interdum condimentum, urna
+          tortor elementum elit, at egestas nisl nulla nec magna. Cras eget laoreet eros. Nunc efficitur sodales lacus. Quisque
+          in mi orci. Phasellus pellentesque, quam ac convallis molestie, arcu orci interdum nisl, sed elementum eros quam
+          sit amet tellus. Suspendisse malesuada eu leo id rhoncus. Suspendisse potenti. Sed ornare tempor odio, id rutrum
+          lorem tempus vitae. Curabitur et eros malesuada, elementum ante at, gravida tellus. Morbi posuere eget elit id
+          mollis. Nam eu sem dolor. Vestibulum suscipit nec mauris sed dapibus. Donec tempor, tortor id facilisis suscipit,
+          nisl mi pharetra risus, sed iaculis quam felis in ante. Praesent nec scelerisque tortor, eget rutrum leo. Quisque
+          eu elit vehicula, condimentum ligula ac, vehicula lorem. Suspendisse eget maximus lacus, at faucibus lacus. Ut
+          lobortis quis turpis et mattis. Duis auctor ultrices quam, id ornare massa interdum sit amet. Proin vel quam neque.
+          Nulla iaculis feugiat mauris nec vehicula. Nullam eget nunc auctor, rhoncus ante eu, ornare mauris. Vestibulum
+          id metus at neque convallis accumsan. Cras lacinia metus nec ultrices iaculis. Nunc feugiat turpis odio, eu convallis
+          odio tempus a. Ut a nisl vehicula, scelerisque enim malesuada, imperdiet ex.
+        </p>
+      </div>
+      <div id="news-history"><a href="project.html#news">News history</a></div>
+    </div>
+  </div>
+  <p id="load">Firebase SDK Loading&hellip;</p>
+
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // // The Firebase SDK is initialized and available here!
+      //
+      // firebase.auth().onAuthStateChanged(user => { });
+      // firebase.database().ref('/path/to/ref').on('data', snapshot => { });
+      // firebase.messaging().requestPermission().then(() => { });
+      // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+      //
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+        document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+  </script>
+</body>
+
+</html>

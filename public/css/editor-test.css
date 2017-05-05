@@ -1,0 +1,203 @@
+body {
+  display: flex;
+  justify-content: center;
+}
+
+#discalmer {
+  font-size: 16px;
+  color: mediumblue;
+  text-align: center;
+}
+
+main {
+  margin: 0;
+  padding: 8px 8px 24px;
+  width: 1024px;
+  max-width: 95%;
+  /*transform: translateX(calc(50vw - 50%));*/
+}
+
+.hide {
+  display: none !important;
+}
+
+#firebaseui-auth-container {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 100;
+}
+
+#lbTitle {
+  font-size: 1.35em;
+}
+
+#title {
+  margin-bottom: 8px;
+  display: inline-flex;
+  max-width: 95%;
+  font-size: 1.35em;
+}
+
+.sc {
+  /*display: inline-block;
+    width: 45%;
+    border: 1px;
+    border-color: black;
+    overflow: auto;
+    word-wrap: break-word;*/
+  margin-top: 16px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 20px auto 6px;
+  line-height: 1.35 !important;
+}
+
+.hr__main {
+  margin-top: 20px;
+}
+
+#p > .article-card {
+  background-color: rgb(255, 192, 203);
+}
+
+.article-card {
+  background-color: rgb(150, 200, 255);
+  width: 300px;
+  height: 300px;
+  margin: 6px;
+  display: inline-flex;
+}
+
+.article-card.expand {
+  background-color: white;
+  width: 75vw;
+  height: 85vh;
+  max-width: 800px;
+  margin: 0;
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
+  z-index: 1000;
+  transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  color: rgba(0, 0, 0, 0.89) !important;
+  font-size: 120% !important;
+}
+
+.expand > .mdl-card__supporting-text {
+  width: 95%;
+  overflow-y: auto;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.89) !important;
+}
+
+.expand > .mdl-card__supporting-text > * {
+  font-size: 100%;
+}
+
+.expand > .mdl-card__supporting-text > h5 {
+  font-size: 17px;
+}
+
+.expand > .mdl-card__supporting-text > h4 {
+  font-size: 18px;
+}
+
+.expand > .mdl-card__supporting-text > h3 {
+  font-size: 20px;
+}
+
+.expand > .mdl-card__supporting-text > h2 {
+  font-size: 22px;
+}
+
+.expand > .mdl-card__supporting-text > h1 {
+  font-size: 24px;
+}
+
+.mdl-card__title {
+  flex-direction: column;
+  justify-content: flex-end;
+  vertical-align: middle;
+  padding: 16px 16px 0px;
+  margin-bottom: 16px;
+  flex: none;
+}
+
+.mdl-card__title-text,
+.mdl-card__subtitle-text {
+  align-self: flex-start;
+}
+
+.mdl-card__title-text {
+  line-height: 32px;
+}
+
+.mdl-card__subtitle-text {
+  line-height: 24px;
+}
+
+.mdl-card__supporting-text {
+  padding-top: 0;
+}
+
+.mdl-card__supporting-text table,
+.mdl-card__supporting-text th,
+.mdl-card__supporting-text td {
+  border: 1px solid black;
+}
+
+.mdl-card__supporting-text table {
+  min-width: 30%;
+  border-collapse: collapse;
+}
+
+.mdl-card__supporting-text th,
+.mdl-card__supporting-text td {
+  padding: 8px;
+}
+
+.mdl-card__supporting-text h1 {
+  font-size: 20px;
+}
+
+.mdl-card__supporting-text h2 {
+  font-size: 18px;
+}
+
+.mdl-card__supporting-text h3 {
+  font-size: 17px;
+}
+
+.mdl-card__supporting-text h4 {
+  font-size: 16px;
+}
+
+.mdl-card__supporting-text h5 {
+  font-size: 15px;
+}
+
+.mdl-card__supporting-text h6 {
+  font-size: 14px;
+}
+
+.mdl-card__supporting-text img {
+  max-width: 80%;
+}
+
+.article-card.expand > .mdl-card__supporting-text img {
+  max-height: 90%;
+}
+
+.mdl-card__actions {
+  margin-top: 16px;
+}
