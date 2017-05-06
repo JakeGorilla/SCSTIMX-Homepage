@@ -14,7 +14,7 @@
     "userList": {
       ".read": "root.child('admin').val() === auth.uid",
       ".write": "auth != null",
-      ".validate": "newData.hasChild(auth.uid) && newData.child(auth.uid).isString() && newData.child(auth.uid).val().contains('@')",
+      ".validate": "newData.hasChild(auth.uid) && newData.child(auth.uid).isString() && newData.child(auth.uid).val().contains('@') && newData.val().contains('.')",
       "$uid": {
         ".validate": "$uid === auth.uid && newData.val().contains('@') && newData.val().contains('.')"
       }
@@ -28,6 +28,9 @@
         "name": {
           ".validate": "$uid === auth.uid && newData.isString()"
         },
+        "affiliation": {
+          ".validate": "$uid === auth.uid && newData.isString()"
+        },
         "icon": {
           ".validate": "$uid === auth.uid && newData.isString()"
         },
@@ -38,7 +41,7 @@
           ".validate": "$uid === auth.uid && newData.isString() && newData.val().contains('@') && newData.val().contains('.')"
         },
         "posts": {
-          ".validate": "$uid === auth.uid",
+          ".validate": "root.child('privilegedUsers').child(auth.uid).val() === true && $uid === auth.uid",
           "$pid": {
             ".validate": "$uid === auth.uid && newData.isBoolean()"
           }
@@ -53,7 +56,7 @@
       ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
       "$pid": {
         ".read": "data.child('public').val() === true",
-        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : auth != null",
+        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : root.child('privilegedUsers').child(auth.uid).val() === true",
         ".validate": "newData.hasChildren(['time','title','authorId'])",
         "time": {
           ".read": "auth.uid === data.parent().child('authorId').val()",

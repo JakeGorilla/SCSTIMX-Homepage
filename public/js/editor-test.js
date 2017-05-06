@@ -111,7 +111,8 @@ function deletePost(event) {
   if (confirm('確定要刪除文章嗎？')) {
     // console.log(event.currentTarget.parentElement);
     var pid = event.currentTarget.parentElement.id;
-    if (latestPostData[pid].authorId != fbaseUser.uid) {
+    var postIndex = vuePosts.postKeys.indexOf(pid);
+    if (vuePosts.posts[postIndex].authorId != fbaseUser.uid) {
       alert('作者是別人');
       return
     }
@@ -152,70 +153,107 @@ var content = new Vue({
   }
 });
 
-var latestPostData;
-fbaseData.ref('/publicPosts').limitToLast(6).on('value', function (dataSnapshot) {
-  var newContent = '';
-  var articleList = dataSnapshot.val();
-  function show(pidList) {
-    var pid;
-    if (pidList.length > 0) pid = pidList.pop();
-    else {
-      content.content = newContent;
-      componentHandler.upgradeDom();
-      return;
-    }
-    var title = articleList[pid].title;
-    var authorId = articleList[pid].authorId;
-    fbaseData.ref('/users/' + authorId).once('value').then(function (dataSnapshot) {
-      var authorInfo = dataSnapshot.val();
-      console.log(title);
-      console.log(pid);
-      console.log(authorInfo.name);
-      fbaseData.ref('/content/' + pid).once('value').then(function (dataSnapshot) {
-        var raw = dataSnapshot.val();
-        var content = simplemde.options.previewRender(JSON.parse(raw)); // actually use marked too
-        var st = 'Author: ' + authorInfo.name;
-        newContent +=
-          '<div id="' + pid + '" class="article-card mdl-card mdl-shadow--2dp">\
-            <div class="mdl-card__title mdl-card--border">\
-              <h2 class="mdl-card__title-text">' + title + '</h2>' + '\
-              <h3 class="mdl-card__subtitle-text">' + st + '</h3>\
-            </div>\
-            <div class="mdl-card__supporting-text mdl-card--expand">' + content + '</div>\
-            <div class="mdl-card__actions mdl-card--border">\
-              <a onclick="expand(event)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-                Read full content\
-              </a>\
-            </div>\
-            <div onclick="deletePost(event)" class="mdl-card__menu">\
-              <a href="#"><i class="material-icons">clear</i></a>\
-            </div>\
-          </div>';
-        show(pidList);
-      });
-    });
-  }
-  console.log(Object.keys(articleList));
-  if (JSON.stringify(latestPostData) === JSON.stringify(articleList)) {
-    console.log('repeat');
-    return;
-  } else {
-    latestPostData = articleList;
-    show(Object.keys(articleList));
-  }
-});
-
 var vuePosts = new Vue({
   el: '#vuePosts',
   data: {
     posts: [], // {order:bigger front,id,title,content,uname,ufrom,}
-    rawPosts: []
+    postKeys: [],
+    rawPosts: [],
+    mostShow: 6
+  },
+  beforeMount: function () {
+    var refToPost = fbaseData.ref('/publicPosts');
+    refToPost.limitToLast(this.mostShow).once('value', function (dataSnapshot) {
+      var tmp = [];
+      dataSnapshot.forEach(function (rawPost) {
+        tmp.push(rawPost);
+      });
+      this.rawPosts = tmp;
+    }, this);
+    // refToPost.limitToLast(this.mostShow).on('child_added', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+    //   console.log('got add');
+    //   this.rawPosts.push(dataSnapshot);
+    // }, this);
+    refToPost.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot/*, keyOfTheRemovedOne*/) {
+      console.log('got removed');
+      var index = this.postKeys.indexOf(dataSnapshot.key);
+      if (index >= 0) {
+        this.posts.splice(index, 1);
+      } else {
+        for (var i = 0; i < this.rawPosts.length; i++) {
+          if (rawPosts[i].key == dataSnapshot.key) {
+            this.rawPosts.splice(i, 1);
+          }
+        }
+      }
+    }, this);
+    refToPost.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+      console.log('got changed');
+      var index = this.postKeys.indexOf(dataSnapshot.key);
+      if (index >= 0) {
+        this.posts.splice(index, 1);
+      } else {
+        for (var i = 0; i < this.rawPosts.length; i++) {
+          if (rawPosts[i].key == dataSnapshot.key) {
+            this.rawPosts.splice(i, 1);
+          }
+        }
+      }
+      this.rawPosts.push(dataSnapshot);
+    }, this);
   },
   watch: {
     rawPosts: function () {
-      if (this.rawPosts.length = 0) return;
-      var rawPost = this.rawPosts.shift;
-      vuePosts.posts.push({ id: 'a', title: 'SCS', authorName: 'ccc', authorAffiliation: '', content: 'XXX' });
+      if (this.rawPosts.length == 0) return;
+      var rawPost = this.rawPosts.pop();
+      var post = {};
+      post.id = rawPost.key;
+      rawPost = rawPost.val();
+      post.time = rawPost.time;
+      post.title = rawPost.title;
+      post.authorId = rawPost.authorId;
+      fbaseData.ref('/users/' + post.authorId).once('value').then(function (dataSnapshot) {
+        var authorInfo = dataSnapshot.val();
+        post.authorName = authorInfo.name;
+        if (authorInfo.affiliation) {
+          post.authorAffiliation = '<h3 class="mdl-card__subtitle-text">From: ' + authorInfo.affiliation + '</h3>';
+        } else post.authorAffiliation = post.time;
+        fbaseData.ref('/content/' + post.id).once('value').then(function (dataSnapshot) {
+          post.content = simplemde.options.previewRender(JSON.parse(dataSnapshot.val()));
+          vuePosts.insert(post);
+        });
+      });
+    }
+  },
+  methods: {
+    trueLocationOf: function (element, sortedBy, compareBy, start, endAt) {
+      compareBy = compareBy || sortedBy;
+      start = start || 0;
+      endAt = endAt || this.posts.length;
+      var pivot = parseInt(start + (endAt - start) / 2, 10);
+      if (endAt - start <= 1 || this.posts[pivot][compareBy] === element[compareBy]) return [pivot, this.posts[pivot][compareBy] === element[compareBy]];
+      if (this.posts[pivot][sortedBy] > element[sortedBy]) {
+        return this.trueLocationOf(element, sortedBy, compareBy, pivot, endAt);
+      } else {
+        return this.trueLocationOf(element, sortedBy, compareBy, start, pivot);
+      }
+    },
+    locationOf: function (element, sortedBy, compareBy, start, endAt) {
+      compareBy = compareBy || sortedBy;
+      start = start || 0;
+      endAt = endAt || this.posts.length;
+      return this.trueLocationOf(element, sortedBy, compareBy, start, endAt)[0];
+    },
+    insert: function (post) {
+      if (this.posts.length == 0) this.posts = [post];
+      else if (post.time > this.posts[0].time) this.posts.unshift(post);
+      else if (post.time < this.posts[this.posts.length - 1].time) this.posts.push(post);
+      else {
+        this.posts.splice((this.locationOf(post, 'time') + 1), 0, post);
+      }
+      this.postKeys = this.posts.map(function (post) {
+        return post.id;
+      });
     }
   },
   components: {
@@ -227,10 +265,10 @@ var vuePosts = new Vue({
             <h2 class="mdl-card__title-text">'+ '{{post.title}}' + '</h2>\
             <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>' + '{{post.authorAffiliation}}' + '\
           </div>\
-          <div class="mdl-card__supporting-text mdl-card--expand">'+ '{{post.content}}' + '</div>\
+          <div class="mdl-card__supporting-text mdl-card--expand" v-html="'+ 'post.content' + '"></div>\
           <div class="mdl-card__actions mdl-card--border">\
             <a onclick="expand(event)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-              Read full content\
+              Toggle full content\
             </a>\
           </div>\
           <div onclick="deletePost(event)" class="mdl-card__menu">\

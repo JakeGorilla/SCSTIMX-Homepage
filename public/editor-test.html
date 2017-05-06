@@ -36,10 +36,10 @@
     <button id="logout" onclick="logout()" class="hide" style="display:inline-block;">Logout</button>
     <label id="who" style="padding-left: 8px;"></label>
     <div id="p" class="sc"></div>
-    <div id="oldPosts" class="sc" v-html="content"></div>
     <div id="vuePosts" class="sc">
       <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
     </div>
+    <div id="oldPosts" class="sc" v-html="content" style="background-color: lightcyan;"></div>
   </main>
 </body>
 

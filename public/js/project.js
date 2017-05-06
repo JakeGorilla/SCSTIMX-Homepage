@@ -35,17 +35,15 @@ var singleFunctions = {
 };
 
 // Initialize Firebase
-var config = {
+var fbaseConfig = {
   apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
   authDomain: 'scstimx-b5bb8.firebaseapp.com',
   databaseURL: 'https://scstimx-b5bb8.firebaseio.com',
   projectId: 'scstimx-b5bb8',
   storageBucket: 'scstimx-b5bb8.appspot.com'
 };
-firebase.initializeApp(config);
-
-// Firebase database ref
-var fbaseData = firebase.database();
+firebase.initializeApp(fbaseConfig);
+fbaseData = firebase.database();
 
 // for querySelectorAll
 // forEach method, could be shipped as part of an Object Literal/Module
@@ -472,6 +470,10 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
     fbaseUser = user;
+    fbaseData = firebase.database();
+    var profile = {};
+    if (fbaseUser.displayName) profile.name = fbaseUser.displayName;
+    fbaseData.ref('/users/' + fbaseUser.uid).update(profile);
     // var userName = user.displayName;
     // var userEmail = user.email;
     // var userEmailVerified = user.emailVerified;
@@ -483,6 +485,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     }
   } else {
     fbaseUser = undefined;
+    fbaseData = firebase.database();
     // userName = undefined;
     // userEmail = undefined;
     // userEmailVerified = undefined;
