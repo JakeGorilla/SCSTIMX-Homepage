@@ -51,6 +51,78 @@
         }
       }
     },
+    "news": {
+      ".read": true,
+      ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
+      "$pid": {
+        ".read": "data.child('public').val() === true",
+        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : root.child('privilegedUsers').child(auth.uid).val() === true",
+        ".validate": "newData.hasChildren(['time','title','authorId'])",
+        "time": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() <= now"
+        },
+        "title": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.isString()"
+        },
+        "authorId": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() === auth.uid"
+        },
+        "$others": {
+          ".validate": false
+        }
+      }
+    },
+    "weatherBriefing": {
+      ".read": true,
+      ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
+      "$pid": {
+        ".read": "data.child('public').val() === true",
+        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : root.child('privilegedUsers').child(auth.uid).val() === true",
+        ".validate": "newData.hasChildren(['time','title','authorId'])",
+        "time": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() <= now"
+        },
+        "title": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.isString()"
+        },
+        "authorId": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() === auth.uid"
+        },
+        "$others": {
+          ".validate": false
+        }
+      }
+    },
+    "workingReports": {
+      ".read": true,
+      ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
+      "$pid": {
+        ".read": "data.child('public').val() === true",
+        ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : root.child('privilegedUsers').child(auth.uid).val() === true",
+        ".validate": "newData.hasChildren(['time','title','authorId'])",
+        "time": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() <= now"
+        },
+        "title": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.isString()"
+        },
+        "authorId": {
+          ".read": "auth.uid === data.parent().child('authorId').val()",
+          ".validate": "newData.val() === auth.uid"
+        },
+        "$others": {
+          ".validate": false
+        }
+      }
+    },
     "publicPosts": {
       ".read": true,
       ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
