@@ -100,6 +100,7 @@ function post() {
 
 function expand(event) {
   // console.log(event.currentTarget.parentElement);
+  event.currentTarget.parentElement.parentElement.querySelector('.mdl-card__supporting-text').scrollTop = 0;
   event.currentTarget.parentElement.parentElement.classList.toggle('expand');
 }
 
