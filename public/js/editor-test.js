@@ -217,7 +217,7 @@ var vuePosts = new Vue({
         post.authorName = authorInfo.name;
         if (authorInfo.affiliation) {
           post.authorAffiliation = '<h3 class="mdl-card__subtitle-text">From: ' + authorInfo.affiliation + '</h3>';
-        } else post.authorAffiliation = post.time;
+        } /*else post.authorAffiliation = post.time;*/
         fbaseData.ref('/content/' + post.id).once('value').then(function (dataSnapshot) {
           post.content = simplemde.options.previewRender(JSON.parse(dataSnapshot.val()));
           vuePosts.insert(post);
