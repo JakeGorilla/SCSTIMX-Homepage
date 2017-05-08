@@ -1,21 +1,27 @@
 // important vars
 var fbaseUser = undefined; // Firebase current user
 var fbaseData = undefined; // Firebase database ref
-
+var userInfo = { // For sync with database. Need to initalize, cannot be undefined any moment or vue can't got it
+  name: '',
+  affiliation: '',
+  icon: '',
+  info: '',
+  email: '',
+  posts: ''
+};
 // DOM, Vue, functions
 var panels = {}; // contains names and Vue instances for tab contents
 var tabHashes = []; // names of available tabs (their #hashvalue)
-var keyFunctions = {}; // key functions and their Vue inst 
+var stateManager = {}; // Vue instances state managers
+var drawer = {}; // all vues in drawer
+var dialogs = {}; // all dialogs, lot's of display related things
+var keyFunctions = {}; // key functions and their Vue inst
 var singleFunctions = {
-  singinSuccess: function () {
-    // console.log('in success');
-    this.dimOff();
-    keyFunctions.drawerAuth.loginState = true;
-  },
   dimOn: function () {
     document.getElementById('dim').style.display = 'block';
   },
-  dimOff: function () {
+  dimOff: function (event) {
+    if (event && event.target.id != 'dim') return;
     document.getElementById('dim').style.display = 'none';
   },
   authNotification: {
@@ -115,59 +121,123 @@ if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
   location.replace(to);
 }
 
-// init login functions
-// drawer login button
-keyFunctions.drawerAuth = new Vue({
-  el: '#drawerAuth',
+// init state managers
+stateManager.containers = {
+  managedStates: {
+    authContainer: true,
+    userInfoContainer: false,
+  },
+  whichOn: 'authContainer',
+  toggle: function (container) {
+    if (this.managedStates.hasOwnProperty(container) && !this[container]) {
+      this.managedStates[this.whichOn] = false;
+      this.managedStates[container] = true;
+      this.whichOn = container;
+      console.log('toggleed');
+    } else {
+      console.log(' * unable to toggle:' + container);
+    }
+  }
+};
+stateManager.auth = new Vue({
   data: {
-    loginState: false, // true for logged in, false for not
-    icon: '',
-    label: '',
-    s2icon: {
-      true: 'cloud_off',
-      false: 'account_box',
+    managedStates: {
+      login: false,
     },
-    s2label: {
-      true: 'Logout',
-      false: 'Login',
-    },
+  },
+  beforeMount: function () {
+    if (stateManager.auth.managedStates.login) {
+      console.log('beforeMount');
+      this.managedStates.login = true;
+    }
+  }
+});
+
+// drawer user information
+drawer.userIcon = new Vue({
+  el: '#userIcon',
+  data: {
+    info: userInfo,
+  },
+  computed: {
+    show: function () { return stateManager.auth.managedStates.login },
+  },
+  methods: {
+    choseNewIcon: function () {
+      // show upload dialog
+      console.log('choseNewIcon');
+    }
+  }
+});
+
+// drawer buttons
+keyFunctions.userInfo = new Vue({
+  el: '#userInfo',
+  computed: {
+    show: function () { return stateManager.auth.managedStates.login },
   },
   methods: {
     trigger: function () {
-      if (this.loginState) {
+      if (stateManager.auth.managedStates.login) {
+        // open dialog then update data
+        stateManager.containers.toggle('userInfoContainer');
+        singleFunctions.dimOn();
+      } else {
+        // user not logged in, display message
+      }
+    }
+  }
+});
+// LOGIN button
+keyFunctions.auth = new Vue({
+  el: '#auth',
+  data: {
+    managedStates: stateManager.auth.managedStates,
+    s2icon: { true: 'cloud_off', false: 'account_box' },
+    s2label: { true: 'Logout', false: 'Login' },
+  },
+  computed: {
+    label: function () { return this.s2label[this.managedStates.login]; },
+    icon: function () { return this.s2icon[this.managedStates.login]; }
+  },
+  methods: {
+    trigger: function () {
+      if (this.managedStates.login) {
         // logout sequence
-        // console.log('trigger out');
         firebase.auth().signOut().then(function () {
           // Sign-out successful.
-          keyFunctions.drawerAuth.loginState = false;
+          stateManager.auth.managedStates.login = false;
         }).catch(function (error) {
           // An error happened.
         });
       } else {
         //  login sequence
-        // console.log('trigger in');
+        stateManager.containers.toggle('authContainer');
         singleFunctions.dimOn();
       }
     }
+  }
+});
+
+// login dialogs
+keyFunctions.authContainer = new Vue({
+  // NEED TO FIX SOMETIME => merge sign in/up flow to one vue
+  // el: '#authContainer',
+  data: {
+    el: document.querySelector('#authContainer'),
+    managedStates: stateManager.containers.managedStates,
   },
-  beforeMount: function () {
-    if (fbaseUser) {
-      console.log('beforeMount');
-      this.loginState = true;
-    }
-    this.label = this.s2label[this.loginState];
-    this.icon = this.s2icon[this.loginState];
+  computed: {
+    show: function () { return this.managedStates.authContainer },
   },
   watch: {
-    loginState: function () {
-      console.log('dec');
-      this.label = this.s2label[this.loginState]
-      this.icon = this.s2icon[this.loginState];
+    show: function () {
+      this.el.classList.toggle('inactive');
     }
   }
 });
 // login intro
-keyFunctions.loginIntro = new Vue({
+dialogs.loginIntro = new Vue({
   el: '#loginIntro',
   data: {
     show: true,
@@ -176,18 +246,17 @@ keyFunctions.loginIntro = new Vue({
     goLogin: function () {
       console.log('show login dialog');
       this.show = false;
-      keyFunctions.loginDialog.show = true;
+      dialogs.loginDialog.show = true;
     },
     goSignup: function () {
-      // TODO: show sign up dialog
       console.log('show signup dialog');
       this.show = false;
-      keyFunctions.signupDialog.show = true;
+      dialogs.signupDialog.show = true;
     }
   }
 });
 // login dialog
-keyFunctions.loginDialog = new Vue({
+dialogs.loginDialog = new Vue({
   el: '#loginDialog',
   data: {
     show: false,
@@ -216,12 +285,12 @@ keyFunctions.loginDialog = new Vue({
         this.loading = true;
         firebase.auth().signInWithEmailAndPassword(this.email, this.pass).then(function () {
           singleFunctions.dimOff();
-          keyFunctions.loginDialog.close();
+          dialogs.loginDialog.close();
         }).catch(function (error) {
           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
-          keyFunctions.loginDialog.loading = false;
+          dialogs.loginDialog.loading = false;
           singleFunctions.authNotification.show(errorMessage, 5000);
         });
       }
@@ -230,7 +299,7 @@ keyFunctions.loginDialog = new Vue({
       // clear fields and back to intro
       this.loading = false;
       this.show = false;
-      keyFunctions.loginIntro.show = true;
+      dialogs.loginIntro.show = true;
       this.pass = '';
       this.email = '';
       this.$el.querySelector('form').reset();
@@ -241,7 +310,7 @@ keyFunctions.loginDialog = new Vue({
   }
 });
 // signup dialog
-keyFunctions.signupDialog = new Vue({
+dialogs.signupDialog = new Vue({
   el: '#signupDialog',
   data: {
     show: false,
@@ -282,7 +351,7 @@ keyFunctions.signupDialog = new Vue({
     confirmSignup: function () {
       if (this.checkData()) {
         this.dim = true;
-        keyFunctions.signupConfirm.show = true;
+        dialogs.signupConfirm.show = true;
       }
     },
     close: function () {
@@ -296,12 +365,12 @@ keyFunctions.signupDialog = new Vue({
         element.classList.remove('is-focused', 'is-dirty', 'is-invalid');
       });
       this.show = false;
-      keyFunctions.loginIntro.show = true;
+      dialogs.loginIntro.show = true;
     }
   }
 });
 // signup confirm
-keyFunctions.signupConfirm = new Vue({
+dialogs.signupConfirm = new Vue({
   el: '#signupConfirm',
   data: {
     show: false,
@@ -312,23 +381,23 @@ keyFunctions.signupConfirm = new Vue({
       // sign up to firebase
       console.log('actual signup');
       this.loading = true;
-      firebase.auth().createUserWithEmailAndPassword(keyFunctions.signupDialog.email, keyFunctions.signupDialog.pass).then(function () {
+      firebase.auth().createUserWithEmailAndPassword(dialogs.signupDialog.email, dialogs.signupDialog.pass).then(function () {
         var wait = setInterval(() => {
           // wait for auto login
-          if (fbaseUser) {
+          if (stateManager.auth.managedStates.login) {
             // loged in
             clearInterval(wait);
             fbaseUser.updateProfile({
-              displayName: keyFunctions.signupDialog.name,
+              displayName: dialogs.signupDialog.name,
             }).then(() => {
               // succeeded update user name
-              keyFunctions.signupConfirm.close();
-              keyFunctions.signupDialog.close();
-              keyFunctions.loginIntro.show = false;
+              dialogs.signupConfirm.close();
+              dialogs.signupDialog.close();
+              dialogs.loginIntro.show = false;
               // send verify email
               fbaseUser.sendEmailVerification().then(function () {
                 // Email sent.
-                keyFunctions.verifyEmailSent.open(
+                dialogs.verifyEmailSent.open(
                   'Success!',
                   'Signup succeed.<br>\
                   We had sent a <strong>VERIFY EMAIL</strong> to you.<br>\
@@ -338,7 +407,7 @@ keyFunctions.signupConfirm = new Vue({
                 );
               }, function (error) {
                 // Sent Verify Email FAILED
-                keyFunctions.verifyEmailSent.open(
+                dialogs.verifyEmailSent.open(
                   'Oops',
                   'Singup succeed, but we failed to send a verify email to you.<br>' +
                   'Here is the error message:<br>' +
@@ -356,7 +425,7 @@ keyFunctions.signupConfirm = new Vue({
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorCode + ':' + errorMessage);
-        keyFunctions.signupConfirm.loading = false;
+        dialogs.signupConfirm.loading = false;
         singleFunctions.authNotification.show(errorMessage, 5000);
       });
     },
@@ -364,12 +433,12 @@ keyFunctions.signupConfirm = new Vue({
       // hide and un-dim signupDialog
       this.show = false;
       this.loading = false;
-      keyFunctions.signupDialog.dim = false;
+      dialogs.signupDialog.dim = false;
     }
   }
 });
 // varify email message
-keyFunctions.verifyEmailSent = new Vue({
+dialogs.verifyEmailSent = new Vue({
   el: '#verifyEmailSent',
   data: {
     show: false,
@@ -387,7 +456,7 @@ keyFunctions.verifyEmailSent = new Vue({
       if (!this.OK) return;
       this.show = false;
       singleFunctions.dimOff();
-      keyFunctions.loginIntro.show = true;
+      dialogs.loginIntro.show = true;
       this.title = '';
       this.message = '';
       this.OK = false;
@@ -402,6 +471,35 @@ keyFunctions.verifyEmailSent = new Vue({
     }
   }
 });
+
+// userInfo
+dialogs.userInfoContainer = new Vue({
+  el: '#userInfoContainer',
+  data: {
+    managedStates: stateManager.containers.managedStates,
+    cachedInfo: userInfo,
+    loading: false
+  },
+  computed: {
+    name: function () { return this.cachedInfo.name },
+    affiliation: function () { return this.cachedInfo.affiliation },
+    info: function () { return this.cachedInfo.info }
+  },
+  methods: {
+    close: function () {
+      // don't restore all fields, just close
+      singleFunctions.dimOff();
+    },
+    cancel: function () {
+      // restore all fields, then close
+      this.close();
+    },
+    update: function () {
+
+    }
+  }
+});
+
 
 // oldURL,newURL patch for ie9+
 if (!window.HashChangeEvent) (function () {
@@ -424,7 +522,7 @@ if (!window.HashChangeEvent) (function () {
 // handle hashtag change for 4 case
 // 1. user change url -> change activeFlag -> jump to new tab
 // 2. user clicked tab -> tab had chaned -> update activeFlag
-// 3. other changes triggered by <a> (as a button to invoke function, not adding to history)
+// 3. other changes triggered by <a> (as a button to invoke function, can call by url)
 // 4. illegal hashtag change
 window.onhashchange = function (e) {
   function trimHead(a) {
@@ -440,19 +538,19 @@ window.onhashchange = function (e) {
   if (location.hash == '' || tabHashes.indexOf(after) == -1) {
     // check for case 3 & 4
     // location.hash = befor;
-    history.back();
-    // if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
-    //   // case 3
-    //   keyFunctions[after].trigger();
-    // } else 
-    if (singleFunctions[after]) {
-      singleFunctions[after]();
+    if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
+      // case 3
+      keyFunctions[after].trigger();
     }
-    return (0);
+    // if (singleFunctions[after]) {
+    //   singleFunctions[after]();
+    // }
+    history.back();
+    return;
   }
   if (tabHashes.indexOf(befor) == -1) {
     // after case 3 & 4 happened, prevent useless operation
-    return (0);
+    return;
   } else {
     // for case 1
     // loadingPanel.style.display = 'block';
@@ -466,34 +564,32 @@ window.onhashchange = function (e) {
 };
 
 // detect firebase login status
+var uid;
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
-    fbaseUser = user;
+    uid = user.uid;
     fbaseData = firebase.database();
-    var profile = {};
-    if (fbaseUser.displayName) profile.name = fbaseUser.displayName;
-    fbaseData.ref('/users/' + fbaseUser.uid).update(profile);
-    // var userName = user.displayName;
-    // var userEmail = user.email;
-    // var userEmailVerified = user.emailVerified;
-    // var userPhotoURL = user.photoURL;
-    // var userId = user.uid;
-    // var userProviderData = user.providerData;
-    if (keyFunctions.drawerAuth) {
-      keyFunctions.drawerAuth.loginState = true;
-    }
+    fbaseUser = user;
+    userInfo.name = fbaseUser.displayName;
+    userInfo.email = fbaseUser.email;
+    userInfo.icon = fbaseUser.photoURL;
+    stateManager.auth.managedStates.login = true;
+    fbaseData.ref('/users/' + fbaseUser.uid).on('value', function (dataSnapshot) {
+      var data = dataSnapshot.val();
+      Object.keys(data).forEach(function (key) {
+        userInfo[key] = data[key];
+      });
+    });
   } else {
+    // unset one by one for databind
+    fbaseData.ref('/users/' + uid).off;
+    Object.keys(userInfo).forEach(function (key) {
+      userInfo[key] = '';
+    });
+    uid = undefined;
     fbaseUser = undefined;
     fbaseData = firebase.database();
-    // userName = undefined;
-    // userEmail = undefined;
-    // userEmailVerified = undefined;
-    // userPhotoURL = undefined;
-    // userId = undefined;
-    // userProviderData = undefined;
-    if (keyFunctions.drawerAuth) {
-      keyFunctions.drawerAuth.loginState = false;
-    }
+    stateManager.auth.managedStates.login = false;
   }
 });

@@ -13,7 +13,6 @@ var database = admin.database();
 
 exports.initUserInDatabase = functions.auth.user().onCreate(event => {
     const user = event.data; // The Firebase user.
-
     const uid = user.uid;
     const email = user.email;
     database.ref('/userList/' + uid).set(email);

@@ -94,6 +94,7 @@ h6 {
 }
 
 .expand > .mdl-card__supporting-text {
+  box-sizing: border-box;
   width: 95%;
   overflow-y: auto;
   font-size: 16px;
