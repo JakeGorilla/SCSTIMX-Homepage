@@ -39,7 +39,7 @@
       <div class="mdl-layout__header-row">
         <!-- Title -->
         <div class="header-vspacer"></div>
-        <span class="mdl-layout-title"><a id="logo" href="index.html">SCSTIMX</a></span>
+        <span class="mdl-layout-title"><a id="logo" href="/">SCSTIMX</a></span>
         <span class="layout-subtitle">South-China Sea Twin Island Monsoon Experiment</span>
       </div>
       <!-- Tabs -->
@@ -64,6 +64,7 @@
         </div>
         <span class="drawer-item drawer-username">{{ info.name }}</span>
         <span class="drawer-item drawer-email">{{ info.email }}</span>
+        <button v-show="!privilege" @click="getPrivilege" class="drawer-getPrivileged mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Request for privilege</button>
       </div>
       <a id="userInfo" href="#userInfo" v-show="show" class="drawer-item drawer-func"><i class="material-icons">account_box</i>  Edit profile...</a>
       <a id="auth" href="#auth" class="drawer-item drawer-func"><i class="material-icons">{{ icon }}</i>  {{ label }}</a>
@@ -157,7 +158,7 @@
           <h2 class="mdl-card__title-text">Login</h2>
         </div>
         <div class="mdl-card__supporting-text mdl-card--expand">
-          <form action="#">
+          <form>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input id="loginEmail" v-model:value="email" class="mdl-textfield__input" type="email">
               <label for="loginEmail" class="mdl-textfield__label">E-mail</label>
@@ -190,22 +191,24 @@
           <h2 class="mdl-card__title-text">Signup</h2>
         </div>
         <div class="mdl-card__supporting-text mdl-card--expand">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input id="signupName" v-model:value="name" class="mdl-textfield__input" type="text">
-            <label for="signupName" class="mdl-textfield__label">Your Name</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input id="signupEmail" v-model:value="email" class="mdl-textfield__input" type="email">
-            <label for="signupEmail" class="mdl-textfield__label">E-mail</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input id="signupPass" v-model:value="pass" class="mdl-textfield__input" type="password">
-            <label for="signupPass" class="mdl-textfield__label">Password</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input id="signupPassConfirm" v-model:value="confirmPass" class="mdl-textfield__input" type="password">
-            <label for="signupPassConfirm" class="mdl-textfield__label">Confirm password</label>
-          </div>
+          <form>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupName" v-model:value="name" class="mdl-textfield__input" type="text">
+              <label for="signupName" class="mdl-textfield__label">Your Name</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupEmail" v-model:value="email" class="mdl-textfield__input" type="email">
+              <label for="signupEmail" class="mdl-textfield__label">E-mail</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupPass" v-model:value="pass" class="mdl-textfield__input" type="password">
+              <label for="signupPass" class="mdl-textfield__label">Password</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input id="signupPassConfirm" v-model:value="confirmPass" class="mdl-textfield__input" type="password">
+              <label for="signupPassConfirm" class="mdl-textfield__label">Confirm password</label>
+            </div>
+          </form>
         </div>
         <div class="mdl-card__actions mdl-card--border">
           <a v-on:click="confirmSignup" class="mdl-button mdl-button--colored mdl-button--raised mdl-js-button mdl-js-ripple-effect">
@@ -278,17 +281,20 @@
         </div>
         <div class="mdl-card__supporting-text mdl-card--expand">
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input name="name" v-model:value="name" class="mdl-textfield__input" type="text">
+            <input id="uiUsername" v-model:value="cachedName" ref="name" class="mdl-textfield__input" type="text">
             <label for="name" class="mdl-textfield__label">Your Name</label>
           </div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input name="affiliation" v-model:value="affiliation" class="mdl-textfield__input" type="text">
+            <input id="uiAffiliation" v-model:value="cachedAffiliation" ref="affiliation" class="mdl-textfield__input" type="text">
             <label for="affiliation" class="mdl-textfield__label">Affiliation</label>
           </div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-text_wide">
-            <textarea name="info" v-model:value="info" class="mdl-textfield__input" type="text" rows="7"></textarea>
+            <textarea id="uiUserinfo" v-model:value="cachedInfo" ref="info" class="mdl-textfield__input" type="text" rows="7"></textarea>
             <label for="info" class="mdl-textfield__label">More informations for readers to know</label>
           </div>
+        </div>
+        <div v-show="loading">
+          <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
         </div>
         <div class="mdl-card__actions mdl-card--border">
           <a v-on:click="update" class="mdl-button mdl-button__raised mdl-button--colored mdl-js-button mdl-js-ripple-effect">
@@ -300,9 +306,6 @@
         </div>
         <div class="mdl-card__menu">
           <a v-on:click="close"><i class="material-icons">clear</i></a>
-        </div>
-        <div v-show="loading">
-          <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
         </div>
       </div>
     </div>

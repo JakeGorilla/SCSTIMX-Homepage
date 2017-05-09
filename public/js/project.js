@@ -1,7 +1,7 @@
 // important vars
 var fbaseUser = undefined; // Firebase current user
 var fbaseData = undefined; // Firebase database ref
-var userInfo = { // For sync with database. Need to initalize, cannot be undefined any moment or vue can't got it
+var databaseUserData = { // For sync with database. Need to initalize, cannot be undefined any moment or vue can't got it
   name: '',
   affiliation: '',
   icon: '',
@@ -143,10 +143,11 @@ stateManager.auth = new Vue({
   data: {
     managedStates: {
       login: false,
+      postPrivilege: false
     },
   },
   beforeMount: function () {
-    if (stateManager.auth.managedStates.login) {
+    if (this.managedStates.login) {
       console.log('beforeMount');
       this.managedStates.login = true;
     }
@@ -157,15 +158,21 @@ stateManager.auth = new Vue({
 drawer.userIcon = new Vue({
   el: '#userIcon',
   data: {
-    info: userInfo,
+    info: databaseUserData,
   },
   computed: {
     show: function () { return stateManager.auth.managedStates.login },
+    privilege: function () { return stateManager.auth.managedStates.postPrivilege }
   },
   methods: {
     choseNewIcon: function () {
       // show upload dialog
       console.log('choseNewIcon');
+    },
+    getPrivilege: function () {
+      console.log('asadsad');
+      // check fbaseUser.emailVerified
+      // send request
     }
   }
 });
@@ -180,6 +187,7 @@ keyFunctions.userInfo = new Vue({
     trigger: function () {
       if (stateManager.auth.managedStates.login) {
         // open dialog then update data
+        dialogs.userInfoContainer.show();
         stateManager.containers.toggle('userInfoContainer');
         singleFunctions.dimOn();
       } else {
@@ -382,14 +390,14 @@ dialogs.signupConfirm = new Vue({
       console.log('actual signup');
       this.loading = true;
       firebase.auth().createUserWithEmailAndPassword(dialogs.signupDialog.email, dialogs.signupDialog.pass).then(function () {
-        var wait = setInterval(() => {
+        var wait = setInterval(function () {
           // wait for auto login
           if (stateManager.auth.managedStates.login) {
             // loged in
             clearInterval(wait);
-            fbaseUser.updateProfile({
-              displayName: dialogs.signupDialog.name,
-            }).then(() => {
+            fbaseData.ref('/users/' + fbaseUser.uid + '/name').set(dialogs.signupDialog.name).then(function () {
+              ;
+              fbaseUser.updateProfile({ displayName: dialogs.signupDialog.name });
               // succeeded update user name
               dialogs.signupConfirm.close();
               dialogs.signupDialog.close();
@@ -415,7 +423,7 @@ dialogs.signupConfirm = new Vue({
                   '<br>Please manualy do it again.'
                 );
               });
-            }, (error) => {
+            }, function (error) {
               // Update display name FAILED while Create User SUCCESS
             });
           }
@@ -472,20 +480,41 @@ dialogs.verifyEmailSent = new Vue({
   }
 });
 
+
 // userInfo
 dialogs.userInfoContainer = new Vue({
   el: '#userInfoContainer',
   data: {
     managedStates: stateManager.containers.managedStates,
-    cachedInfo: userInfo,
-    loading: false
+    cachedName: '',
+    cachedAffiliation: '',
+    cachedInfo: '',
+    loading: false,
+    dirty: false
   },
   computed: {
-    name: function () { return this.cachedInfo.name },
-    affiliation: function () { return this.cachedInfo.affiliation },
-    info: function () { return this.cachedInfo.info }
+    login: function () {
+      return stateManager.auth.managedStates.login;
+    }
   },
   methods: {
+    init: function () {
+      this.cachedName = databaseUserData.name;
+      this.cachedAffiliation = databaseUserData.affiliation;
+      this.cachedInfo = databaseUserData.info;
+    },
+    show: function () {
+      if (!this.dirty) {
+        this.init();
+        this.dirty = true;
+      }
+      for (var k in this.$refs) {
+        if (this.$refs.hasOwnProperty(k)) {
+          this.mdlState(this.$refs[k]);
+        }
+      }
+      console.log('show');
+    },
     close: function () {
       // don't restore all fields, just close
       singleFunctions.dimOff();
@@ -493,13 +522,39 @@ dialogs.userInfoContainer = new Vue({
     cancel: function () {
       // restore all fields, then close
       this.close();
+      this.init();
+      this.dirty = false;
+    },
+    mdlState: function (element) {
+      setTimeout(function () {
+        console.log(element.value);
+        if (element.value) element.parentElement.classList.add('is-dirty');
+        else element.parentElement.classList.remove('is-dirty');
+      }, 10);
+      setTimeout(function () {
+        componentHandler.upgradeDom();
+      }, 30);
     },
     update: function () {
-
+      var up = {};
+      if (this.cachedName && this.cachedName != databaseUserData.name) up.name = this.cachedName;
+      if (this.cachedAffiliation && this.cachedAffiliation != databaseUserData.affiliation) up.affiliation = this.cachedAffiliation;
+      if (this.cachedInfo && this.cachedInfo != databaseUserData.info) up.info = this.cachedInfo;
+      if (Object.keys(up).length == 0) alert('No new data to update');
+      else if (confirm('Updating profile... Are you sure?')) {
+        this.loading = true;
+        fbaseData.ref('/users/' + fbaseUser.uid).update(up, function () {
+          dialogs.userInfoContainer.loading = false;
+        });
+      }
+    }
+  },
+  watch: {
+    login: function () {
+      this.init();
     }
   }
 });
-
 
 // oldURL,newURL patch for ie9+
 if (!window.HashChangeEvent) (function () {
@@ -571,22 +626,29 @@ firebase.auth().onAuthStateChanged(function (user) {
     uid = user.uid;
     fbaseData = firebase.database();
     fbaseUser = user;
-    userInfo.name = fbaseUser.displayName;
-    userInfo.email = fbaseUser.email;
-    userInfo.icon = fbaseUser.photoURL;
+    databaseUserData.name = fbaseUser.displayName;
+    databaseUserData.email = fbaseUser.email;
+    databaseUserData.icon = fbaseUser.photoURL;
     stateManager.auth.managedStates.login = true;
+    fbaseData.ref('/privilegedUsers/' + fbaseUser.uid).on('value', function (dataSnapshot) {
+      stateManager.auth.managedStates.postPrivilege = dataSnapshot.val() ? true : false;
+    });
     fbaseData.ref('/users/' + fbaseUser.uid).on('value', function (dataSnapshot) {
       var data = dataSnapshot.val();
       Object.keys(data).forEach(function (key) {
-        userInfo[key] = data[key];
+        databaseUserData[key] = data[key];
+        if (key == 'name') fbaseUser.updateProfile({ displayName: data[key] });
+        else if (key == 'icon') fbaseUser.updateProfile({ photoURL: data[key] });
       });
     });
   } else {
     // unset one by one for databind
-    fbaseData.ref('/users/' + uid).off;
-    Object.keys(userInfo).forEach(function (key) {
-      userInfo[key] = '';
+    fbaseData.ref('/users/' + uid).off();
+    fbaseData.ref('/privilegedUsers/' + uid).off();
+    Object.keys(databaseUserData).forEach(function (key) {
+      databaseUserData[key] = '';
     });
+    postPrivilege = false;
     uid = undefined;
     fbaseUser = undefined;
     fbaseData = firebase.database();

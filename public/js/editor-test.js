@@ -217,8 +217,8 @@ var vuePosts = new Vue({
         var authorInfo = dataSnapshot.val();
         post.authorName = authorInfo.name;
         if (authorInfo.affiliation) {
-          post.authorAffiliation = '<h3 class="mdl-card__subtitle-text">From: ' + authorInfo.affiliation + '</h3>';
-        } /*else post.authorAffiliation = post.time;*/
+          post.authorAffiliation = authorInfo.affiliation;
+        } else post.authorAffiliation = '';
         fbaseData.ref('/content/' + post.id).once('value').then(function (dataSnapshot) {
           post.content = simplemde.options.previewRender(JSON.parse(dataSnapshot.val()));
           vuePosts.insert(post);
@@ -264,7 +264,8 @@ var vuePosts = new Vue({
         <div :id="'+ 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp">\
           <div class="mdl-card__title mdl-card--border">\
             <h2 class="mdl-card__title-text">'+ '{{post.title}}' + '</h2>\
-            <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>' + '{{post.authorAffiliation}}' + '\
+            <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>\
+            <h3 v-show="' + 'post.authorAffiliation' + '" class="mdl-card__subtitle-text">From: ' + '{{post.authorAffiliation}}' + '</h3>\
           </div>\
           <div class="mdl-card__supporting-text mdl-card--expand" v-html="'+ 'post.content' + '"></div>\
           <div class="mdl-card__actions mdl-card--border">\

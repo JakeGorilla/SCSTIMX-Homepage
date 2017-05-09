@@ -45,6 +45,12 @@ body {
   transform: translateX(-105%);
 }
 
+#userIcon {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+
 .drawer-usericon {
   left: 40px;
   width: 80px;
@@ -87,11 +93,15 @@ body {
   font-size: 20px;
   padding: 12px 0 0 42px;
 }
+
 .drawer-email {
   font-size: 16px;
-  padding: 6px 0 32px 42px;
+  padding: 6px 0 0 42px;
 }
 
+.drawer-getPrivileged {
+  margin-top: 24px;
+}
 
 .drawer-item > .material-icons {
   font-size: 24px;
@@ -111,8 +121,9 @@ body {
   .drawer-username {
     padding: 8px 0 0 26px;
   }
+
   .drawer-email {
-    padding: 6px 0 32px 26px;
+    padding: 6px 0 0 26px;
   }
 
   footer {
@@ -376,6 +387,7 @@ body {
 #userInfoEditor {
   width: auto;
   max-width: 640px;
+  min-height: 400px;
 }
 
 .mdl-text_wide {
