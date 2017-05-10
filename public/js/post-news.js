@@ -184,13 +184,11 @@ var newsPosts = new Vue({
       props: ['post'],
       methods: {
         expand: function () {
-          this.$refs.card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
-          this.$refs.card.classList.toggle('expand');
-          if (this.$refs.card.classList.contains('expand')) {
-            var card = this.$refs.card;
-            var scrolling = setInterval(function () { card.scrollIntoView(); }, 1);
-            setTimeout(function() {clearInterval(scrolling);}, 500);
-          }
+          var card = this.$refs.card;
+          card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
+          card.classList.toggle('expand');
+          var scrolling = setInterval(function () { card.scrollIntoView(); }, 1);
+          setTimeout(function () { clearInterval(scrolling); }, 500);
         },
         deletePost: function () {
           if (!fbaseUser) {
