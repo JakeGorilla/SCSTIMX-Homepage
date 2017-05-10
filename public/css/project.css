@@ -11,11 +11,20 @@
   font-size: 16px;
 }
 
+[v-cloak] {
+  display: none;
+}
+
+[v-cloak]::before {
+  content: "Loading...";
+}
+
 html {
   font-size: 15px;
 }
 
 body {
+  height: 100vh;
   font-size: 1rem;
   background-color: #000011;
   /*background-image: url("../../Nock-ten_2016-12-25_0210Z.jpg");*/
@@ -29,7 +38,10 @@ body {
 
 .wait-tabs {
   /*hide until all tabs are initialized*/
-  display: none;
+  display: none !important;
+}
+.hide {
+  display: none !important;
 }
 
 .mdl-layout {
@@ -164,7 +176,7 @@ body {
 
 .mdl-layout__header {
   background-color: #222233;
-  background-image: url('../img/a.png');
+  background-image: url("../img/a.png");
 }
 
 .mdl-layout__header-row {
@@ -228,7 +240,72 @@ body {
 }
 
 .page-content {
-  padding: 10px 20px;
+  padding: 0px;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.goPost {
+  position: absolute;
+  text-align: right;
+  height: 48px;
+  top: 0;
+  right: 0;
+}
+
+.goPost > a {
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.goPost .material-icons {
+  text-align: center;
+  line-height: 48px;
+  font-size: 36px;
+  width: 48px;
+}
+
+.intro {
+  font-size: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 360px;
+  line-height: 1.2;
+  color: rgba(250, 250, 250, 0.89);
+}
+
+.post-container {
+  min-height: 360px;
+}
+
+#home {
+  background: radial-gradient(circle 60vw at 15vw 15vw, #01579b, #0277bd);
+}
+
+#newsPosts .goPost *{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+#newsPosts {
+  position: relative;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.66);
+  min-height: 456px;
+}
+
+#newsPosts .title {
+  padding: 6px;
+  margin: 0;
+}
+
+#newsPosts .message {
+  width: 100%;
+  min-height: 360px;
+  line-height: 300px;
+  text-align: center;
+  font-size: 32px;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .mdl-mini-footer__right-section {
@@ -341,10 +418,11 @@ body {
   text-align: center;
 }
 
+.goPost::before,
 #dim::before,
 #loginLoading::before,
 #signupLoading::before {
-  content: '';
+  content: "";
   display: inline-block;
   height: 100%;
   line-height: 100%;

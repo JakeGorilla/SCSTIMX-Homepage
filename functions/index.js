@@ -21,11 +21,11 @@ exports.initUserInDatabase = functions.auth.user().onCreate(event => {
 exports.deleteUserInDatabase = functions.auth.user().onDelete(event => {
     const user = event.data; // The Firebase user.
     const uid = user.uid;
-    database.ref('/userList/' + uid).once('value').then(function (dataSnapshot) {
+    database.ref('/users/' + uid).once('value').then(function (dataSnapshot) {
         database.ref('/removedUsers/' + uid).set(dataSnapshot.val()).then(function () {
+            database.ref('/users/' + uid).remove();
             database.ref('/userList/' + uid).remove();
         });
     });
-    database.ref('/users/' + uid + '/removed').set(true);
     database.ref('/privilegedUsers/' + uid).remove();
 });

@@ -43,7 +43,12 @@
         "posts": {
           ".validate": "root.child('privilegedUsers').child(auth.uid).val() === true && $uid === auth.uid",
           "$pid": {
-            ".validate": "$uid === auth.uid && newData.isBoolean()"
+            "type": {
+              ".validate": "$uid === auth.uid && newData.isString() && newData.val().length > 0"
+            },
+            "public": {
+              ".validate": "$uid === auth.uid && newData.isBoolean()"
+            }
           }
         },
         "$others": {
@@ -163,7 +168,14 @@
     "content": {
       "$pid": {
         ".read": true,
-        ".write": "root.child('publicPosts').child($pid).child('authorId').val() === auth.uid || root.child('privatePosts').child($pid).child('authorId').val() === auth.uid",
+        ".write": "!root.child('publicPosts').child($pid).exists() || root.child('publicPosts').child($pid).child('authorId').val() === auth.uid || root.child('privatePosts').child($pid).child('authorId').val() === auth.uid",
+        ".validate": "newData.isString() && newData.val().length > 0"
+      }
+    },
+    "newsContent": {
+      "$pid": {
+        ".read": true,
+        ".write": "!root.child('news').child($pid).exists() || root.child('news').child($pid).child('authorId').val() === auth.uid",
         ".validate": "newData.isString() && newData.val().length > 0"
       }
     }

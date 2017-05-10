@@ -40,19 +40,8 @@ var singleFunctions = {
   }
 };
 
-// Initialize Firebase
-var fbaseConfig = {
-  apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
-  authDomain: 'scstimx-b5bb8.firebaseapp.com',
-  databaseURL: 'https://scstimx-b5bb8.firebaseio.com',
-  projectId: 'scstimx-b5bb8',
-  storageBucket: 'scstimx-b5bb8.appspot.com'
-};
-firebase.initializeApp(fbaseConfig);
-fbaseData = firebase.database();
-
 // for querySelectorAll
-// forEach method, could be shipped as part of an Object Literal/Module
+// forEach, could be shipped as part of an Object Literal/Module
 // Usage: optionally change the scope as final parameter too, like ECMA5
 var forEach = function (array, callback, scope) {
   for (var i = 0; i < array.length; i++) {
@@ -64,18 +53,22 @@ var forEach = function (array, callback, scope) {
 forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, index) {
   tabHashes.push(element.id);
   panels[element.id] = new Vue({
-    el: element,
     data: {
+      el: element,
       activeFlag: false
     },
     watch: {
       activeFlag: function () {
         // show content panel when activated first time
-        if (this.activeFlag && this.$el.querySelector('.wait-tabs')) {
-          this.$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
-          // console.log('removed');
+        if (this.activeFlag) {
+          this.el.classList.add('is-active');
+          if (this.el.querySelector('.wait-tabs')) {
+            this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+            // console.log('removed');
+          }
         } else {
-          this.$el.getElementsByClassName('page-content')[0].scrollIntoView();
+          this.el.classList.remove('is-active');
+          this.el.getElementsByClassName('page-content')[0].scrollIntoView();
         }
       }
     }
@@ -88,12 +81,12 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
   // function to decide the first tab to use
   function aornot() {
     if (!location.hash && index == 0) {
-      panels[hashtag].$data.activeFlag = true;
-      // panels[hashtag].$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+      panels[hashtag].activeFlag = true;
+      // panels[hashtag].el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else if (location.hash == '#' + hashtag) {
-      panels[hashtag].$data.activeFlag = true;
-      // panels[hashtag].$el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+      panels[hashtag].activeFlag = true;
+      // panels[hashtag].el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else {
       return false;
@@ -133,7 +126,6 @@ stateManager.containers = {
       this.managedStates[this.whichOn] = false;
       this.managedStates[container] = true;
       this.whichOn = container;
-      console.log('toggleed');
     } else {
       console.log(' * unable to toggle:' + container);
     }
@@ -146,11 +138,122 @@ stateManager.auth = new Vue({
       postPrivilege: false
     },
   },
-  beforeMount: function () {
+  created: function () {
     if (this.managedStates.login) {
-      console.log('beforeMount');
       this.managedStates.login = true;
     }
+  }
+});
+
+// oldURL,newURL patch for ie9+
+if (!window.HashChangeEvent) (function () {
+  var lastURL = document.URL;
+  window.addEventListener('hashchange', function (event) {
+    Object.defineProperty(event, 'oldURL', {
+      enumerable: true,
+      configurable: true,
+      value: lastURL
+    });
+    Object.defineProperty(event, 'newURL', {
+      enumerable: true,
+      configurable: true,
+      value: document.URL
+    });
+    lastURL = document.URL;
+  });
+}());
+
+// handle hashtag change for 4 case
+// 1. user change url -> change activeFlag -> jump to new tab
+// 2. user clicked tab -> tab had chaned -> update activeFlag
+// 3. other changes triggered by <a> (as a button to invoke function, can call by url)
+// 4. illegal hashtag change
+window.onhashchange = function (e) {
+  function trimHead(a) {
+    var b = a.split('#');
+    b.shift();
+    return b.join('#');
+  }
+  var befor = trimHead(e.oldURL);
+  var after = trimHead(e.newURL);
+  console.log('* detected hashtag change');
+  console.log('from:' + befor + ', to:' + after);
+  if (location.hash == '' || tabHashes.indexOf(after) == -1) {
+    // check for case 3 & 4
+    // location.hash = befor;
+    if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
+      // case 3
+      keyFunctions[after].trigger();
+    }
+    // if (singleFunctions[after]) {
+    //   singleFunctions[after]();
+    // }
+    history.back();
+    return;
+  }
+  if (tabHashes.indexOf(befor) == -1) {
+    // after case 3 & 4 happened, prevent useless operation
+    return;
+  } else {
+    // for case 1
+    // loadingPanel.style.display = 'block';
+    tabs[befor].activeFlag = false;
+    panels[befor].activeFlag = false;
+  }
+  // for case 1 & 2
+  panels[after].activeFlag = true;
+  tabs[after].activeFlag = true;
+  // loadingPanel.style.display = 'none';
+};
+
+
+// Initialize Firebase
+var fbaseConfig = {
+  apiKey: 'AIzaSyBSHtV-JlfcQ-PyronfInW25bLHxB65ftY',
+  authDomain: 'scstimx-b5bb8.firebaseapp.com',
+  databaseURL: 'https://scstimx-b5bb8.firebaseio.com',
+  projectId: 'scstimx-b5bb8',
+  storageBucket: 'scstimx-b5bb8.appspot.com'
+};
+firebase.initializeApp(fbaseConfig);
+fbaseData = firebase.database();
+
+// detect firebase login status
+var uid;
+firebase.auth().onAuthStateChanged(function (user) {
+  if (user) {
+    // User is signed in.
+    uid = user.uid;
+    fbaseData = firebase.database();
+    fbaseUser = user;
+    databaseUserData.name = fbaseUser.displayName;
+    databaseUserData.email = fbaseUser.email;
+    databaseUserData.icon = fbaseUser.photoURL;
+    stateManager.auth.managedStates.login = true;
+    fbaseData.ref('/privilegedUsers/' + fbaseUser.uid).on('value', function (dataSnapshot) {
+      stateManager.auth.managedStates.postPrivilege = dataSnapshot.val() ? true : false;
+    });
+    fbaseData.ref('/users/' + fbaseUser.uid).on('value', function (dataSnapshot) {
+      var data = dataSnapshot.val();
+      Object.keys(data).forEach(function (key) {
+        databaseUserData[key] = data[key];
+        if (key == 'name') fbaseUser.updateProfile({ displayName: data[key] });
+        else if (key == 'icon') fbaseUser.updateProfile({ photoURL: data[key] });
+      });
+    });
+  } else {
+    // unset one by one for databind
+    fbaseData.ref('/users/' + uid).off();
+    fbaseData.ref('/privilegedUsers/' + uid).off();
+    Object.keys(databaseUserData).forEach(function (key) {
+      databaseUserData[key] = '';
+    });
+    postPrivilege = false;
+    uid = undefined;
+    fbaseUser = undefined;
+    fbaseData = firebase.database();
+    stateManager.auth.managedStates.login = false;
+    stateManager.auth.managedStates.postPrivilege = false;
   }
 });
 
@@ -170,7 +273,7 @@ drawer.userIcon = new Vue({
       console.log('choseNewIcon');
     },
     getPrivilege: function () {
-      console.log('asadsad');
+      console.log('getPrivilege');
       // check fbaseUser.emailVerified
       // send request
     }
@@ -252,12 +355,10 @@ dialogs.loginIntro = new Vue({
   },
   methods: {
     goLogin: function () {
-      console.log('show login dialog');
       this.show = false;
       dialogs.loginDialog.show = true;
     },
     goSignup: function () {
-      console.log('show signup dialog');
       this.show = false;
       dialogs.signupDialog.show = true;
     }
@@ -289,7 +390,6 @@ dialogs.loginDialog = new Vue({
     login: function () {
       // log in to firebase
       if (this.checkData()) {
-        console.log('actual login');
         this.loading = true;
         firebase.auth().signInWithEmailAndPassword(this.email, this.pass).then(function () {
           singleFunctions.dimOff();
@@ -387,7 +487,6 @@ dialogs.signupConfirm = new Vue({
   methods: {
     signup: function () {
       // sign up to firebase
-      console.log('actual signup');
       this.loading = true;
       firebase.auth().createUserWithEmailAndPassword(dialogs.signupDialog.email, dialogs.signupDialog.pass).then(function () {
         var wait = setInterval(function () {
@@ -513,7 +612,6 @@ dialogs.userInfoContainer = new Vue({
           this.mdlState(this.$refs[k]);
         }
       }
-      console.log('show');
     },
     close: function () {
       // don't restore all fields, just close
@@ -527,7 +625,6 @@ dialogs.userInfoContainer = new Vue({
     },
     mdlState: function (element) {
       setTimeout(function () {
-        console.log(element.value);
         if (element.value) element.parentElement.classList.add('is-dirty');
         else element.parentElement.classList.remove('is-dirty');
       }, 10);
@@ -556,102 +653,181 @@ dialogs.userInfoContainer = new Vue({
   }
 });
 
-// oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent) (function () {
-  var lastURL = document.URL;
-  window.addEventListener('hashchange', function (event) {
-    Object.defineProperty(event, 'oldURL', {
-      enumerable: true,
-      configurable: true,
-      value: lastURL
-    });
-    Object.defineProperty(event, 'newURL', {
-      enumerable: true,
-      configurable: true,
-      value: document.URL
-    });
-    lastURL = document.URL;
-  });
-}());
+var simplemde = new SimpleMDE({
+  element: document.createElement('div').appendChild(document.createElement('textarea')),
+});
 
-// handle hashtag change for 4 case
-// 1. user change url -> change activeFlag -> jump to new tab
-// 2. user clicked tab -> tab had chaned -> update activeFlag
-// 3. other changes triggered by <a> (as a button to invoke function, can call by url)
-// 4. illegal hashtag change
-window.onhashchange = function (e) {
-  function trimHead(a) {
-    var b = a.split('#');
-    b.shift();
-    return b.join('#');
-  }
-  var befor = trimHead(e.oldURL);
-  var after = trimHead(e.newURL);
-  console.log('* detected hashtag change');
-  console.log('from:' + befor);
-  console.log('chto:' + after);
-  if (location.hash == '' || tabHashes.indexOf(after) == -1) {
-    // check for case 3 & 4
-    // location.hash = befor;
-    if (keyFunctions[after] && keyFunctions[after].hasOwnProperty('trigger')) {
-      // case 3
-      keyFunctions[after].trigger();
+var newsPosts = new Vue({
+  el: '#newsPosts',
+  data: {
+    posts: [], // {order:bigger front,id,title,content,uname,ufrom,}
+    postKeys: [],
+    rawPosts: [],
+    mostShow: 6,
+    auth: stateManager.auth.managedStates,
+    refToPosts: fbaseData.ref('/news'),
+    refToContents: fbaseData.ref('/newsContent')
+  },
+  computed: {
+    showMessage: function () {
+      if (this.posts.length === 0) return true;
+      else return false;
+    },
+    message: function () {
+      if (this.posts.length === 0) return 'No Data';
+      else '';
     }
-    // if (singleFunctions[after]) {
-    //   singleFunctions[after]();
-    // }
-    history.back();
-    return;
-  }
-  if (tabHashes.indexOf(befor) == -1) {
-    // after case 3 & 4 happened, prevent useless operation
-    return;
-  } else {
-    // for case 1
-    // loadingPanel.style.display = 'block';
-    tabs[befor].activeFlag = false;
-    panels[befor].activeFlag = false;
-  }
-  // for case 1 & 2
-  panels[after].activeFlag = true;
-  tabs[after].activeFlag = true;
-  // loadingPanel.style.display = 'none';
-};
-
-// detect firebase login status
-var uid;
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    // User is signed in.
-    uid = user.uid;
-    fbaseData = firebase.database();
-    fbaseUser = user;
-    databaseUserData.name = fbaseUser.displayName;
-    databaseUserData.email = fbaseUser.email;
-    databaseUserData.icon = fbaseUser.photoURL;
-    stateManager.auth.managedStates.login = true;
-    fbaseData.ref('/privilegedUsers/' + fbaseUser.uid).on('value', function (dataSnapshot) {
-      stateManager.auth.managedStates.postPrivilege = dataSnapshot.val() ? true : false;
-    });
-    fbaseData.ref('/users/' + fbaseUser.uid).on('value', function (dataSnapshot) {
-      var data = dataSnapshot.val();
-      Object.keys(data).forEach(function (key) {
-        databaseUserData[key] = data[key];
-        if (key == 'name') fbaseUser.updateProfile({ displayName: data[key] });
-        else if (key == 'icon') fbaseUser.updateProfile({ photoURL: data[key] });
+  },
+  beforeMount: function () {
+    this.refToPosts.limitToLast(this.mostShow).once('value', function (dataSnapshot) {
+      var tmp = [];
+      dataSnapshot.forEach(function (rawPost) {
+        tmp.push(rawPost);
       });
-    });
-  } else {
-    // unset one by one for databind
-    fbaseData.ref('/users/' + uid).off();
-    fbaseData.ref('/privilegedUsers/' + uid).off();
-    Object.keys(databaseUserData).forEach(function (key) {
-      databaseUserData[key] = '';
-    });
-    postPrivilege = false;
-    uid = undefined;
-    fbaseUser = undefined;
-    fbaseData = firebase.database();
-    stateManager.auth.managedStates.login = false;
+      this.rawPosts = tmp;
+    }, this);
+    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+      console.log('got add');
+      this.rawPosts.push(dataSnapshot);
+    }, this);
+    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot/*, keyOfTheRemovedOne*/) {
+      console.log('got removed');
+      var index = this.postKeys.indexOf(dataSnapshot.key);
+      if (index >= 0) {
+        this.posts.splice(index, 1);
+        this.postKeys = this.posts.map(function (post) { return post.id; });
+      } else {
+        for (var i = 0; i < this.rawPosts.length; i++) {
+          if (rawPosts[i].key == dataSnapshot.key) {
+            this.rawPosts.splice(i, 1);
+          }
+        }
+      }
+    }, this);
+    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+      console.log('got changed');
+      var index = this.postKeys.indexOf(dataSnapshot.key);
+      if (index >= 0) {
+        this.posts.splice(index, 1);
+      } else {
+        for (var i = 0; i < this.rawPosts.length; i++) {
+          if (rawPosts[i].key == dataSnapshot.key) {
+            this.rawPosts.splice(i, 1);
+          }
+        }
+      }
+      this.rawPosts.push(dataSnapshot);
+    }, this);
+  },
+  watch: {
+    rawPosts: function () {
+      if (this.rawPosts.length == 0) return;
+      var rawPost = this.rawPosts.pop();
+      var post = {};
+      post.id = rawPost.key;
+      rawPost = rawPost.val();
+      post.time = rawPost.time;
+      post.title = rawPost.title;
+      post.authorId = rawPost.authorId;
+      var refToContents = this.refToContents;
+      fbaseData.ref('/users/' + post.authorId).once('value').then(function (dataSnapshot) {
+        var authorInfo = dataSnapshot.val();
+        post.authorName = authorInfo.name;
+        if (authorInfo.affiliation) {
+          post.authorAffiliation = authorInfo.affiliation;
+        } else post.authorAffiliation = '';
+        refToContents.child(post.id).once('value').then(function (dataSnapshot) {
+          post.content = simplemde.options.previewRender(JSON.parse(dataSnapshot.val()));
+          newsPosts.insert(post);
+        });
+      });
+    }
+  },
+  methods: {
+    trueLocationOf: function (element, sortedBy, compareBy, start, endAt) {
+      compareBy = compareBy || sortedBy;
+      start = start || 0;
+      endAt = endAt || this.posts.length;
+      var pivot = parseInt(start + (endAt - start) / 2, 10);
+      if (endAt - start <= 1 || this.posts[pivot][compareBy] === element[compareBy]) return [pivot, this.posts[pivot][compareBy] === element[compareBy]];
+      if (this.posts[pivot][sortedBy] > element[sortedBy]) {
+        return this.trueLocationOf(element, sortedBy, compareBy, pivot, endAt);
+      } else {
+        return this.trueLocationOf(element, sortedBy, compareBy, start, pivot);
+      }
+    },
+    locationOf: function (element, sortedBy, compareBy, start, endAt) {
+      compareBy = compareBy || sortedBy;
+      start = start || 0;
+      endAt = endAt || this.posts.length;
+      return this.trueLocationOf(element, sortedBy, compareBy, start, endAt)[0];
+    },
+    insert: function (post) {
+      if (this.posts.length == 0) this.posts = [post];
+      else if (post.id == this.posts[0].id) return;
+      else if (post.time > this.posts[0].time) this.posts.unshift(post);
+      else if (post.time < this.posts[this.posts.length - 1].time) this.posts.push(post);
+      else {
+        this.posts.splice((this.locationOf(post, 'time') + 1), 0, post);
+      }
+      this.postKeys = this.posts.map(function (post) {
+        return post.id;
+      });
+    }
+  },
+  components: {
+    'post-card': {
+      props: ['post'],
+      methods: {
+        expand: function () {
+          this.$refs.card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
+          this.$refs.card.classList.toggle('expand');
+          if (this.$refs.card.classList.contains('expand')) {
+            var card = this.$refs.card;
+            var scrolling = setInterval(function () { card.scrollIntoView(); }, 1);
+            setTimeout(function() {clearInterval(scrolling);}, 500);
+          }
+        },
+        deletePost: function () {
+          if (!fbaseUser) {
+            alert('Login to delete post');
+            return
+          }
+          if (confirm('確定要刪除文章嗎？')) {
+            // console.log(this.$refs.card);
+            var pid = this.post.id;
+            var postIndex = this.$parent.postKeys.indexOf(pid);
+            var refToPosts = this.$parent.refToPosts;
+            var refToContents = this.$parent.refToContents;
+            if (this.$parent.posts[postIndex].authorId != fbaseUser.uid) {
+              alert('作者是別人');
+              return
+            }
+            refToPosts.child(pid).remove().then(
+              refToContents.child(pid).remove().then(
+                fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + pid).remove()
+              )
+            );
+          }
+        }
+      },
+      template: '\
+        <div ref="card" :id="'+ 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp">\
+          <div class="mdl-card__title mdl-card--border">\
+            <h2 class="mdl-card__title-text">'+ '{{post.title}}' + '</h2>\
+            <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>\
+            <h3 v-show="' + 'post.authorAffiliation' + '" class="mdl-card__subtitle-text">From: ' + '{{post.authorAffiliation}}' + '</h3>\
+          </div>\
+          <div class="mdl-card__supporting-text mdl-card--expand" v-html="'+ 'post.content' + '"></div>\
+          <div class="mdl-card__actions mdl-card--border">\
+            <a @click="expand" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+              Toggle full content\
+            </a>\
+          </div>\
+          <div @click="deletePost" class="mdl-card__menu">\
+            <a><i class="material-icons">clear</i></a>\
+          </div>\
+        </div>'
+    }
   }
 });

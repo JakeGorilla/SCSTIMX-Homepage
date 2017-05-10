@@ -88,7 +88,7 @@ function post() {
   var postContent = JSON.stringify(simplemde.value());
   var newPostId = fbaseData.ref('/publicPosts').push().key;
   var updates = {};
-  fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + newPostId).set(true).then(function () {
+  fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + newPostId).set({type:'publicPosts',public:true}).then(function () {
     fbaseData.ref('/publicPosts/' + newPostId).set(postData);
     fbaseData.ref('/content/' + newPostId).set(postContent);
   }).then(function () {
@@ -246,8 +246,9 @@ var vuePosts = new Vue({
       return this.trueLocationOf(element, sortedBy, compareBy, start, endAt)[0];
     },
     insert: function (post) {
+      console.log(post.time);
       if (this.posts.length == 0) this.posts = [post];
-      else if (post.time > this.posts[0].time) this.posts.unshift(post);
+      else if (post.id > this.posts[0].id) this.posts.unshift(post);
       else if (post.time < this.posts[this.posts.length - 1].time) this.posts.push(post);
       else {
         this.posts.splice((this.locationOf(post, 'time') + 1), 0, post);
