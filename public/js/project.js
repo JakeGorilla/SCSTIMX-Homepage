@@ -61,14 +61,17 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
       activeFlag: function () {
         // show content panel when activated first time
         if (this.activeFlag) {
+          console.log('active');
           this.el.classList.add('is-active');
           if (this.el.querySelector('.wait-tabs')) {
             this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+            this.$nextTick(function () { document.body.scrollIntoView(); });
             // console.log('removed');
           }
         } else {
+          console.log('deactive');
           this.el.classList.remove('is-active');
-          this.el.getElementsByClassName('page-content')[0].scrollIntoView();
+          // this.el.getElementsByClassName('page-content')[0].scrollIntoView();
         }
       }
     }
@@ -82,11 +85,9 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
   function aornot() {
     if (!location.hash && index == 0) {
       panels[hashtag].activeFlag = true;
-      // panels[hashtag].el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else if (location.hash == '#' + hashtag) {
       panels[hashtag].activeFlag = true;
-      // panels[hashtag].el.querySelector('.wait-tabs').classList.remove('wait-tabs');
       return true;
     } else {
       return false;
@@ -112,6 +113,7 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
 if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
   var to = location.toString().split('#')[0] + '#' + tabHashes[0];
   location.replace(to);
+  Vue.nextTick(function () { document.body.scrollIntoView(); });
 }
 
 // init state managers
@@ -674,7 +676,7 @@ var newsPosts = new Vue({
       else return false;
     },
     message: function () {
-      if (this.posts.length === 0) return 'No Data';
+      if (this.posts.length === 0) return 'No News';
       else '';
     }
   },
@@ -778,13 +780,41 @@ var newsPosts = new Vue({
   components: {
     'post-card': {
       props: ['post'],
+      data: function () {
+        return {
+          mdlBtnColor: true,
+          mdlBtnAccent: false,
+          showDelete: false,
+          toggleText: 'Read'
+        }
+      },
       methods: {
+        scrollto: function () {
+          this.$refs.card.scrollIntoView();
+        },
         expand: function () {
+          var pid = this.post.id;
           var card = this.$refs.card;
+          var postIndex = this.$parent.postKeys.indexOf(pid);
           card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
           card.classList.toggle('expand');
           var scrolling = setInterval(function () { card.scrollIntoView(); }, 1);
           setTimeout(function () { clearInterval(scrolling); }, 500);
+          if (card.classList.contains('expand')) {
+            this.mdlBtnColor = false;
+            this.mdlBtnAccent = true;
+            this.toggleText = 'Close';
+            if (fbaseUser && this.$parent.posts[postIndex].authorId == fbaseUser.uid) {
+              this.showDelete = true;
+            }
+            document.body.style.overflow = 'hidden';
+          } else {
+            this.mdlBtnColor = true;
+            this.mdlBtnAccent = false;
+            this.toggleText = 'Read';
+            this.showDelete = false;
+            document.body.style.overflow = 'auto';
+          }
         },
         deletePost: function () {
           if (!fbaseUser) {
@@ -799,7 +829,7 @@ var newsPosts = new Vue({
             var refToContents = this.$parent.refToContents;
             if (this.$parent.posts[postIndex].authorId != fbaseUser.uid) {
               alert('作者是別人');
-              return
+              return;
             }
             refToPosts.child(pid).remove().then(
               refToContents.child(pid).remove().then(
@@ -810,7 +840,7 @@ var newsPosts = new Vue({
         }
       },
       template: '\
-        <div ref="card" :id="'+ 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp">\
+        <div ref="card" :id="'+ 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp" @click="scrollto">\
           <div class="mdl-card__title mdl-card--border">\
             <h2 class="mdl-card__title-text">'+ '{{post.title}}' + '</h2>\
             <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>\
@@ -818,14 +848,30 @@ var newsPosts = new Vue({
           </div>\
           <div class="mdl-card__supporting-text mdl-card--expand" v-html="'+ 'post.content' + '"></div>\
           <div class="mdl-card__actions mdl-card--border">\
-            <a @click="expand" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
-              Toggle full content\
+            <a @click="expand" :class="{\'mdl-button--colored\': mdlBtnColor, \'mdl-button--accent\': mdlBtnAccent}" class="mdl-button mdl-button--raised mdl-js-button mdl-js-ripple-effect">\
+              {{ toggleText }}\
             </a>\
-          </div>\
-          <div @click="deletePost" class="mdl-card__menu">\
-            <a><i class="material-icons">clear</i></a>\
+            <div @click="deletePost" v-show="showDelete" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">\
+              Delete\
+            </div>\
           </div>\
         </div>'
     }
   }
 });
+
+
+new Vue({
+  el: '#operShow',
+  data: {
+    value: '',
+    options: ['Select option', 'options', 'selected', 'mulitple', 'label', 'searchable', 'clearOnSelect', 'hideSelected', 'maxHeight', 'allowEmpty', 'showLabels', 'onChange', 'touched']
+
+  },
+  components: {
+    multiselect: VueMultiselect.Multiselect
+  },
+});
+
+
+document.body.scrollIntoView();

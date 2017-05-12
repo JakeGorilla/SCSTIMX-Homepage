@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Post NEWS</title>
+  <title>Post Working Report</title>
   <link rel="shortcut icon" href="favicon.png" type="image/png" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
@@ -27,7 +27,7 @@
   <header class="news-disp">
     <div class="header-vspacer"></div>
     <span class="mdl-layout-title"><a id="logo" href="/">SCSTIMX</a></span>
-    <span class="layout-subtitle">News publication</span>
+    <span class="layout-subtitle">Working Report</span>
   </header>
   <main class="news-disp">
     <label id="lbTitle" for="title">Title</label>
@@ -37,7 +37,7 @@
     <button onclick="post()" style="display:inline-block;">Post</button>
     <label id="who" style="padding-left: 8px;"></label>
     <div id="p"></div>
-    <div id="newsPosts" class="sc">
+    <div id="workingReports" class="sc">
       <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
     </div>
   </main>

@@ -49,18 +49,19 @@
 .news-disp .article-card.expand {
   /*background-color: white;*/
   order: -1;
-  width: 100vw;
-  height: calc(95vh - 112px);
-  max-width: 99%;
+  height: 97vh;
+  width: 100%;
   transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
   color: rgba(0, 0, 0, 0.89) !important;
   font-size: 120% !important;
+  margin: 0;
 }
 
 .news-disp .expand > .mdl-card__supporting-text {
   box-sizing: border-box;
-  width: 95%;
+  width: 99%;
   overflow-y: auto;
+  overflow-wrap: break-word;
   font-size: 16px;
   color: rgba(0, 0, 0, 0.89) !important;
 }
@@ -124,6 +125,7 @@
 
 .news-disp .mdl-card__supporting-text table {
   min-width: 30%;
+  max-width: 100%;
   border-collapse: collapse;
 }
 
@@ -162,8 +164,20 @@
 
 .news-disp .article-card.expand > .mdl-card__supporting-text img {
   max-height: 90%;
+  width: auto;
 }
 
 .news-disp .mdl-card__actions {
   margin-top: 16px;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  .news-disp .article-card.expand > .mdl-card__supporting-text img {
+    width: 360px;
+  }
+
+  .news-disp .article-card.expand > .mdl-card__supporting-text {
+    overflow: auto;
+  }
 }

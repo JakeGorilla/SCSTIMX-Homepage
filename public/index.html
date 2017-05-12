@@ -9,6 +9,7 @@
   <link rel="shortcut icon" href="favicon.png" type="image/png" />
 
   <!-- MDL -->
+  <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.0.0-beta.14/dist/vue-multiselect.min.css"/>
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
@@ -16,6 +17,7 @@
   <link rel="stylesheet" href="css/news.css">
 
   <script src="js/vue.js"></script>
+  <script defer src="https://unpkg.com/vue-multiselect@2.0.0-beta.14"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
@@ -36,17 +38,17 @@
     jsbarrier.parentNode.removeChild(jsbarrier);
   </script>
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-    <header class="mdl-layout__header">
+    <header class="mdl-layout__header mdl-layout__header--scroll">
       <div class="mdl-layout__header-row">
         <!-- Title -->
         <div class="header-vspacer"></div>
-        <span class="mdl-layout-title"><a id="logo" href="/">SCSTIMX</a></span>
+        <span id="logo" class="mdl-layout-title">SCSTIMX</span>
         <span class="layout-subtitle">South-China Sea Twin Island Monsoon Experiment</span>
       </div>
       <!-- Tabs -->
       <nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
         <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">HOME</a>
-        <a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>
+        <!--<a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>-->
         <a id="t-operational" href="#operational" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Operational<br>Products</a>
         <a id="t-modelfcst" href="#modelfcst" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Model/Forecast<br>Products</a>
         <a id="t-research" href="#research" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Research<br>Products</a>
@@ -73,7 +75,7 @@
     <!-- Main -->
     <main class="mdl-layout__content">
       <!--<div id="loading-panel"> </div>-->
-      <section id="home" class="mdl-layout__tab-panel">
+      <section v-cloak id="home" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           <div class="intro">SCSTIMX<br>intro</div>
@@ -89,37 +91,39 @@
           </div>
         </div>
       </section>
-      <section id="reports" class="mdl-layout__tab-panel">
+      <!--<section v-cloak id="reports" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
-          <!-- Your content goes here -->
           report
         </div>
-      </section>
-      <section id="operational" class="mdl-layout__tab-panel">
+      </section>-->
+      <section v-cloak id="operational" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
-          oper
+          <div id="operShow">
+            <multiselect v-model="value" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" placeholder="Choose product type"></multiselect>
+          </div>
+          http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg
         </div>
       </section>
-      <section id="modelfcst" class="mdl-layout__tab-panel">
+      <section v-cloak id="modelfcst" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           model
         </div>
       </section>
-      <section id="research" class="mdl-layout__tab-panel">
+      <section v-cloak id="research" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           res
         </div>
       </section>
-      <section id="missions" class="mdl-layout__tab-panel">
+      <section v-cloak id="missions" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           miss
         </div>
       </section>
-      <section id="links" class="mdl-layout__tab-panel">
+      <section v-cloak id="links" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           link
