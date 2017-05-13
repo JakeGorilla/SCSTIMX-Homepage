@@ -25,6 +25,8 @@ body {
   background-color: #000011;
   /*background-image: url("../../Nock-ten_2016-12-25_0210Z.jpg");*/
 }
+
+
 /*
 #loading-panel {
   width: 100%;
@@ -73,7 +75,7 @@ body {
 .mdl-layout__drawer-button>.material-icons:hover {
   font-size: 36px;
   line-height: 48px;
-  text-shadow: 0 0 10px red,0 0 25px red, 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black, 1px 1px black, -1px 1px black, -1px -1px black, 1px -1px black;
+  text-shadow: 0 0 10px red, 0 0 25px red, 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black, 1px 1px black, -1px 1px black, -1px -1px black, 1px -1px black;
   transition: all 0.1s cubic-bezier(.4, 0, 1, 1);
 }
 
@@ -96,7 +98,7 @@ body {
   padding-top: 100%;
 }
 
-.drawer-usericon > img {
+.drawer-usericon>img {
   top: 0;
   left: 0;
   right: 0;
@@ -135,7 +137,7 @@ body {
   margin-top: 24px;
 }
 
-.drawer-item > .material-icons {
+.drawer-item>.material-icons {
   font-size: 24px;
   padding-right: 16px;
   vertical-align: middle;
@@ -145,19 +147,15 @@ body {
   .drawer-usericon {
     left: 24px;
   }
-
   .drawer-item {
     padding: 5px 0 10px 24px;
   }
-
   .drawer-username {
     padding: 8px 0 0 26px;
   }
-
   .drawer-email {
     padding: 6px 0 0 26px;
   }
-
   footer {
     margin-top: 8px;
   }
@@ -168,14 +166,12 @@ body {
     max-width: 1024px;
     /*min-width: 600px;*/
   }
-
   .mdl-layout__drawer-button {
     left: 0;
     top: 0;
     margin: 9px 0px !important;
     background-color: transparent !important;
   }
-
   .header-vspacer {
     height: 20px;
   }
@@ -185,7 +181,6 @@ body {
   .header-vspacer {
     height: 12px;
   }
-
   .mdl-layout__drawer-button {
     top: 0;
     left: 0;
@@ -212,6 +207,8 @@ body {
   font-size: 24px;
   text-shadow: 2px 1px black, 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black, 1px 1px black, -1px 1px black, -1px -1px black, 1px -1px black;
 }
+
+
 /*
 #logo:hover {
   text-decoration: underline;
@@ -272,7 +269,7 @@ body {
   right: 0;
 }
 
-.goPost > a {
+.goPost>a {
   font-size: 24px;
   text-decoration: none;
 }
@@ -375,7 +372,7 @@ body {
   height: 270px;
 }
 
-#loginIntro > .mdl-card__title {
+#loginIntro>.mdl-card__title {
   color: white;
   background-image: url("../img/intro.jpg");
   background-size: cover;
@@ -387,7 +384,7 @@ body {
   cursor: pointer;
 }
 
-.mdl-card__menu > a {
+.mdl-card__menu>a {
   color: rgba(0, 0, 0, 0.36);
 }
 
@@ -449,8 +446,10 @@ body {
   vertical-align: middle;
 }
 
+
 /*#loginLoading>.mdl-spinner,
 #signupLoading>*/
+
 .mdl-spinner {
   display: inline-block;
 }
@@ -491,4 +490,36 @@ body {
 .mdl-text_wide {
   display: flex;
   width: auto;
+}
+
+#operShow {
+  margin: 16px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#operShow .prod-type {
+  display: inline-flex;
+  flex: 2 1 300px;
+}
+
+#operShow .date-time {
+  display: inline-flex;
+  flex: 1 20000 150px;
+}
+
+#operShow .img-container {
+  height: 100%;
+  flex: 0 0 100%;
+  text-align: center;
+}
+
+#operShow .img-container::before {
+  content: "";
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+#operShow .img-container img {
+  max-width: 100%;
 }

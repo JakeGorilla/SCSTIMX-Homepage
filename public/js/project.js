@@ -40,6 +40,21 @@ var singleFunctions = {
   }
 };
 
+if (!String.prototype.includes) {
+  String.prototype.includes = function (search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+
 // for querySelectorAll
 // forEach, could be shipped as part of an Object Literal/Module
 // Usage: optionally change the scope as final parameter too, like ECMA5
@@ -61,15 +76,15 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
       activeFlag: function () {
         // show content panel when activated first time
         if (this.activeFlag) {
-          console.log('active');
           this.el.classList.add('is-active');
           if (this.el.querySelector('.wait-tabs')) {
             this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
-            this.$nextTick(function () { document.body.scrollIntoView(); });
+            this.$nextTick(function () {
+              document.body.scrollIntoView();
+            });
             // console.log('removed');
           }
         } else {
-          console.log('deactive');
           this.el.classList.remove('is-active');
           // this.el.getElementsByClassName('page-content')[0].scrollIntoView();
         }
@@ -113,7 +128,9 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
 if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
   var to = location.toString().split('#')[0] + '#' + tabHashes[0];
   location.replace(to);
-  Vue.nextTick(function () { document.body.scrollIntoView(); });
+  Vue.nextTick(function () {
+    document.body.scrollIntoView();
+  });
 }
 
 // init state managers
@@ -148,7 +165,7 @@ stateManager.auth = new Vue({
 });
 
 // oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent) (function () {
+if (!window.HashChangeEvent)(function () {
   var lastURL = document.URL;
   window.addEventListener('hashchange', function (event) {
     Object.defineProperty(event, 'oldURL', {
@@ -239,8 +256,12 @@ firebase.auth().onAuthStateChanged(function (user) {
       var data = dataSnapshot.val();
       Object.keys(data).forEach(function (key) {
         databaseUserData[key] = data[key];
-        if (key == 'name') fbaseUser.updateProfile({ displayName: data[key] });
-        else if (key == 'icon') fbaseUser.updateProfile({ photoURL: data[key] });
+        if (key == 'name') fbaseUser.updateProfile({
+          displayName: data[key]
+        });
+        else if (key == 'icon') fbaseUser.updateProfile({
+          photoURL: data[key]
+        });
       });
     });
   } else {
@@ -266,8 +287,12 @@ drawer.userIcon = new Vue({
     info: databaseUserData,
   },
   computed: {
-    show: function () { return stateManager.auth.managedStates.login },
-    privilege: function () { return stateManager.auth.managedStates.postPrivilege }
+    show: function () {
+      return stateManager.auth.managedStates.login
+    },
+    privilege: function () {
+      return stateManager.auth.managedStates.postPrivilege
+    }
   },
   methods: {
     choseNewIcon: function () {
@@ -286,7 +311,9 @@ drawer.userIcon = new Vue({
 keyFunctions.userInfo = new Vue({
   el: '#userInfo',
   computed: {
-    show: function () { return stateManager.auth.managedStates.login },
+    show: function () {
+      return stateManager.auth.managedStates.login
+    },
   },
   methods: {
     trigger: function () {
@@ -306,12 +333,22 @@ keyFunctions.auth = new Vue({
   el: '#auth',
   data: {
     managedStates: stateManager.auth.managedStates,
-    s2icon: { true: 'cloud_off', false: 'account_box' },
-    s2label: { true: 'Logout', false: 'Login' },
+    s2icon: {
+      true: 'cloud_off',
+      false: 'account_box'
+    },
+    s2label: {
+      true: 'Logout',
+      false: 'Login'
+    },
   },
   computed: {
-    label: function () { return this.s2label[this.managedStates.login]; },
-    icon: function () { return this.s2icon[this.managedStates.login]; }
+    label: function () {
+      return this.s2label[this.managedStates.login];
+    },
+    icon: function () {
+      return this.s2icon[this.managedStates.login];
+    }
   },
   methods: {
     trigger: function () {
@@ -341,7 +378,9 @@ keyFunctions.authContainer = new Vue({
     managedStates: stateManager.containers.managedStates,
   },
   computed: {
-    show: function () { return this.managedStates.authContainer },
+    show: function () {
+      return this.managedStates.authContainer
+    },
   },
   watch: {
     show: function () {
@@ -448,7 +487,7 @@ dialogs.signupDialog = new Vue({
       }
       if (this.pass.length < 6) {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
-        var h = function () { };
+        var h = function () {};
         singleFunctions.authNotification.show('Password need 6 chars at least', 5000);
         res = false;
       }
@@ -496,9 +535,10 @@ dialogs.signupConfirm = new Vue({
           if (stateManager.auth.managedStates.login) {
             // loged in
             clearInterval(wait);
-            fbaseData.ref('/users/' + fbaseUser.uid + '/name').set(dialogs.signupDialog.name).then(function () {
-              ;
-              fbaseUser.updateProfile({ displayName: dialogs.signupDialog.name });
+            fbaseData.ref('/users/' + fbaseUser.uid + '/name').set(dialogs.signupDialog.name).then(function () {;
+              fbaseUser.updateProfile({
+                displayName: dialogs.signupDialog.name
+              });
               // succeeded update user name
               dialogs.signupConfirm.close();
               dialogs.signupDialog.close();
@@ -688,16 +728,18 @@ var newsPosts = new Vue({
       });
       this.rawPosts = tmp;
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got add');
       this.rawPosts.push(dataSnapshot);
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot/*, keyOfTheRemovedOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/ ) {
       console.log('got removed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
         this.posts.splice(index, 1);
-        this.postKeys = this.posts.map(function (post) { return post.id; });
+        this.postKeys = this.posts.map(function (post) {
+          return post.id;
+        });
       } else {
         for (var i = 0; i < this.rawPosts.length; i++) {
           if (rawPosts[i].key == dataSnapshot.key) {
@@ -706,7 +748,7 @@ var newsPosts = new Vue({
         }
       }
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot/*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got changed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -798,8 +840,12 @@ var newsPosts = new Vue({
           var postIndex = this.$parent.postKeys.indexOf(pid);
           card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
           card.classList.toggle('expand');
-          var scrolling = setInterval(function () { card.scrollIntoView(); }, 1);
-          setTimeout(function () { clearInterval(scrolling); }, 500);
+          var scrolling = setInterval(function () {
+            card.scrollIntoView();
+          }, 1);
+          setTimeout(function () {
+            clearInterval(scrolling);
+          }, 500);
           if (card.classList.contains('expand')) {
             this.mdlBtnColor = false;
             this.mdlBtnAccent = true;
@@ -840,13 +886,13 @@ var newsPosts = new Vue({
         }
       },
       template: '\
-        <div ref="card" :id="'+ 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp" @click="scrollto">\
+        <div ref="card" :id="' + 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp" @click="scrollto">\
           <div class="mdl-card__title mdl-card--border">\
-            <h2 class="mdl-card__title-text">'+ '{{post.title}}' + '</h2>\
-            <h3 class="mdl-card__subtitle-text">Author: '+ '{{post.authorName}}' + '</h3>\
+            <h2 class="mdl-card__title-text">' + '{{post.title}}' + '</h2>\
+            <h3 class="mdl-card__subtitle-text">Author: ' + '{{post.authorName}}' + '</h3>\
             <h3 v-show="' + 'post.authorAffiliation' + '" class="mdl-card__subtitle-text">From: ' + '{{post.authorAffiliation}}' + '</h3>\
           </div>\
-          <div class="mdl-card__supporting-text mdl-card--expand" v-html="'+ 'post.content' + '"></div>\
+          <div class="mdl-card__supporting-text mdl-card--expand" v-html="' + 'post.content' + '"></div>\
           <div class="mdl-card__actions mdl-card--border">\
             <a @click="expand" :class="{\'mdl-button--colored\': mdlBtnColor, \'mdl-button--accent\': mdlBtnAccent}" class="mdl-button mdl-button--raised mdl-js-button mdl-js-ripple-effect">\
               {{ toggleText }}\
@@ -860,16 +906,356 @@ var newsPosts = new Vue({
   }
 });
 
+var TTFRI_dataTree = [{
+    "name": "OBSERVATION",
+    "description": "觀測",
+    "children": [{
+        "name": "CWB-R",
+        "description": "CWB雷達",
+        "children": [{
+            "name": "Taiwan",
+            "description": "全台灣",
+            "children": [{
+                "name": "Land",
+                "description": "無地形",
+                "list": "OBSERVATION/CWB-R/Taiwan/Land"
+              },
+              {
+                "name": "Land-N",
+                "description": "有地形",
+                "list": "OBSERVATION/CWB-R/Taiwan/Land-N"
+              }
+            ]
+          },
+          {
+            "name": "Chiku",
+            "description": "七股",
+            "list": "OBSERVATION/CWB-R/Chiku"
+          }
+        ]
+      },
+      {
+        "name": "CWB-S",
+        "description": "CWB衛星",
+        "children": [{
+            "name": "Taiwan",
+            "description": "台灣",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/Taiwan/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/Taiwan/Color"
+              }
+            ]
+          },
+          {
+            "name": "East-Asia",
+            "description": "東亞",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/East-Asia/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/East-Asia/Color"
+              }
+            ]
+          },
+          {
+            "name": "High",
+            "description": "高解析",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/High/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/High/Color"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CWB-RF",
+        "description": "CWB雨量",
+        "children": [{
+            "name": "Small",
+            "description": "小間距",
+            "list": "OBSERVATION/CWB-RF/Small"
+          },
+          {
+            "name": "Large",
+            "description": "大間距",
+            "list": "OBSERVATION/CWB-RF/Large"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "MODE",
+    "description": "模式",
+    "children": [{
+        "name": "CWB-W",
+        "description": "CWB天氣圖",
+        "children": [{
+            "name": "New-W",
+            "description": "最新天氣圖",
+            "list": "MODE/CWB-W/New-W"
+          },
+          {
+            "name": "Land-W",
+            "description": "地面天氣圖",
+            "list": "MODE/CWB-W/Land-W"
+          }
+        ]
+      },
+      {
+        "name": "CWB-RF",
+        "description": "CWB定量降水預報",
+        "children": [{
+            "name": "I",
+            "description": "定量降雨預報(I)",
+            "list": "MODE/CWB-RF/I"
+          },
+          {
+            "name": "II",
+            "description": "定量降雨預報(II)",
+            "list": "MODE/CWB-RF/II"
+          }
+        ]
+      }
+    ]
+  }
+];
 
-new Vue({
+var TTFRI_dataDayTime = {
+  'OBSERVATION/CWB-R/Taiwan/Land': [],
+  'OBSERVATION/CWB-R/Taiwan/Land-N': [],
+  'OBSERVATION/CWB-R/Chiku': [],
+  'OBSERVATION/CWB-S/Taiwan/Light': ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'],
+  'OBSERVATION/CWB-S/Taiwan/Color': ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'],
+  'OBSERVATION/CWB-S/East-Asia/Light': ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'],
+  'OBSERVATION/CWB-S/East-Asia/Color': ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'],
+  'OBSERVATION/CWB-S/High/Light': ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'],
+  'OBSERVATION/CWB-S/High/Color': ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'],
+  'OBSERVATION/CWB-RF/Small': ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'],
+  'OBSERVATION/CWB-RF/Large': ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'],
+  'MODE/CWB-W/New-W': [],
+  'MODE/CWB-W/Land-W': ['02:00', '08:00', '14:00', '20:00'],
+  'MODE/CWB-RF/I': ['00:00'],
+  'MODE/CWB-RF/II': ['00:00']
+};
+
+var operShow = new Vue({
   el: '#operShow',
   data: {
-    value: '',
-    options: ['Select option', 'options', 'selected', 'mulitple', 'label', 'searchable', 'clearOnSelect', 'hideSelected', 'maxHeight', 'allowEmpty', 'showLabels', 'onChange', 'touched']
-
+    baseUrl: 'http://140.110.147.101:8080/narlabs/rest/data/',
+    type: '',
+    date: '',
+    time: '',
+    availDates: [],
+    show: false,
+    timePlaceholder: 'Select Type first'
+  },
+  created: function () {
+    var res = new Date();
+    if (res.getHours() < 12) res.setDate(res.getDate() - 1);
+    var year = res.getFullYear().toString();
+    var mon = this.pad(res.getMonth() + 1);
+    var day = this.pad(res.getDate());
+    res = year + '/' + mon + '/' + day;
+    this.date = res;
+  },
+  computed: {
+    availTimes: function () {
+      if (this.type && this.date) {
+        this.timePlaceholder = 'Select time';
+        if (TTFRI_dataDayTime[this.type.url].indexOf(this.time) == -1) this.time = '';
+        return TTFRI_dataDayTime[this.type.url];
+      } else {
+        this.timePlaceholder = 'Select Type first';
+        this.time = '';
+        return [];
+      }
+    },
+    products: function () {
+      function flatten(data) {
+        var res = [];
+        var path = [''];
+        var visited = [];
+        var node = data; // is onject
+        var parentNodes = [];
+        while (path.length > 0) {
+          // console.log(path.join('/'));
+          if (node.list) {
+            // leaf node
+            if (node.list != 'OBSERVATION/CWB-R/Taiwan/Land' &&
+              node.list != 'OBSERVATION/CWB-R/Taiwan/Land-N' &&
+              node.list != 'OBSERVATION/CWB-R/Chiku' &&
+              node.list != 'OBSERVATION/CWB-S/High/Light' &&
+              node.list != 'OBSERVATION/CWB-S/High/Color' &&
+              node.list != 'MODE/CWB-W/New-W') {
+              res.push({
+                label: path.join('/'),
+                url: node.list
+              });
+            }
+            path.pop();
+            node = parentNodes.pop();
+          } else {
+            var index = [];
+            var layer = node.children.map(function (child) {
+              return child['description'];
+            }).filter(function (value, i) {
+              path.push(value);
+              if (visited.indexOf(path.join('/')) == -1) {
+                index.push(i);
+                path.pop();
+                return true;
+              } else {
+                path.pop();
+                return false;
+              }
+            });
+            // console.log(layer);
+            // console.log(index);
+            if (layer.length > 0) {
+              path.push(layer[0]);
+              parentNodes.push(node);
+              node = node.children[index[0]];
+              visited.push(path.join('/'));
+            } else {
+              path.pop();
+              node = parentNodes.pop();
+            }
+          }
+        }
+        return res;
+      };
+      var res = [];
+      for (cat in TTFRI_dataTree) {
+        res.push({
+          cat: TTFRI_dataTree[cat].description,
+          types: flatten(TTFRI_dataTree[cat])
+        });
+      }
+      return res;
+    }
+  },
+  methods: {
+    compDate: function (searchQuery) {
+      // this.date = searchQuery;
+      if (this.$refs.date.$refs.search.value != searchQuery) return;
+      var maxYear = new Date();
+      maxYear = maxYear.getFullYear();
+      var searchDate = Date.parse(searchQuery);
+      var match = searchQuery.match(/(\d{4})(?:\/(\d{0,2}))?/);
+      if (searchDate && searchQuery.includes('/')) {
+        searchDate = new Date(searchDate);
+        var year = searchDate.getFullYear();
+        if (year > 2014 && year <= maxYear) {
+          var mon = searchDate.getMonth() + 1;
+          var lastDateOfMon = new Date(year, mon + 1, 0);
+          lastDateOfMon = lastDateOfMon.getDate();
+          this.availDates = new Array(lastDateOfMon);
+          for (var i = 0; i < this.availDates.length; i++) {
+            this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i + 1);
+          }
+        }
+      } else if (match) {
+        var year = parseInt(match[1]);
+        var mon;
+        var ymGood = false;
+        if (year > 2014 && year <= maxYear) {
+          if (match.length == 3) {
+            mon = parseInt(match[2]);
+            if (mon > 0 && mon < 13) {
+              ymGood = true;
+            }
+          }
+          if (ymGood) {
+            var lastDateOfMon = new Date(year, mon + 1, 0);
+            lastDateOfMon = lastDateOfMon.getDate();
+            this.availDates = new Array(lastDateOfMon);
+            for (var i = 0; i < this.availDates.length; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i + 1);
+            }
+          } else {
+            this.availDates = new Array(12);
+            for (var i = 0; i < 12; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(i + 1);
+            }
+          }
+        }
+      } else {
+        this.availDates = new Array(maxYear - 2013);
+        for (var i = 0; i < this.availDates.length; i++) {
+          this.availDates[i] = (2014 + i).toString() + '/';
+        }
+      }
+    },
+    syncQuery: function (val) {
+      val = val ? val : this.date;
+      this.$refs.date.$refs.search.focus();
+      var a = this.$refs.date.$refs.search;
+      setTimeout(function () {
+        var event = new Event('input', {
+          'bubbles': true,
+          'cancelable': true
+        });
+        a.value = val;
+        a.dispatchEvent(event);
+      }, 8);
+    },
+    updateQuery: function (selectedOption) {
+      this.syncQuery(selectedOption);
+      if (selectedOption.match(/\d{4}\/\d\d\/\d\d/)) {
+        this.$refs.date.deactivate();
+      }
+    },
+    updateImg: function () {
+      if (this.type && this.date && this.time) {
+        var date = new Date(Date.parse(this.date + ' ' + this.time));
+        if (date) {
+          var year = date.getFullYear().toString();
+          var mon = this.pad(date.getMonth() + 1);
+          var day = this.pad(date.getDate());
+          var hour = this.pad(date.getHours());
+          var min = this.pad(date.getMinutes());
+          var url = this.baseUrl + this.type.url + '/' + year + '-' + mon + '-' + day + '-' + hour + min + '.jpg';
+          this.$refs.img.src = url;
+          this.show = true;
+        } else this.show = false;
+      } else this.show = false;
+    },
+    pad: function (num) {
+      return num < 10 ? '0' + num.toString() : num.toString();
+    },
+  },
+  watch: {
+    type: function () {
+      this.updateImg()
+    },
+    date: function () {
+      this.updateImg()
+    },
+    time: function () {
+      this.updateImg()
+    }
   },
   components: {
-    multiselect: VueMultiselect.Multiselect
+    'prod-type': VueMultiselect.Multiselect,
+    'date-time': VueMultiselect.Multiselect,
   },
 });
 

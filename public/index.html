@@ -100,9 +100,13 @@
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           <div id="operShow">
-            <multiselect v-model="value" :options="options" :searchable="false" :close-on-select="true" :show-labels="false" placeholder="Choose product type"></multiselect>
+            <!--<div class="prod-type"><prod-type v-model="type" placeholder="Select product type" :options="products" :close-on-select="true" group-label="cat" group-value="types"  track-by="label" label="label"></prod-type></div>-->
+            <div class="prod-type"><prod-type v-model="type" :options="products" group-values="types" group-label="cat" placeholder="Select product type" track-by="label" label="label" :searchable="false"></prod-type></div>
+            <div class="date-time"><date-time ref="date" v-model="date" :options="availDates" :close-on-select="false" :show-labels="false" :internal-search="false" @open="syncQuery" @search-change="compDate" @select="updateQuery"></date-time></div>
+            <div class="date-time"><date-time ref="time" v-model="time" :placeholder="timePlaceholder" :options="availTimes" :show-labels="false" :searchable="false"></date-time></div>
+            <div class="img-container"><img ref="img" v-show="show"></div>
           </div>
-          http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg
+          <!--http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg-->
         </div>
       </section>
       <section v-cloak id="modelfcst" class="mdl-layout__tab-panel">
