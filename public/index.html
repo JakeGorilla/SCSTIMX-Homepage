@@ -9,7 +9,7 @@
   <link rel="shortcut icon" href="favicon.png" type="image/png" />
 
   <!-- MDL -->
-  <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.0.0-beta.14/dist/vue-multiselect.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.0.0-beta.14/dist/vue-multiselect.min.css" />
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
@@ -101,10 +101,18 @@
           <!-- Your content goes here -->
           <div id="operShow">
             <!--<div class="prod-type"><prod-type v-model="type" placeholder="Select product type" :options="products" :close-on-select="true" group-label="cat" group-value="types"  track-by="label" label="label"></prod-type></div>-->
-            <div class="prod-type"><prod-type v-model="type" :options="products" group-values="types" group-label="cat" placeholder="Select product type" track-by="label" label="label" :searchable="false"></prod-type></div>
-            <div class="date-time"><date-time ref="date" v-model="date" :options="availDates" :close-on-select="false" :show-labels="false" :internal-search="false" @open="syncQuery" @search-change="compDate" @select="updateQuery"></date-time></div>
-            <div class="date-time"><date-time ref="time" v-model="time" :placeholder="timePlaceholder" :options="availTimes" :show-labels="false" :searchable="false"></date-time></div>
-            <div class="img-container"><img ref="img" v-show="show"></div>
+            <div class="prod-type">
+              <prod-type ref="type" v-model="type" :options="products" group-values="types" group-label="cat" placeholder="Select product type" track-by="label"
+                label="label" :searchable="false"></prod-type>
+            </div>
+            <div class="date-time">
+              <date-time ref="date" v-model="date" :options="availDates" :close-on-select="false" :show-labels="false" :internal-search="false"
+                @open="syncQuery" @search-change="compDate" @select="updateQuery"></date-time>
+            </div>
+            <div class="date-time">
+              <date-time ref="time" v-model="time" :placeholder="timePlaceholder" :options="availTimes" :show-labels="false" :searchable="false"></date-time>
+            </div>
+            <div class="img-container"><img ref="img" v-show="show" @load="toTop" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="></div>
           </div>
           <!--http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg-->
         </div>

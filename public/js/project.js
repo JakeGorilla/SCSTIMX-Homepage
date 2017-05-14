@@ -165,7 +165,7 @@ stateManager.auth = new Vue({
 });
 
 // oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent)(function () {
+if (!window.HashChangeEvent) (function () {
   var lastURL = document.URL;
   window.addEventListener('hashchange', function (event) {
     Object.defineProperty(event, 'oldURL', {
@@ -487,7 +487,6 @@ dialogs.signupDialog = new Vue({
       }
       if (this.pass.length < 6) {
         this.$el.querySelector('#signupPass').parentElement.classList.add('is-invalid');
-        var h = function () {};
         singleFunctions.authNotification.show('Password need 6 chars at least', 5000);
         res = false;
       }
@@ -535,7 +534,7 @@ dialogs.signupConfirm = new Vue({
           if (stateManager.auth.managedStates.login) {
             // loged in
             clearInterval(wait);
-            fbaseData.ref('/users/' + fbaseUser.uid + '/name').set(dialogs.signupDialog.name).then(function () {;
+            fbaseData.ref('/users/' + fbaseUser.uid + '/name').set(dialogs.signupDialog.name).then(function () {
               fbaseUser.updateProfile({
                 displayName: dialogs.signupDialog.name
               });
@@ -728,11 +727,11 @@ var newsPosts = new Vue({
       });
       this.rawPosts = tmp;
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
       console.log('got add');
       this.rawPosts.push(dataSnapshot);
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/ ) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/) {
       console.log('got removed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -748,7 +747,7 @@ var newsPosts = new Vue({
         }
       }
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
       console.log('got changed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -907,135 +906,135 @@ var newsPosts = new Vue({
 });
 
 var TTFRI_dataTree = [{
-    "name": "OBSERVATION",
-    "description": "觀測",
+  "name": "OBSERVATION",
+  "description": "觀測",
+  "children": [{
+    "name": "CWB-R",
+    "description": "CWB雷達",
     "children": [{
-        "name": "CWB-R",
-        "description": "CWB雷達",
-        "children": [{
-            "name": "Taiwan",
-            "description": "全台灣",
-            "children": [{
-                "name": "Land",
-                "description": "無地形",
-                "list": "OBSERVATION/CWB-R/Taiwan/Land"
-              },
-              {
-                "name": "Land-N",
-                "description": "有地形",
-                "list": "OBSERVATION/CWB-R/Taiwan/Land-N"
-              }
-            ]
-          },
-          {
-            "name": "Chiku",
-            "description": "七股",
-            "list": "OBSERVATION/CWB-R/Chiku"
-          }
-        ]
+      "name": "Taiwan",
+      "description": "全台灣",
+      "children": [{
+        "name": "Land",
+        "description": "無地形",
+        "list": "OBSERVATION/CWB-R/Taiwan/Land"
       },
       {
-        "name": "CWB-S",
-        "description": "CWB衛星",
-        "children": [{
-            "name": "Taiwan",
-            "description": "台灣",
-            "children": [{
-                "name": "Light",
-                "description": "可見光",
-                "list": "OBSERVATION/CWB-S/Taiwan/Light"
-              },
-              {
-                "name": "Color",
-                "description": "色調強化",
-                "list": "OBSERVATION/CWB-S/Taiwan/Color"
-              }
-            ]
-          },
-          {
-            "name": "East-Asia",
-            "description": "東亞",
-            "children": [{
-                "name": "Light",
-                "description": "可見光",
-                "list": "OBSERVATION/CWB-S/East-Asia/Light"
-              },
-              {
-                "name": "Color",
-                "description": "色調強化",
-                "list": "OBSERVATION/CWB-S/East-Asia/Color"
-              }
-            ]
-          },
-          {
-            "name": "High",
-            "description": "高解析",
-            "children": [{
-                "name": "Light",
-                "description": "可見光",
-                "list": "OBSERVATION/CWB-S/High/Light"
-              },
-              {
-                "name": "Color",
-                "description": "色調強化",
-                "list": "OBSERVATION/CWB-S/High/Color"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "CWB-RF",
-        "description": "CWB雨量",
-        "children": [{
-            "name": "Small",
-            "description": "小間距",
-            "list": "OBSERVATION/CWB-RF/Small"
-          },
-          {
-            "name": "Large",
-            "description": "大間距",
-            "list": "OBSERVATION/CWB-RF/Large"
-          }
-        ]
+        "name": "Land-N",
+        "description": "有地形",
+        "list": "OBSERVATION/CWB-R/Taiwan/Land-N"
       }
+      ]
+    },
+    {
+      "name": "Chiku",
+      "description": "七股",
+      "list": "OBSERVATION/CWB-R/Chiku"
+    }
     ]
   },
   {
-    "name": "MODE",
-    "description": "模式",
+    "name": "CWB-S",
+    "description": "CWB衛星",
     "children": [{
-        "name": "CWB-W",
-        "description": "CWB天氣圖",
-        "children": [{
-            "name": "New-W",
-            "description": "最新天氣圖",
-            "list": "MODE/CWB-W/New-W"
-          },
-          {
-            "name": "Land-W",
-            "description": "地面天氣圖",
-            "list": "MODE/CWB-W/Land-W"
-          }
-        ]
+      "name": "Taiwan",
+      "description": "台灣",
+      "children": [{
+        "name": "Light",
+        "description": "可見光",
+        "list": "OBSERVATION/CWB-S/Taiwan/Light"
       },
       {
-        "name": "CWB-RF",
-        "description": "CWB定量降水預報",
-        "children": [{
-            "name": "I",
-            "description": "定量降雨預報(I)",
-            "list": "MODE/CWB-RF/I"
-          },
-          {
-            "name": "II",
-            "description": "定量降雨預報(II)",
-            "list": "MODE/CWB-RF/II"
-          }
-        ]
+        "name": "Color",
+        "description": "色調強化",
+        "list": "OBSERVATION/CWB-S/Taiwan/Color"
       }
+      ]
+    },
+    {
+      "name": "East-Asia",
+      "description": "東亞",
+      "children": [{
+        "name": "Light",
+        "description": "可見光",
+        "list": "OBSERVATION/CWB-S/East-Asia/Light"
+      },
+      {
+        "name": "Color",
+        "description": "色調強化",
+        "list": "OBSERVATION/CWB-S/East-Asia/Color"
+      }
+      ]
+    },
+    {
+      "name": "High",
+      "description": "高解析",
+      "children": [{
+        "name": "Light",
+        "description": "可見光",
+        "list": "OBSERVATION/CWB-S/High/Light"
+      },
+      {
+        "name": "Color",
+        "description": "色調強化",
+        "list": "OBSERVATION/CWB-S/High/Color"
+      }
+      ]
+    }
+    ]
+  },
+  {
+    "name": "CWB-RF",
+    "description": "CWB雨量",
+    "children": [{
+      "name": "Small",
+      "description": "小間距",
+      "list": "OBSERVATION/CWB-RF/Small"
+    },
+    {
+      "name": "Large",
+      "description": "大間距",
+      "list": "OBSERVATION/CWB-RF/Large"
+    }
     ]
   }
+  ]
+},
+{
+  "name": "MODE",
+  "description": "模式",
+  "children": [{
+    "name": "CWB-W",
+    "description": "CWB天氣圖",
+    "children": [{
+      "name": "New-W",
+      "description": "最新天氣圖",
+      "list": "MODE/CWB-W/New-W"
+    },
+    {
+      "name": "Land-W",
+      "description": "地面天氣圖",
+      "list": "MODE/CWB-W/Land-W"
+    }
+    ]
+  },
+  {
+    "name": "CWB-RF",
+    "description": "CWB定量降水預報",
+    "children": [{
+      "name": "I",
+      "description": "定量降雨預報(I)",
+      "list": "MODE/CWB-RF/I"
+    },
+    {
+      "name": "II",
+      "description": "定量降雨預報(II)",
+      "list": "MODE/CWB-RF/II"
+    }
+    ]
+  }
+  ]
+}
 ];
 
 var TTFRI_dataDayTime = {
@@ -1079,9 +1078,14 @@ var operShow = new Vue({
   computed: {
     availTimes: function () {
       if (this.type && this.date) {
+        var res = TTFRI_dataDayTime[this.type.url];
         this.timePlaceholder = 'Select time';
-        if (TTFRI_dataDayTime[this.type.url].indexOf(this.time) == -1) this.time = '';
-        return TTFRI_dataDayTime[this.type.url];
+        if (res.indexOf(this.time) == -1) this.time = '';
+        if ((new Date(Date.parse(this.date))).toLocaleDateString() === (new Date()).toLocaleDateString()) {
+          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { return parseInt(str.split(':')[0]) <= (new Date()).getHours() && parseInt(str.split(':')[1]) <= (new Date()).getMinutes() });
+          if (res.indexOf(this.time) == -1) this.time = res[res.length - 1];
+        }
+        return res;
       } else {
         this.timePlaceholder = 'Select Type first';
         this.time = '';
@@ -1156,37 +1160,53 @@ var operShow = new Vue({
     compDate: function (searchQuery) {
       // this.date = searchQuery;
       if (this.$refs.date.$refs.search.value != searchQuery) return;
-      var maxYear = new Date();
-      maxYear = maxYear.getFullYear();
+      var thisHour = new Date();
+      var thisYear = thisHour.getFullYear();
+      var thisMon = thisHour.getMonth() + 1;
+      var thisDay = thisHour.getDate();
+      thisHour = thisHour.getHours();
       var searchDate = Date.parse(searchQuery);
       var match = searchQuery.match(/(\d{4})(?:\/(\d{0,2}))?/);
       if (searchDate && searchQuery.includes('/')) {
         searchDate = new Date(searchDate);
         var year = searchDate.getFullYear();
-        if (year > 2014 && year <= maxYear) {
+        if (year > 2013 && year <= thisYear) {
           var mon = searchDate.getMonth() + 1;
-          var lastDateOfMon = new Date(year, mon + 1, 0);
-          lastDateOfMon = lastDateOfMon.getDate();
-          this.availDates = new Array(lastDateOfMon);
-          for (var i = 0; i < this.availDates.length; i++) {
-            this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i + 1);
+          var lastDay = new Date(year, mon, 0);
+          lastDay = lastDay.getDate();
+          if (year < thisYear || mon < thisMon) {
+            this.availDates = new Array(lastDay + 2);
+            this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
+            for (var i = 1; i < this.availDates.length - 1; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i);
+            }
+            this.availDates[this.availDates.length - 1] = year.toString() + '/' + this.pad(mon + 1) + '/';
+          } else if (mon == thisMon) {
+            lastDay = thisDay;
+            this.availDates = new Array(lastDay + 1);
+            this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
+            for (var i = 1; i < this.availDates.length; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i);
+            }
           }
         }
       } else if (match) {
         var year = parseInt(match[1]);
         var mon;
         var ymGood = false;
-        if (year > 2014 && year <= maxYear) {
+        var ymEdge = false;
+        if (year > 2013 && year <= thisYear) {
           if (match.length == 3) {
             mon = parseInt(match[2]);
             if (mon > 0 && mon < 13) {
-              ymGood = true;
+              ymGood = (year === thisYear ? mon <= thisMon : true);
+              ymEdge = (year === thisYear ? mon === thisMon : false);
             }
           }
           if (ymGood) {
-            var lastDateOfMon = new Date(year, mon + 1, 0);
-            lastDateOfMon = lastDateOfMon.getDate();
-            this.availDates = new Array(lastDateOfMon);
+            var lastDay = new Date(year, mon, 0);
+            lastDay = ymEdge ? thisDay : lastDay.getDate();
+            this.availDates = new Array(lastDay);
             for (var i = 0; i < this.availDates.length; i++) {
               this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i + 1);
             }
@@ -1198,7 +1218,7 @@ var operShow = new Vue({
           }
         }
       } else {
-        this.availDates = new Array(maxYear - 2013);
+        this.availDates = new Array(thisYear - 2013);
         for (var i = 0; i < this.availDates.length; i++) {
           this.availDates[i] = (2014 + i).toString() + '/';
         }
@@ -1208,25 +1228,27 @@ var operShow = new Vue({
       val = val ? val : this.date;
       this.$refs.date.$refs.search.focus();
       var a = this.$refs.date.$refs.search;
-      setTimeout(function () {
+      this.$nextTick(function () {
         var event = new Event('input', {
           'bubbles': true,
           'cancelable': true
         });
         a.value = val;
         a.dispatchEvent(event);
-      }, 8);
+      });
     },
     updateQuery: function (selectedOption) {
       this.syncQuery(selectedOption);
       if (selectedOption.match(/\d{4}\/\d\d\/\d\d/)) {
         this.$refs.date.deactivate();
+      } else {
+        this.show = false;
       }
     },
     updateImg: function () {
       if (this.type && this.date && this.time) {
-        var date = new Date(Date.parse(this.date + ' ' + this.time));
-        if (date) {
+        if (Date.parse(this.date) && Date.parse(this.date + ' ' + this.time)) {
+          var date = new Date(Date.parse(this.date + ' ' + this.time));
           var year = date.getFullYear().toString();
           var mon = this.pad(date.getMonth() + 1);
           var day = this.pad(date.getDate());
@@ -1234,13 +1256,16 @@ var operShow = new Vue({
           var min = this.pad(date.getMinutes());
           var url = this.baseUrl + this.type.url + '/' + year + '-' + mon + '-' + day + '-' + hour + min + '.jpg';
           this.$refs.img.src = url;
-          this.show = true;
-        } else this.show = false;
-      } else this.show = false;
+          var me = this;
+          me.show = true;
+        } else { this.show = false; this.clearImg() }
+      } else { this.show = false; this.clearImg() }
     },
     pad: function (num) {
       return num < 10 ? '0' + num.toString() : num.toString();
     },
+    clearImg: function () { this.$refs.img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; },
+    toTop: function () { this.$refs.type.$el.scrollIntoView() }
   },
   watch: {
     type: function () {
@@ -1250,6 +1275,7 @@ var operShow = new Vue({
       this.updateImg()
     },
     time: function () {
+      if (!this.time && this.time != '') this.time = '';
       this.updateImg()
     }
   },
