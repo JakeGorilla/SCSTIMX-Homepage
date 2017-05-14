@@ -34,8 +34,9 @@
 <body>
   <div id="javascriptDetector">Please enable <span style="color:red;font-size:20px;">"Javascript"</span> in your browser for viewing this site</div>
   <script>
-    let jsbarrier = document.getElementById('javascriptDetector');
+    jsbarrier = document.getElementById('javascriptDetector');
     jsbarrier.parentNode.removeChild(jsbarrier);
+    delete jsbarrier;
   </script>
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header mdl-layout__header--scroll">
