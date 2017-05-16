@@ -40,21 +40,6 @@ var singleFunctions = {
   }
 };
 
-if (!String.prototype.includes) {
-  String.prototype.includes = function (search, start) {
-    'use strict';
-    if (typeof start !== 'number') {
-      start = 0;
-    }
-
-    if (start + search.length > this.length) {
-      return false;
-    } else {
-      return this.indexOf(search, start) !== -1;
-    }
-  };
-}
-
 // for querySelectorAll
 // forEach, could be shipped as part of an Object Literal/Module
 // Usage: optionally change the scope as final parameter too, like ECMA5
@@ -224,6 +209,43 @@ window.onhashchange = function (e) {
   tabs[after].activeFlag = true;
   // loadingPanel.style.display = 'none';
 };
+
+if (!String.prototype.includes) {
+  String.prototype.includes = function (search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+
+function Check_IE_Version() {
+  var rv = -1; // Return value assumes failure.
+
+  if (navigator.appName == 'Microsoft Internet Explorer') {
+
+    var ua = navigator.userAgent,
+      re = new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})");
+
+    if (re.exec(ua) !== null) {
+      rv = parseFloat(RegExp.$1);
+    }
+  }
+  else if (navigator.appName == "Netscape") {
+    /// in IE 11 the navigator.appVersion says 'trident'
+    /// in Edge the navigator.appVersion does not say trident
+    if (navigator.appVersion.indexOf('Trident') === -1) rv = 12;
+    else rv = 11;
+  }
+
+  return rv;
+}
+var IE = Check_IE_Version();
 
 
 // Initialize Firebase
@@ -1064,11 +1086,12 @@ var operShow = new Vue({
     time: '',
     availDates: [],
     show: false,
-    timePlaceholder: 'Select Type first'
+    timePlaceholder: 'Select Type first',
+    message: 'Choose a <strong>product</strong> to show.<br><strong>Type</strong> to search <strong>date</strong> and <strong>time</strong>.'
   },
   created: function () {
     var res = new Date();
-    if (res.getHours() < 12) res.setDate(res.getDate() - 1);
+    if (res.getHours() < 1) res.setDate(res.getDate() - 1);
     var year = res.getFullYear().toString();
     var mon = this.pad(res.getMonth() + 1);
     var day = this.pad(res.getDate());
@@ -1082,8 +1105,15 @@ var operShow = new Vue({
         this.timePlaceholder = 'Select time';
         if (res.indexOf(this.time) == -1) this.time = '';
         if ((new Date(Date.parse(this.date))).toLocaleDateString() === (new Date()).toLocaleDateString()) {
-          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { return parseInt(str.split(':')[0]) <= (new Date()).getHours() && parseInt(str.split(':')[1]) <= (new Date()).getMinutes() });
-          if (res.indexOf(this.time) == -1) this.time = res[res.length - 1];
+          var thisHour = (new Date()).getHours();
+          var thisMinute = (new Date()).getMinutes();
+          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { var hour = parseInt(str.split(':')[0]); var minute = parseInt(str.split(':')[1]); return hour < thisHour || hour == thisHour && minute <= thisMinute });
+          if (res.indexOf(this.time) == -1) {
+            var target = res[res.length - 1];
+            var hour = parseInt(target.split(':')[0]);
+            var minute = parseInt(target.split(':')[1]);
+            this.time = thisHour > hour ? target : thisMinute - minute > 20 ? target : res[res.length - 2];
+          }
         }
         return res;
       } else {
@@ -1108,7 +1138,9 @@ var operShow = new Vue({
               node.list != 'OBSERVATION/CWB-R/Chiku' &&
               node.list != 'OBSERVATION/CWB-S/High/Light' &&
               node.list != 'OBSERVATION/CWB-S/High/Color' &&
-              node.list != 'MODE/CWB-W/New-W') {
+              node.list != 'MODE/CWB-W/New-W' &&
+              node.list != 'MODE/CWB-RF/I' &&
+              node.list != 'MODE/CWB-RF/II') {
               res.push({
                 label: path.join('/'),
                 url: node.list
@@ -1148,33 +1180,38 @@ var operShow = new Vue({
       };
       var res = [];
       for (cat in TTFRI_dataTree) {
-        res.push({
-          cat: TTFRI_dataTree[cat].description,
-          types: flatten(TTFRI_dataTree[cat])
-        });
+        // res.push({
+        //   cat: TTFRI_dataTree[cat].description,
+        //   types: flatten(TTFRI_dataTree[cat])
+        // });
+        res = res.concat(flatten(TTFRI_dataTree[cat]));
       }
       return res;
     }
   },
   methods: {
     compDate: function (searchQuery) {
-      // this.date = searchQuery;
+      // update list according to searchQuery;
       if (this.$refs.date.$refs.search.value != searchQuery) return;
+      searchQuery.trim();
       var thisHour = new Date();
       var thisYear = thisHour.getFullYear();
       var thisMon = thisHour.getMonth() + 1;
       var thisDay = thisHour.getDate();
       thisHour = thisHour.getHours();
       var searchDate = Date.parse(searchQuery);
-      var match = searchQuery.match(/(\d{4})(?:\/(\d{0,2}))?/);
-      if (searchDate && searchQuery.includes('/')) {
+      var match = searchQuery.match(/(\d{4})(?:\/?(\d{0,2}))?/);
+      if (searchDate && searchQuery.includes('/') && !searchQuery.match(/\/$/)) {
+        // console.log('A')
         searchDate = new Date(searchDate);
         var year = searchDate.getFullYear();
         if (year > 2013 && year <= thisYear) {
+          // console.log('A1')
           var mon = searchDate.getMonth() + 1;
           var lastDay = new Date(year, mon, 0);
           lastDay = lastDay.getDate();
           if (year < thisYear || mon < thisMon) {
+            // console.log('A11')
             this.availDates = new Array(lastDay + 2);
             this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
             for (var i = 1; i < this.availDates.length - 1; i++) {
@@ -1182,6 +1219,7 @@ var operShow = new Vue({
             }
             this.availDates[this.availDates.length - 1] = year.toString() + '/' + this.pad(mon + 1) + '/';
           } else if (mon == thisMon) {
+            // console.log('A12')
             lastDay = thisDay;
             this.availDates = new Array(lastDay + 1);
             this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
@@ -1191,12 +1229,14 @@ var operShow = new Vue({
           }
         }
       } else if (match) {
+        // console.log('B')
         var year = parseInt(match[1]);
         var mon;
         var ymGood = false;
         var ymEdge = false;
         if (year > 2013 && year <= thisYear) {
           if (match.length == 3) {
+            // console.log('B1')
             mon = parseInt(match[2]);
             if (mon > 0 && mon < 13) {
               ymGood = (year === thisYear ? mon <= thisMon : true);
@@ -1223,31 +1263,62 @@ var operShow = new Vue({
           this.availDates[i] = (2014 + i).toString() + '/';
         }
       }
-    },
-    syncQuery: function (val) {
-      val = val ? val : this.date;
-      this.$refs.date.$refs.search.focus();
-      var a = this.$refs.date.$refs.search;
+      // highlight date entry according to searchQuery
       this.$nextTick(function () {
-        var event = new Event('input', {
-          'bubbles': true,
-          'cancelable': true
-        });
-        a.value = val;
-        a.dispatchEvent(event);
+        for (var i = 0; i < this.availDates.length; i++) {
+          var optDate = this.availDates[i];
+          var simpleOpt = optDate.replace(/\D/g, '');
+          var simpleQuery = searchQuery.replace(/\D/g, '');
+          if (optDate.match(searchQuery) || simpleOpt.match(simpleQuery)) {
+            this.$refs.date.pointer = i;
+            this.$refs.date.$refs.list.scrollTop = parseInt(this.$refs.date.pointerPosition - (this.$refs.date.visibleElements - 1) * this.$refs.date.optionHeight / 2);
+            break;
+          }
+        }
       });
     },
-    updateQuery: function (selectedOption) {
-      this.syncQuery(selectedOption);
-      if (selectedOption.match(/\d{4}\/\d\d\/\d\d/)) {
-        this.$refs.date.deactivate();
+    syncQuery: function (val, close) {
+      val = val ? val : this.date;
+      close = close ? close : false;
+
+      this.$refs.date.$refs.search.focus();
+      var a = this.$refs.date.$refs.search;
+      if (IE < 0 || IE > 11) {
+        this.$nextTick(function () {
+          var event = new Event('input', {
+            'bubbles': true,
+            'cancelable': true
+          });
+          a.value = val;
+          a.dispatchEvent(event);
+        });
       } else {
-        this.show = false;
+        this.$refs.date.updateSearch(val);
       }
+      if (close) this.$refs.date.deactivate();
+    },
+    updateQuery: function (selectedOption) {
+      if (selectedOption.match(/\d{4}\/\d\d\/\d\d/)) this.syncQuery(selectedOption, true);
+      else this.syncQuery(selectedOption);
+    },
+    listPosition: function () {
+      // highlight time entry according to this.time
+      this.$nextTick(function () {
+        for (var i = 0; i < this.availTimes.length; i++) {
+          var optTime = this.availTimes[i];
+          var simpleOpt = optTime.replace(/\D/g, '');
+          var simpleQuery = this.time.replace(/\D/g, '');
+          if (optTime.match(this.time) || simpleOpt.match(simpleQuery)) {
+            this.$refs.time.pointer = i;
+            this.$refs.time.$refs.list.scrollTop = parseInt(this.$refs.time.pointerPosition - (this.$refs.time.visibleElements - 1) * this.$refs.time.optionHeight / 2);
+            break;
+          }
+        }
+      });
     },
     updateImg: function () {
       if (this.type && this.date && this.time) {
-        if (Date.parse(this.date) && Date.parse(this.date + ' ' + this.time)) {
+        if (Date.parse(this.date) && !this.date.match(/\/$/) && Date.parse(this.date + ' ' + this.time)) {
           var date = new Date(Date.parse(this.date + ' ' + this.time));
           var year = date.getFullYear().toString();
           var mon = this.pad(date.getMonth() + 1);
@@ -1258,8 +1329,10 @@ var operShow = new Vue({
           this.$refs.img.src = url;
           var me = this;
           me.show = true;
-        } else { this.show = false; this.clearImg() }
-      } else { this.show = false; this.clearImg() }
+        }
+        //  else { this.show = false; this.clearImg() }
+      }
+      //  else { this.show = false; this.clearImg() }
     },
     pad: function (num) {
       return num < 10 ? '0' + num.toString() : num.toString();
