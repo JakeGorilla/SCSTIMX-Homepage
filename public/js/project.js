@@ -1112,7 +1112,7 @@ var operShow = new Vue({
             var target = res[res.length - 1];
             var hour = parseInt(target.split(':')[0]);
             var minute = parseInt(target.split(':')[1]);
-            this.time = thisHour > hour ? target : thisMinute - minute > 20 ? target : res[res.length - 2];
+            this.time = thisHour > hour ? target : thisMinute - minute > 24 ? target : res[res.length - 2];
           }
         }
         return res;
@@ -1293,7 +1293,11 @@ var operShow = new Vue({
           a.dispatchEvent(event);
         });
       } else {
-        this.$refs.date.updateSearch(val);
+        // User using IE!!!!!!! FXXK
+        // this.$refs.date.updateSearch(val);
+        this.$refs.date.$refs.search.value = val;
+        console.log([this.$refs.date.$refs.search.value,val]);
+        this.compDate(val);
       }
       if (close) this.$refs.date.deactivate();
     },
@@ -1363,4 +1367,6 @@ var operShow = new Vue({
 });
 
 
-document.body.scrollIntoView();
+setTimeout(function () {
+  document.body.scrollIntoView();
+}, 5);

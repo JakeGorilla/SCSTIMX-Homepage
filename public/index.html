@@ -78,12 +78,12 @@
       <!--<div id="loading-panel"> </div>-->
       <section v-cloak id="home" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
-          <!-- Your content goes here -->
+          <!-- HOME content -->
           <div class="intro">SCSTIMX<br>intro</div>
           <div id="newsPosts" class="news-disp mdl-shadow--2dp">
             <h2 class="title">News</h2>
             <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
-            <div class="post-container">
+            <div class="post-container" v-show="!showMessage">
               <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
             </div>
             <div v-show="auth.postPrivilege" class="goPost">
@@ -99,7 +99,7 @@
       </section>-->
       <section v-cloak id="operational" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
-          <!-- Your content goes here -->
+          <!-- OPERATIONAL content -->
           <div id="operShow">
             <!--<div class="prod-type"><prod-type v-model="type" placeholder="Select product type" :options="products" :close-on-select="true" group-label="cat" group-value="types"  track-by="label" label="label"></prod-type></div>-->
             <div class="opt-container">
