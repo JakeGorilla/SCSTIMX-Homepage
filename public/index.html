@@ -119,7 +119,7 @@
             </div>
             <div class="img-container">
               <div v-cloak v-show="!show" v-html="message"></div>
-              <img ref="img" v-show="show" @load="toTop" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+              <img ref="img" v-show="show" @load="toTop" @error="imgBroken" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
             </div>
           </div>
           <!--http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg-->

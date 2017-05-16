@@ -1338,7 +1338,11 @@ var operShow = new Vue({
       return num < 10 ? '0' + num.toString() : num.toString();
     },
     clearImg: function () { this.$refs.img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; },
-    toTop: function () { this.$refs.type.$el.scrollIntoView() }
+    toTop: function () { this.$refs.type.$el.scrollIntoView() },
+    imgBroken: function () {
+      this.message = '<strong>Data unavailable</strong>.<br>Try again with another <strong>date</strong> or <strong>time</strong>.';
+      this.show = false;
+    }
   },
   watch: {
     type: function () {
