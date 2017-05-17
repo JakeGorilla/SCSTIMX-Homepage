@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
   <link rel="stylesheet" href="css/post-news.css">
-  <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/post-card.css">
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-database.js"></script>
@@ -23,13 +23,13 @@
 
 </head>
 
-<body class="news-disp">
-  <header class="news-disp">
+<body class="post-card_parent">
+  <header class="post-card_parent">
     <div class="header-vspacer"></div>
     <span class="mdl-layout-title"><a id="logo" href="/">SCSTIMX</a></span>
     <span class="layout-subtitle">News publication</span>
   </header>
-  <main class="news-disp">
+  <main class="post-card_parent">
     <label id="lbTitle" for="title">Title</label>
     <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
     <textarea name="at" id="a" cols="30" rows="15"></textarea>

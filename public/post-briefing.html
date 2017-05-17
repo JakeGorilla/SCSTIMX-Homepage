@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Post Working Report</title>
+  <title>Post Briefing</title>
   <link rel="shortcut icon" href="favicon.png" type="image/png" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-orange.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
   <link rel="stylesheet" href="css/post-news.css">
-  <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/post-card.css">
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-database.js"></script>
@@ -19,17 +19,17 @@
   <script src="js/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-  <script defer src="js/post-news.js"></script>
+  <script defer src="js/post-briefing.js"></script>
 
 </head>
 
-<body class="news-disp">
-  <header class="news-disp">
+<body class="post-card_parent">
+  <header class="post-card_parent">
     <div class="header-vspacer"></div>
     <span class="mdl-layout-title"><a id="logo" href="/">SCSTIMX</a></span>
-    <span class="layout-subtitle">Working Report</span>
+    <span class="layout-subtitle">Briefing publication</span>
   </header>
-  <main class="news-disp">
+  <main class="post-card_parent">
     <label id="lbTitle" for="title">Title</label>
     <input id="title" type="text" placeholder="Input Title HERE (Not in editor)" size="60">
     <textarea name="at" id="a" cols="30" rows="15"></textarea>
@@ -37,7 +37,7 @@
     <button onclick="post()" style="display:inline-block;">Post</button>
     <label id="who" style="padding-left: 8px;"></label>
     <div id="p"></div>
-    <div id="workingReports" class="sc">
+    <div id="briefingPosts" class="sc">
       <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
     </div>
   </main>

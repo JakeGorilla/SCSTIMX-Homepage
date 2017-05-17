@@ -17,7 +17,7 @@ var simplemde = new SimpleMDE({
   element: document.getElementById('a'),
   autosave: {
     enabled: true,
-    uniqueId: "testingpage",
+    uniqueId: "briefingPosts",
     delay: 1000,
   },
   forceSync: true,
@@ -62,15 +62,15 @@ firebase.auth().onAuthStateChanged(function (user) {
 });
 
 // SHOW
-var workingReports = new Vue({
-  el: '#workingReports',
+var briefingPosts = new Vue({
+  el: '#briefingPosts',
   data: {
     posts: [], // {order:bigger front,id,title,content,uname,ufrom,}
     postKeys: [],
     rawPosts: [],
     mostShow: 6,
-    refToPosts: fbaseData.ref('/news'),
-    refToContents: fbaseData.ref('/newsContent')
+    refToPosts: fbaseData.ref('/briefing'),
+    refToContents: fbaseData.ref('/briefingContent')
   },
   computed: {
     showMessage: function () {
@@ -134,7 +134,6 @@ var workingReports = new Vue({
       post.title = rawPost.title;
       post.authorId = rawPost.authorId;
       var refToContents = this.refToContents;
-      var objOfThis = this;
       fbaseData.ref('/users/' + post.authorId).once('value').then(function (dataSnapshot) {
         var authorInfo = dataSnapshot.val();
         post.authorName = authorInfo.name;
@@ -143,7 +142,7 @@ var workingReports = new Vue({
         } else post.authorAffiliation = '';
         refToContents.child(post.id).once('value').then(function (dataSnapshot) {
           post.content = simplemde.options.previewRender(JSON.parse(dataSnapshot.val()));
-          objOfThis.insert(post);
+          briefingPosts.insert(post);
         });
       });
     }
@@ -284,11 +283,11 @@ function post() {
     return;
   }
   var postContent = JSON.stringify(simplemde.value());
-  var refToPosts = workingReports.refToPosts;
-  var refToContents = workingReports.refToContents;
+  var refToPosts = briefingPosts.refToPosts;
+  var refToContents = briefingPosts.refToContents;
   var newPostId = refToPosts.push().key;
   var updates = {};
-  fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + newPostId).set({ type: 'workingReports', public: true }).then(function () {
+  fbaseData.ref('/users/' + fbaseUser.uid + '/posts/' + newPostId).set({ type: 'briefing', public: true }).then(function () {
     refToPosts.child(newPostId).set(postData);
     refToContents.child(newPostId).set(postContent);
   }).then(function () {

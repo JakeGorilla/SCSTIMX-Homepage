@@ -17,7 +17,7 @@ var simplemde = new SimpleMDE({
   element: document.getElementById('a'),
   autosave: {
     enabled: true,
-    uniqueId: "testingpage",
+    uniqueId: "newsPosts",
     delay: 1000,
   },
   forceSync: true,

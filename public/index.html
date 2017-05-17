@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <link rel="stylesheet" href="css/project.css">
-  <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/post-card.css">
 
   <script src="https://unpkg.com/vue"></script>
   <script defer src="https://unpkg.com/vue-multiselect@2.0.0-beta.15"></script>
@@ -81,7 +81,7 @@
         <div class="wait-tabs page-content">
           <!-- HOME content -->
           <div class="intro">SCSTIMX<br>intro</div>
-          <div id="newsPosts" class="news-disp mdl-shadow--2dp">
+          <div id="newsPosts" class="post-card_parent mdl-shadow--2dp">
             <h2 class="title">News</h2>
             <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
             <div class="post-container" v-show="!showMessage">
@@ -100,11 +100,18 @@
       </section>-->
       <section v-cloak id="briefing" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
-          <div id="briefingContainer">
+          <div id="briefingContainer" class="post-card_parent">
             <h2 class="title">Briefing reports</h2>
-            <div class="mdl-list">
-              <file-list v-for="file in files" :file="file" :key="file.id"></file-list>
+            <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
+            <div class="post-container" v-show="!showMessage">
+              <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
             </div>
+            <div v-show="auth.postPrivilege" class="goPost">
+              <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
+            </div>
+            <!--<div class="mdl-list">
+              <file-list v-for="file in files" :file="file" :key="file.id"></file-list>
+            </div>-->
           </div>
         </div>
       </section>
@@ -129,7 +136,8 @@
               </div>
             </div>
             <div class="img-container">
-              <div v-cloak v-show="!show" v-html="message"></div>
+              <div v-show="loading" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+              <div v-cloak v-show="!show" v-html="message" class="message"></div>
               <img ref="img" v-show="show" @load="toTop" @error="imgBroken" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
             </div>
           </div>

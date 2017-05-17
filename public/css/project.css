@@ -27,11 +27,15 @@ body {
 }
 
 main {
-  background: radial-gradient(circle farthest-corner at 16% 40%, #1de9ff, #304fff);
+  /*background: radial-gradient(circle farthest-corner at 16% 40%, #1de9ff, #304fff);*/
+  /*background: radial-gradient(circle farthest-corner at 16% 40%, #00b0ff, #1de9ff, #304fff);*/
+  /*background-color: #fff8e1;*/
+  background-color: white;
 }
 
 section.mdl-layout__tab-panel {
-  background-color: rgba(180, 235, 255, 0.6);
+  /*background-color: rgba(255, 235, 235, 0.6);*/
+  background-color: rgba(249, 251, 231, 0.6);
 }
 
 /*
@@ -42,7 +46,7 @@ section.mdl-layout__tab-panel {
 }*/
 
 .red {
-  color: rgba(255, 30, 30, 0.9);
+  color: rgba(235, 0, 0, 0.7);
 }
 
 .wait-tabs {
@@ -296,6 +300,10 @@ section.mdl-layout__tab-panel {
   right: 0;
 }
 
+.goPost * {
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .goPost > a {
   font-size: 24px;
   text-decoration: none;
@@ -320,11 +328,8 @@ section.mdl-layout__tab-panel {
 }
 
 .post-container {
+  margin: 4px;
   min-height: 360px;
-}
-
-#newsPosts .goPost * {
-  color: rgba(0, 0, 0, 0.5);
 }
 
 #newsPosts {
@@ -339,7 +344,7 @@ section.mdl-layout__tab-panel {
   margin: 0;
 }
 
-#newsPosts .message {
+.post-card_parent .message {
   width: 100%;
   min-height: 360px;
   line-height: 300px;
@@ -547,7 +552,11 @@ footer {
   text-align: center;
 }
 
-#operShow .img-container div {
+#operShow .mdl-progress{
+  width: 100%;
+}
+
+#operShow .img-container .message {
   font-size: 30px;
   line-height: 1.4;
   color: rgba(0, 0, 0, 0.66);
@@ -562,14 +571,14 @@ footer {
 }
 
 #briefingContainer {
-  padding: 16px;
-  background-color: rgba(255, 240, 222, 0.5);
+  padding: 12px;
+  /*background-color: rgba(255, 240, 222, 0.5);*/
+  background-color: rgba(255, 248, 233, 0.7);
   min-height: calc(100vh - 112px - 138px);
 }
 
-#briefingContainer .mdl-list {
+/*#briefingContainer .mdl-list {
   margin-top: 16px;
-  /*width: 60%;*/
 }
 
 #briefingContainer .mdl-list__item {
@@ -618,4 +627,4 @@ footer {
 
 #briefingContainer .mdl-list__item-secondary-action .material-icons {
   font-size: 30px;
-}
+}*/
