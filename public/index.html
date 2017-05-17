@@ -50,6 +50,7 @@
       <nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
         <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">HOME</a>
         <!--<a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>-->
+        <a id="t-briefing" href="#briefing" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Weather<br>Briefing</a>
         <a id="t-operational" href="#operational" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Operational<br>Products</a>
         <!--<a id="t-modelfcst" href="#modelfcst" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Model/Forecast<br>Products</a>-->
         <!--<a id="t-research" href="#research" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Research<br>Products</a>-->
@@ -97,6 +98,16 @@
           report
         </div>
       </section>-->
+      <section v-cloak id="briefing" class="mdl-layout__tab-panel">
+        <div class="wait-tabs page-content">
+          <div id="briefingContainer">
+            <h2 class="title">Briefing reports</h2>
+            <div class="mdl-list">
+              <file-list v-for="file in files" :file="file" :key="file.id"></file-list>
+            </div>
+          </div>
+        </div>
+      </section>
       <section v-cloak id="operational" class="mdl-layout__tab-panel">
         <div class="wait-tabs page-content">
           <!-- OPERATIONAL content -->

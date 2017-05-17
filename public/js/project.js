@@ -62,13 +62,13 @@ forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, 
         // show content panel when activated first time
         if (this.activeFlag) {
           this.el.classList.add('is-active');
-          if (this.el.querySelector('.wait-tabs')) {
-            this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
-            this.$nextTick(function () {
+          this.$nextTick(function () {
+            if (this.el.querySelector('.wait-tabs')) {
+              this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
               document.body.scrollIntoView();
-            });
-            // console.log('removed');
-          }
+              // console.log('removed');
+            }
+          });
         } else {
           this.el.classList.remove('is-active');
           // this.el.getElementsByClassName('page-content')[0].scrollIntoView();
@@ -927,6 +927,34 @@ var newsPosts = new Vue({
   }
 });
 
+var briefingContainer = new Vue({
+  el: '#briefingContainer',
+  data: {
+    // files: [
+    //   { id: 'A long long long long long long long long long long long long name, not yet over rrrrrr rrrrrr rrrrrrrrrrr rrrrrrrrrrrrrrrr', time: 'yesterday' },
+    //   { id: 'bb', time: 'nope' }
+    // ]
+  },
+  components: {
+    // 'file-list': {
+    //   props: ['file'],
+    //   template: '\
+    //     <div class="mdl-list__item mdl-list__item--two-line">\
+    //       <span class="mdl-list__item-primary-content">\
+    //         <i class="material-icons mdl-list__item-icon">picture_as_pdf</i>\
+    //         <span class="mdl-list__item-title">'+ '{{ file.id }}' + '</span>\
+    //         <span class="mdl-list__item-sub-title">'+ '{{ file.time }}' + '</span>\
+    //       </span>\
+    //       <span class="mdl-list__item-secondary-content">\
+    //         <span class="mdl-list__item-secondary-info">Download</span>\
+    //         <a class="mdl-list__item-secondary-action" href="' + '"><i class="material-icons">file_download</i></a>\
+    //       </span>\
+    //     </div>'
+    // }
+  }
+});
+
+
 var TTFRI_dataTree = [{
   "name": "OBSERVATION",
   "description": "觀測",
@@ -1087,7 +1115,7 @@ var operShow = new Vue({
     availDates: [],
     show: false,
     timePlaceholder: 'Select Type first',
-    message: 'Choose a <strong>product</strong> to show.<br><strong>Type</strong> to search <strong>date</strong> and <strong>time</strong>.'
+    message: '<strong class="red">Type</strong> to search <strong>date</strong> and <strong>time</strong>.<br>Choose a <strong>product</strong> to show.'
   },
   created: function () {
     var res = new Date();
@@ -1296,7 +1324,7 @@ var operShow = new Vue({
         // User using IE!!!!!!! FXXK
         // this.$refs.date.updateSearch(val);
         this.$refs.date.$refs.search.value = val;
-        console.log([this.$refs.date.$refs.search.value,val]);
+        console.log([this.$refs.date.$refs.search.value, val]);
         this.compDate(val);
       }
       if (close) this.$refs.date.deactivate();
@@ -1344,6 +1372,7 @@ var operShow = new Vue({
     clearImg: function () { this.$refs.img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; },
     toTop: function () { this.$refs.type.$el.scrollIntoView() },
     imgBroken: function () {
+      this.clearImg();
       this.message = '<strong>Data unavailable</strong>.<br>Try again with another <strong>date</strong> or <strong>time</strong>.';
       this.show = false;
     }
