@@ -10,6 +10,7 @@ var databaseUserData = { // For sync with database. Need to initalize, cannot be
   posts: ''
 };
 // DOM, Vue, functions
+var imgPlaceholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 var panels = {}; // contains names and Vue instances for tab contents
 var tabHashes = []; // names of available tabs (their #hashvalue)
 var stateManager = {}; // Vue instances state managers
@@ -51,27 +52,28 @@ var forEach = function (array, callback, scope) {
 
 //  init Vue instance for panels
 forEach(document.querySelectorAll('.mdl-layout__tab-panel'), function (element, index) {
-  tabHashes.push(element.id);
-  panels[element.id] = new Vue({
+  var elementHash = '!' + element.id;
+  tabHashes.push(elementHash);
+  panels[elementHash] = new Vue({
     data: {
-      el: element,
+      element: element,
       activeFlag: false
     },
     watch: {
       activeFlag: function () {
         // show content panel when activated first time
         if (this.activeFlag) {
-          this.el.classList.add('is-active');
+          this.element.classList.add('is-active');
           this.$nextTick(function () {
-            if (this.el.querySelector('.wait-tabs')) {
-              this.el.querySelector('.wait-tabs').classList.remove('wait-tabs');
+            if (this.element.querySelector('.wait-tabs')) {
+              this.element.querySelector('.wait-tabs').classList.remove('wait-tabs');
               document.body.scrollIntoView();
               // console.log('removed');
             }
           });
         } else {
-          this.el.classList.remove('is-active');
-          // this.el.getElementsByClassName('page-content')[0].scrollIntoView();
+          this.element.classList.remove('is-active');
+          // this.element.getElementsByClassName('page-content')[0].scrollIntoView();
         }
       }
     }
@@ -93,7 +95,7 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
       return false;
     }
   }
-  var hashtag = element.getAttribute('href').slice(1);
+  var hashtag = '!' + element.getAttribute('href').slice(1);
   tabs[hashtag] = new Vue({
     el: element,
     data: {
@@ -109,7 +111,7 @@ forEach(document.querySelectorAll('.mdl-layout__tab'), function (element, index)
   });
 });
 
-// if there is no hashtag or illegal, jump to first panel
+// if there is no hashtag or illegal, jump to first panel, remove Loading-section
 if (location.hash == '' || tabHashes.indexOf(location.hash.slice(1)) == -1) {
   var to = location.toString().split('#')[0] + '#' + tabHashes[0];
   location.replace(to);
@@ -209,6 +211,14 @@ window.onhashchange = function (e) {
   tabs[after].activeFlag = true;
   // loadingPanel.style.display = 'none';
 };
+
+var mdlLayout = document.querySelector('div.mdl-layout.mdl-js-layout');
+var loading = setInterval(function () {
+  if (mdlLayout.classList.contains('is-upgraded')) {
+    clearInterval(loading);
+    document.querySelector('main.mdl-layout__content').removeChild(document.getElementById('loading-panel'));
+  }
+}, 10);
 
 if (!String.prototype.includes) {
   String.prototype.includes = function (search, start) {
@@ -723,6 +733,20 @@ var simplemde = new SimpleMDE({
 Vue.component('post-card', {
   props: ['post'],
   data: function () {
+    // this.post.content = this.post.content.replace(/(<img[^>]+)src=((['"]).+?\3)/g, '$1src="' + imgPlaceholder + '" data-src=$2');
+    // // var src = this.post.content.match(/<img[^>]+src=(['"]).+?\1/g);
+    // // var src = this.post.content.match(/(<img[^>]src=['"])([^'"]*)['"]/g);
+    // // var src = this.post.content;
+    // // src.replace(/(<img[^>])(src=(['"])((?!\3)*)\3)/g,'$1');
+    // // console.log(src);
+    // // if (src) {
+    // //   src = src.map(function (tag) {
+    // //     var res = tag.replace(/^[^'"]+['"]/,'').replace(/['"]$/,'');
+    // //     this.post.content.replace(/<img/)
+    // //     return res;
+    // //   });
+    // // }
+    // // console.log(this.post.content);
     return {
       mdlBtnColor: true,
       mdlBtnAccent: false,
@@ -732,7 +756,7 @@ Vue.component('post-card', {
   },
   methods: {
     scrollto: function () {
-      this.$refs.card.scrollIntoView();
+      // this.$refs.card.scrollIntoView();
     },
     expand: function () {
       var pid = this.post.id;
@@ -761,6 +785,14 @@ Vue.component('post-card', {
         this.showDelete = false;
         document.body.style.overflow = 'auto';
       }
+      // var img = this.$refs.content.getElementsByTagName('img');
+      // if (img) {
+      //   forEach(img, function (img) {
+      //     var src = img.src;
+      //     img.src = img.getAttribute('data-src');
+      //     img.setAttribute('data-src', src);
+      //   });
+      // }
     },
     deletePost: function () {
       if (!fbaseUser) {
@@ -794,7 +826,7 @@ Vue.component('post-card', {
         <h3 class="mdl-card__subtitle-text">Time: ' + '{{ (new Date(post.time)).toLocaleDateString() }}' + '</h3>\
         <h3 v-show="' + 'post.authorAffiliation' + '" class="mdl-card__subtitle-text">From: ' + '{{post.authorAffiliation}}' + '</h3>\
       </div>\
-      <div class="mdl-card__supporting-text mdl-card--expand" v-html="' + 'post.content' + '"></div>\
+      <div ref="content" class="mdl-card__supporting-text mdl-card--expand" v-html="' + 'post.content' + '"></div>\
       <div class="mdl-card__actions mdl-card--border">\
         <a @click="expand" :class="{\'mdl-button--colored\': mdlBtnColor, \'mdl-button--accent\': mdlBtnAccent}" class="mdl-button mdl-button--raised mdl-js-button mdl-js-ripple-effect">\
           {{ toggleText }}\
@@ -929,16 +961,35 @@ var newsPosts = new Vue({
   }
 });
 
+Vue.component(
+  'file-list', {
+    props: ['file'],
+    template: '\
+      <div class="mdl-list__item mdl-list__item--two-line">\
+        <span class="mdl-list__item-primary-content">\
+          <i class="material-icons mdl-list__item-icon">picture_as_pdf</i>\
+          <span class="mdl-list__item-title">'+ '{{ file.title }}' + '</span>\
+          <span class="mdl-list__item-sub-title">'+ '{{ (new Date(file.time)).toLocaleDateString() }}' + '</span>\
+        </span>\
+        <span class="mdl-list__item-secondary-content">\
+          <span class="mdl-list__item-secondary-info">Download</span>\
+          <a :href="' + 'file.link' + '" target="_blank" class="mdl-list__item-secondary-action"><i class="material-icons">file_download</i></a>\
+        </span>\
+      </div>'
+  });
+
 var briefingContainer = new Vue({
   el: '#briefingContainer',
   data: {
+    files: [],
     posts: [], // {order:bigger front,id,title,content,uname,ufrom,}
     postKeys: [],
     rawPosts: [],
     mostShow: 6,
     auth: stateManager.auth.managedStates,
     refToPosts: fbaseData.ref('/briefing'),
-    refToContents: fbaseData.ref('/briefingContent')
+    refToContents: fbaseData.ref('/briefingContent'),
+    refToFiles: fbaseData.ref('/briefingFiles')
   },
   computed: {
     showMessage: function () {
@@ -951,6 +1002,20 @@ var briefingContainer = new Vue({
     }
   },
   beforeMount: function () {
+    var me = this;
+    this.refToFiles.once('value', function (dataSnapshot) {
+      me.files = [];
+      dataSnapshot.forEach(function (fileShot) {
+        var data = fileShot.val();
+        me.files.unshift({
+          id: fileShot.key,
+          authorId: data.authorId,
+          title: data.title,
+          link: data.link,
+          time: data.time
+        });
+      });
+    });
     this.refToPosts.limitToLast(this.mostShow).once('value', function (dataSnapshot) {
       var tmp = [];
       dataSnapshot.forEach(function (rawPost) {
@@ -1019,6 +1084,17 @@ var briefingContainer = new Vue({
     }
   },
   methods: {
+    addFile: function () {
+      var title = prompt('Title of file?', '');
+      var link = prompt('Link of file?', '');
+      var newFileId = this.refToFiles.push().key;
+      this.refToFiles.child(newFileId).set({
+        time: firebase.database.ServerValue.TIMESTAMP,
+        authorId: fbaseUser.uid,
+        title: title,
+        link: link
+      }).catch(alert('FAILED: add file'));
+    },
     trueLocationOf: function (element, sortedBy, compareBy, start, endAt) {
       compareBy = compareBy || sortedBy;
       start = start || 0;
@@ -1270,7 +1346,7 @@ var operShow = new Vue({
             var minute = parseInt(target.split(':')[1]);
             this.time = thisHour > hour ? target : thisMinute - minute > 24 ? target : res[res.length - 2];
           }
-        } else this.time = res[res.length - 1];
+        } else if (this.time === '' || !this.time) this.time = res[res.length - 1];
         return res;
       } else {
         this.timePlaceholder = 'Select Type first';
@@ -1497,7 +1573,7 @@ var operShow = new Vue({
     pad: function (num) {
       return num < 10 ? '0' + num.toString() : num.toString();
     },
-    clearImg: function () { this.$refs.img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; },
+    clearImg: function () { this.$refs.img.src = imgPlaceholder; },
     toTop: function () {
       this.loading = false;
       this.$refs.type.$el.scrollIntoView();

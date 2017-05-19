@@ -22,8 +22,10 @@ html {
 body {
   /*height: 100vh;*/
   font-size: 1rem;
-  background-color: #000011;
+  background-color: #110011;
   /*background-image: url("../../Nock-ten_2016-12-25_0210Z.jpg");*/
+  /*background: radial-gradient(circle 100vh at 16% 40%, #1A237E, #304fff);
+  background-attachment: fixed;*/
 }
 
 main {
@@ -32,18 +34,6 @@ main {
   /*background-color: #fff8e1;*/
   background-color: white;
 }
-
-section.mdl-layout__tab-panel {
-  /*background-color: rgba(255, 235, 235, 0.6);*/
-  background-color: rgba(249, 251, 231, 0.6);
-}
-
-/*
-#loading-panel {
-  width: 100%;
-  height: 1000px;
-  min-height: 100%;
-}*/
 
 .red {
   color: rgba(235, 0, 0, 0.7);
@@ -183,7 +173,6 @@ section.mdl-layout__tab-panel {
 @media (min-width: 1024px) {
   .mdl-layout {
     max-width: 1024px;
-    /*min-width: 600px;*/
   }
 
   .mdl-layout__drawer-button {
@@ -213,7 +202,7 @@ section.mdl-layout__tab-panel {
 
 .mdl-layout__header {
   background-color: #222233;
-  background-image: url("../img/header-sea.jpg");
+  background-image: url("../img/ht2.jpg");
 }
 
 .mdl-layout__header-row {
@@ -270,13 +259,35 @@ section.mdl-layout__tab-panel {
   background-color: rgba(255, 255, 255, 0.24);
 }
 
-.mdl-layout__tab-panel {
+#loading-panel {
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+#loading-panel::before {
+  content: "";
+  height: calc(100vh - 112px - 138px);
+  vertical-align: middle;
+  display: inline-block;
+}
+
+section {
+  /*background-color: #FFF3E0;*/
+  /*background-color: rgba(255, 240, 222, 0.6);*/
+  /*background: radial-gradient(circle farthest-corner at 16% 40%, #FFF8E1, #FFF3E0);*/
+  /*background: radial-gradient(circle farthest-corner at 16% 40%, #ffe0b2, #ffe57f);*/
+  /*background: radial-gradient(circle farthest-corner at 16% 40%, #fff3e0, #FFECB3);*/
+  background: radial-gradient(circle farthest-corner at 36% 0, #fff3e0, #FFECB3);
+  /*background-color: #fff3e0;*/
   min-height: calc(100vh - 112px - 138px);
 }
 
-/*.mdl-layout__content {
-  background-color: rgba(255, 255, 255, 0.97);
-}*/
+.page-content {
+  /*background: radial-gradient(circle farthest-side at 84% 60%, rgba(255, 253, 231, 0.66), rgba(255, 224, 178, 0.66));*/
+  background: radial-gradient(circle farthest-side at 84% 60%, transparent, rgba(159, 168, 218, 0.36));
+}
 
 .mdl-layout__container {
   height: 100%;
@@ -292,7 +303,7 @@ section.mdl-layout__tab-panel {
   color: rgba(0, 0, 0, 0.75);
 }
 
-.goPost {
+.editorBtn {
   position: absolute;
   text-align: right;
   height: 48px;
@@ -300,16 +311,17 @@ section.mdl-layout__tab-panel {
   right: 0;
 }
 
-.goPost * {
+.editorBtn * {
   color: rgba(0, 0, 0, 0.5);
 }
 
-.goPost > a {
+.editorBtn > a {
   font-size: 24px;
   text-decoration: none;
+  cursor: pointer;
 }
 
-.goPost .material-icons {
+.editorBtn .material-icons {
   text-align: center;
   line-height: 48px;
   font-size: 36px;
@@ -328,7 +340,8 @@ section.mdl-layout__tab-panel {
 }
 
 .post-container {
-  margin: 4px;
+  position: relative;
+  /*margin: 4px;*/
   min-height: 360px;
 }
 
@@ -468,7 +481,7 @@ footer {
   text-align: center;
 }
 
-.goPost::before,
+.editorBtn::before,
 #dim::before,
 #loginLoading::before,
 #signupLoading::before {
@@ -552,7 +565,7 @@ footer {
   text-align: center;
 }
 
-#operShow .mdl-progress{
+#operShow .mdl-progress {
   width: 100%;
 }
 
@@ -571,14 +584,23 @@ footer {
 }
 
 #briefingContainer {
-  padding: 12px;
+  /*padding: 12px;*/
   /*background-color: rgba(255, 240, 222, 0.5);*/
   background-color: rgba(255, 248, 233, 0.7);
   min-height: calc(100vh - 112px - 138px);
 }
 
-/*#briefingContainer .mdl-list {
-  margin-top: 16px;
+#briefingContainer > div {
+  padding: 12px;
+}
+
+#briefingContainer .post-container {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+#briefingContainer .mdl-list {
+  position: relative;
+  margin-bottom: 16px;
 }
 
 #briefingContainer .mdl-list__item {
@@ -599,7 +621,7 @@ footer {
   height: 30px;
 }
 
-#briefingContainer .mdl-list__item--two-line .mdl-list__item-primary-content{
+#briefingContainer .mdl-list__item--two-line .mdl-list__item-primary-content {
   height: auto;
 }
 
@@ -609,6 +631,7 @@ footer {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 #briefingContainer .mdl-list__item-primary-content .mdl-list__item-title {
   font-size: 18px;
   line-height: 20px;
@@ -627,4 +650,4 @@ footer {
 
 #briefingContainer .mdl-list__item-secondary-action .material-icons {
   font-size: 30px;
-}*/
+}

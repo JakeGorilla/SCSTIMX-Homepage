@@ -22,6 +22,10 @@
   margin-top: 20px;
 }
 
+.post-card_parent .title {
+  margin-bottom: 6px;
+}
+
 .post-card_parent .article-card {
   background-color: #f1f8e9;
   width: 300px;

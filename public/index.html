@@ -18,7 +18,7 @@
 
   <script src="https://unpkg.com/vue"></script>
   <script defer src="https://unpkg.com/vue-multiselect@2.0.0-beta.15"></script>
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script defer src="https://code.getmdl.io/1.3.0/material.js"></script>
   <script defer src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
 
@@ -48,7 +48,7 @@
       </div>
       <!-- Tabs -->
       <nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
-        <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">HOME</a>
+        <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click.prevent="setHash">HOME</a>
         <!--<a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>-->
         <a id="t-briefing" href="#briefing" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Weather<br>Briefing</a>
         <a id="t-operational" href="#operational" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Operational<br>Products</a>
@@ -74,10 +74,11 @@
       <a id="userInfo" href="#userInfo" v-show="show" class="drawer-item drawer-func"><i class="material-icons">account_box</i>  Edit profile...</a>
       <a id="auth" href="#auth" class="drawer-item drawer-func"><i class="material-icons">{{ icon }}</i>  {{ label }}</a>
     </div>
+    <!--<nav id="contentSideBar"></nav>-->
     <!-- Main -->
     <main class="mdl-layout__content">
-      <!--<div id="loading-panel"> </div>-->
-      <section v-cloak id="home" class="mdl-layout__tab-panel">
+      <section id="loading-panel"><span>Loading...</span></section>
+      <section id="home" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- HOME content -->
           <div class="intro">SCSTIMX<br>intro</div>
@@ -87,35 +88,39 @@
             <div class="post-container" v-show="!showMessage">
               <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
             </div>
-            <div v-show="auth.postPrivilege" class="goPost">
+            <div v-show="auth.postPrivilege" class="editorBtn">
               <a href="post-news.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
             </div>
           </div>
         </div>
       </section>
-      <!--<section v-cloak id="reports" class="mdl-layout__tab-panel">
+      <!--<section id="reports" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           report
         </div>
       </section>-->
-      <section v-cloak id="briefing" class="mdl-layout__tab-panel">
+      <section id="briefing" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <div id="briefingContainer" class="post-card_parent">
-            <h2 class="title">Briefing reports</h2>
-            <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
-            <div class="post-container" v-show="!showMessage">
+            <div class="mdl-list">
+              <h2 class="title">Files</h2>
+              <div v-show="auth.postPrivilege" class="editorBtn">
+                <a @click="addFile">Add File<i class="material-icons">mode_edit</i></a>
+              </div>
+              <file-list v-for="file in files" :file="file" :key="file.id"></file-list>
+            </div>
+            <div class="post-container">
+              <h2 class="title">Briefing reports</h2>
+              <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
+              <div v-show="auth.postPrivilege" class="editorBtn">
+                <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
+              </div>
               <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
             </div>
-            <div v-show="auth.postPrivilege" class="goPost">
-              <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
-            </div>
-            <!--<div class="mdl-list">
-              <file-list v-for="file in files" :file="file" :key="file.id"></file-list>
-            </div>-->
           </div>
         </div>
       </section>
-      <section v-cloak id="operational" class="mdl-layout__tab-panel">
+      <section id="operational" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- OPERATIONAL content -->
           <div id="operShow">
@@ -144,25 +149,25 @@
           <!--http://140.110.147.101:8080/narlabs/rest/data/OBSERVATION/CWB-S/Taiwan/Light/2017-05-12-1700.jpg-->
         </div>
       </section>
-      <section v-cloak id="modelfcst" class="mdl-layout__tab-panel">
+      <section id="modelfcst" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           model
         </div>
       </section>
-      <section v-cloak id="research" class="mdl-layout__tab-panel">
+      <section id="research" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           res
         </div>
       </section>
-      <section v-cloak id="missions" class="mdl-layout__tab-panel">
+      <section id="missions" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           miss
         </div>
       </section>
-      <section v-cloak id="links" class="mdl-layout__tab-panel">
+      <section id="links" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
           link
@@ -362,7 +367,6 @@
       </div>
     </div>
   </div>
-
   <script defer src="js/project.js"></script>
 </body>
 
