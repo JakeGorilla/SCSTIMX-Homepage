@@ -731,7 +731,7 @@ var simplemde = new SimpleMDE({
 });
 
 Vue.component('post-card', {
-  props: ['post'],
+  props: ['post', 'refToPosts', 'refToContents'],
   data: function () {
     // this.post.content = this.post.content.replace(/(<img[^>]+)src=((['"]).+?\3)/g, '$1src="' + imgPlaceholder + '" data-src=$2');
     // // var src = this.post.content.match(/<img[^>]+src=(['"]).+?\1/g);
@@ -751,7 +751,8 @@ Vue.component('post-card', {
       mdlBtnColor: true,
       mdlBtnAccent: false,
       showDelete: false,
-      toggleText: 'Read'
+      toggleText: 'Read',
+      expanded: false
     }
   },
   methods: {
@@ -761,20 +762,19 @@ Vue.component('post-card', {
     expand: function () {
       var pid = this.post.id;
       var card = this.$refs.card;
-      var postIndex = this.$parent.postKeys.indexOf(pid);
       card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
-      card.classList.toggle('expand');
+      this.expanded = !this.expanded;
       var scrolling = setInterval(function () {
         card.scrollIntoView();
       }, 1);
       setTimeout(function () {
         clearInterval(scrolling);
-      }, 500);
-      if (card.classList.contains('expand')) {
+      }, 550);
+      if (this.expanded) {
         this.mdlBtnColor = false;
         this.mdlBtnAccent = true;
         this.toggleText = 'Close';
-        if (fbaseUser && this.$parent.posts[postIndex].authorId == fbaseUser.uid) {
+        if (fbaseUser && this.post.authorId == fbaseUser.uid) {
           this.showDelete = true;
         }
         document.body.style.overflow = 'hidden';
@@ -785,6 +785,7 @@ Vue.component('post-card', {
         this.showDelete = false;
         document.body.style.overflow = 'auto';
       }
+      this.$emit('expand', this.post.id);
       // var img = this.$refs.content.getElementsByTagName('img');
       // if (img) {
       //   forEach(img, function (img) {
@@ -802,10 +803,9 @@ Vue.component('post-card', {
       if (confirm('確定要刪除文章嗎？')) {
         // console.log(this.$refs.card);
         var pid = this.post.id;
-        var postIndex = this.$parent.postKeys.indexOf(pid);
-        var refToPosts = this.$parent.refToPosts;
-        var refToContents = this.$parent.refToContents;
-        if (this.$parent.posts[postIndex].authorId != fbaseUser.uid) {
+        var refToPosts = this.refToPosts;
+        var refToContents = this.refToContents;
+        if (this.post.authorId != fbaseUser.uid) {
           alert('作者是別人');
           return;
         }
@@ -820,7 +820,7 @@ Vue.component('post-card', {
   },
   // <h3 class="mdl-card__subtitle-text">Author: ' + '{{post.authorName}}' + '</h3>\
   template: '\
-    <div ref="card" :id="' + 'post.id' + '" class="article-card mdl-card mdl-shadow--2dp" @click="scrollto">\
+    <div ref="card" :id="' + 'post.id' + '" :class="{expand: expanded}" class="article-card mdl-card mdl-shadow--2dp" @click="scrollto">\
       <div class="mdl-card__title mdl-card--border">\
         <h2 class="mdl-card__title-text">' + '{{post.title}}' + '</h2>\
         <h3 class="mdl-card__subtitle-text">Time: ' + '{{ (new Date(post.time)).toLocaleDateString() }}' + '</h3>\
@@ -976,7 +976,8 @@ Vue.component(
           <a :href="' + 'file.link' + '" target="_blank" class="mdl-list__item-secondary-action"><i class="material-icons">file_download</i></a>\
         </span>\
       </div>'
-  });
+  }
+);
 
 var briefingContainer = new Vue({
   el: '#briefingContainer',
@@ -1124,6 +1125,9 @@ var briefingContainer = new Vue({
       this.postKeys = this.posts.map(function (post) {
         return post.id;
       });
+    },
+    expand: function (event) {
+      console.log(event)
     }
   }
 });

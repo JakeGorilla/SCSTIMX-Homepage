@@ -86,7 +86,7 @@
             <h2 class="title">News</h2>
             <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
             <div class="post-container" v-show="!showMessage">
-              <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
+              <post-card v-for="post in posts" v-bind:post="post" :key="post.id" :ref-to-posts="refToPosts" :ref-to-contents="refToContents"></post-card>
             </div>
             <div v-show="auth.postPrivilege" class="editorBtn">
               <a href="post-news.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
@@ -115,7 +115,9 @@
               <div v-show="auth.postPrivilege" class="editorBtn">
                 <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
               </div>
-              <post-card v-for="post in posts" v-bind:post="post" :key="post.id"></post-card>
+              <transition-group tag="div" style="position: relative;">
+                <post-card @expand="expand" v-for="post in posts" :post="post" :key="post.id" :ref-to-posts="refToPosts" :ref-to-contents="refToContents"></post-card>
+              </transition-group>
             </div>
           </div>
         </div>
