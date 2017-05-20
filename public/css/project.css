@@ -286,7 +286,7 @@ section {
 
 .page-content {
   /*background: radial-gradient(circle farthest-side at 84% 60%, rgba(255, 253, 231, 0.66), rgba(255, 224, 178, 0.66));*/
-  background: radial-gradient(circle farthest-side at 84% 60%, transparent, rgba(159, 168, 218, 0.36));
+  background: radial-gradient(circle farthest-side at 84% 60%, transparent, rgba(168, 168, 218, 0.36));
 }
 
 .mdl-layout__container {

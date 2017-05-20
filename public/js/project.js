@@ -763,13 +763,21 @@ Vue.component('post-card', {
       var pid = this.post.id;
       var card = this.$refs.card;
       card.querySelector('.mdl-card__supporting-text').scrollTop = 0;
+      this.$emit('expand', this.post.id);
       this.expanded = !this.expanded;
-      var scrolling = setInterval(function () {
+      var scrolling = this.expanded ? setInterval(function () {
         card.scrollIntoView();
-      }, 1);
-      setTimeout(function () {
-        clearInterval(scrolling);
-      }, 550);
+      }, 1) : null;
+      // setTimeout(function () {
+      //   clearInterval(scrolling);
+      // }, 550);
+      if (scrolling) {
+        card.addEventListener('transitionend', function () {
+          setTimeout(function () {
+            clearInterval(scrolling);
+          }, 360);
+        });
+      }
       if (this.expanded) {
         this.mdlBtnColor = false;
         this.mdlBtnAccent = true;
@@ -785,7 +793,6 @@ Vue.component('post-card', {
         this.showDelete = false;
         document.body.style.overflow = 'auto';
       }
-      this.$emit('expand', this.post.id);
       // var img = this.$refs.content.getElementsByTagName('img');
       // if (img) {
       //   forEach(img, function (img) {

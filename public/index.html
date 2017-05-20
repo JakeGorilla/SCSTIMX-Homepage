@@ -115,9 +115,9 @@
               <div v-show="auth.postPrivilege" class="editorBtn">
                 <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
               </div>
-              <transition-group tag="div" style="position: relative;">
+              <!--<transition-group tag="div" style="position: relative;">-->
                 <post-card @expand="expand" v-for="post in posts" :post="post" :key="post.id" :ref-to-posts="refToPosts" :ref-to-contents="refToContents"></post-card>
-              </transition-group>
+              <!--</transition-group>-->
             </div>
           </div>
         </div>
