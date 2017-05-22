@@ -116,7 +116,7 @@
                 <a href="post-briefing.html" target="_blank">New Post<i class="material-icons">mode_edit</i></a>
               </div>
               <!--<transition-group tag="div" style="position: relative;">-->
-                <post-card @expand="expand" v-for="post in posts" :post="post" :key="post.id" :ref-to-posts="refToPosts" :ref-to-contents="refToContents"></post-card>
+              <post-card @expand="expand" v-for="post in posts" :post="post" :key="post.id" :ref-to-posts="refToPosts" :ref-to-contents="refToContents"></post-card>
               <!--</transition-group>-->
             </div>
           </div>
@@ -178,8 +178,8 @@
     </main>
     <footer class="mdl-mini-footer">
       <div class="mdl-mini-footer__left-section">
-        <div class="mdl-logo">SCSTIMX - a MOST supported project</div>
-        <ul>wanna contact with us?</ul>
+        <div class="mdl-logo">SCSTIMX</div>
+        <div id="footer-left-text">A MOST supported project</div>
       </div>
       <div class="mdl-mini-footer__right-section">
         <span class="t-bottom">website build by <a target="_blank" href="mailto:j255121@gmail.com">Wei-hua, Hsu</a></span>
