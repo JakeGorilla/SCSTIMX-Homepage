@@ -729,6 +729,12 @@ dialogs.userInfoContainer = new Vue({
 
 var simplemde = new SimpleMDE({
   element: document.createElement('div').appendChild(document.createElement('textarea')),
+  autoDownloadFontAwesome: false,
+  shortcuts: {},
+  spellChecker: false,
+  status: false,
+  toolbar: false,
+  toolbarTips: false
 });
 
 Vue.component('post-card', {
