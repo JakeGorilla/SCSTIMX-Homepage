@@ -75,22 +75,27 @@
 }
 
 .post-card_parent .expand > .mdl-card__supporting-text > h5 {
+  margin: 4px 0;
   font-size: 17px;
 }
 
 .post-card_parent .expand > .mdl-card__supporting-text > h4 {
+  margin: 6px 0;
   font-size: 18px;
 }
 
 .post-card_parent .expand > .mdl-card__supporting-text > h3 {
+  margin: 12px 0;
   font-size: 20px;
 }
 
 .post-card_parent .expand > .mdl-card__supporting-text > h2 {
+  margin: 14px 0;
   font-size: 22px;
 }
 
 .post-card_parent .expand > .mdl-card__supporting-text > h1 {
+  margin: 16px 0;
   font-size: 24px;
 }
 
@@ -121,6 +126,10 @@
   text-overflow: ellipsis;
 }
 
+.post-card_parent .mdl-card__supporting-text > * {
+  line-height: 1.5;
+}
+
 .post-card_parent .mdl-card__supporting-text table,
 .post-card_parent .mdl-card__supporting-text th,
 .post-card_parent .mdl-card__supporting-text td {
@@ -139,26 +148,32 @@
 }
 
 .post-card_parent .mdl-card__supporting-text h1 {
+  margin: 0;
   font-size: 20px;
 }
 
 .post-card_parent .mdl-card__supporting-text h2 {
+  margin: 0;
   font-size: 18px;
 }
 
 .post-card_parent .mdl-card__supporting-text h3 {
+  margin: 0;
   font-size: 17px;
 }
 
 .post-card_parent .mdl-card__supporting-text h4 {
+  margin: 0;
   font-size: 16px;
 }
 
 .post-card_parent .mdl-card__supporting-text h5 {
+  margin: 0;
   font-size: 15px;
 }
 
 .post-card_parent .mdl-card__supporting-text h6 {
+  margin: 0;
   font-size: 14px;
 }
 
