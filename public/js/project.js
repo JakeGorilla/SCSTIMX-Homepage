@@ -735,6 +735,7 @@ Vue.component('post-card', {
   props: ['post', 'refToPosts', 'refToContents'],
   data: function () {
     // this.post.content = this.post.content.replace(/(<img[^>]+)src=((['"]).+?\3)/g, '$1src="' + imgPlaceholder + '" data-src=$2');
+    // // // replace all img src for async load
     // // var src = this.post.content.match(/<img[^>]+src=(['"]).+?\1/g);
     // // var src = this.post.content.match(/(<img[^>]src=['"])([^'"]*)['"]/g);
     // // var src = this.post.content;
@@ -748,6 +749,11 @@ Vue.component('post-card', {
     // //   });
     // // }
     // // console.log(this.post.content);
+    this.post.content = this.post.content.replace(/(<img[^>]+)src=(?:\s*)((['"]).+?\3)([^>]*>)/g, function (tag, beforeSrc, src, quote, afterSrc) {
+      if (tag.match(/ alt=(['"])(gif.*?)\1/)) {
+        return beforeSrc + 'src="' + imgPlaceholder + '" data-src=' + src + afterSrc;
+      } else return tag;
+    });
     return {
       mdlBtnColor: true,
       mdlBtnAccent: false,
@@ -794,14 +800,23 @@ Vue.component('post-card', {
         this.showDelete = false;
         document.body.style.overflow = 'auto';
       }
-      // var img = this.$refs.content.getElementsByTagName('img');
-      // if (img) {
-      //   forEach(img, function (img) {
-      //     var src = img.src;
-      //     img.src = img.getAttribute('data-src');
-      //     img.setAttribute('data-src', src);
-      //   });
-      // }
+      var images = this.$refs.content.getElementsByTagName('img');
+      if (images) {
+        // forEach(images, function (img) {
+        //   // async load all img
+        //   var src = img.src;
+        //   img.src = img.getAttribute('data-src');
+        //   img.setAttribute('data-src', src);
+        // });
+        forEach(images, function (img) {
+          // async img only: "alt" begin with "gif"
+          if (img.alt && img.alt.match(/^gif/i) && img.getAttribute('data-src')) {
+            var src = img.src;
+            img.src = img.getAttribute('data-src');
+            img.setAttribute('data-src', src);
+          }
+        });
+      }
     },
     deletePost: function () {
       if (!fbaseUser) {
