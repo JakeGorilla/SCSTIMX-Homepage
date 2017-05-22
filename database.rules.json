@@ -61,7 +61,7 @@
       ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
       "$pid": {
         ".write": "root.child('admin').val() === auth.uid || data.exists() ? auth.uid === data.child('authorId').val() : root.child('privilegedUsers').child(auth.uid).val() === true",
-        ".validate": "newData.hasChildren(['time','title','authorId'])",
+        ".validate": "newData.hasChildren(['time','title','authorId']) && (!data.exists() || data.child('authorId').val() === auth.uid)",
         "time": {
           ".validate": "newData.val() <= now"
         },
@@ -88,7 +88,7 @@
       ".write": "root.child('privilegedUsers').child(auth.uid).val() === true",
       "$fid": {
         ".read": true,
-        ".validate": "!data.exists() || data.child('authorId').val() === auth.uid",
+        ".validate": "(!data.exists() || data.child('authorId').val() === auth.uid) && newData.hasChildren(['time','title','authorId','link'])",
         "time": {
           ".validate": "newData.val() <= now"
         },
