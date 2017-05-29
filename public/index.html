@@ -47,7 +47,7 @@
         <span class="layout-subtitle">South-China Sea Twin Island Monsoon Experiment</span>
       </div>
       <!-- Tabs -->
-      <nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
+      <nav class="mdl-layout__tab-bar mdl-js-ripple-effect"> <!--for ie: don't use mdl-layout__tab-manual-switch-->
         <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click.prevent="setHash">HOME</a>
         <!--<a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>-->
         <a id="t-briefing" href="#briefing" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Weather<br>Briefing</a>

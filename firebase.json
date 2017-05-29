@@ -4,5 +4,12 @@
   },
   "hosting": {
     "public": "public"
+    // ,"redirects": [
+    //   {
+    //     "source": "**",
+    //     "destination": "http://sui.as.ntu.edu.tw/~lab/",
+    //     "type": 302
+    //   }
+    // ]
   }
 }
