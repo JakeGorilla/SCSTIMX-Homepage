@@ -44,16 +44,17 @@
         <!-- Title -->
         <div class="header-vspacer"></div>
         <span id="logo" class="mdl-layout-title">SCSTIMX</span>
-        <span class="layout-subtitle">South-China Sea Twin Island Monsoon Experiment</span>
+        <span class="layout-subtitle">South-China Sea Two Island Monsoon Experiment</span>
       </div>
       <!-- Tabs -->
-      <nav class="mdl-layout__tab-bar mdl-js-ripple-effect"> <!--for ie: don't use mdl-layout__tab-manual-switch-->
+      <nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <!--for ie: don't use mdl-layout__tab-manual-switch-->
         <a id="t-home" href="#home" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click.prevent="setHash">HOME</a>
         <!--<a id="t-reports" href="#reports" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Reports</a>-->
         <a id="t-briefing" href="#briefing" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Weather<br>Briefing</a>
         <a id="t-operational" href="#operational" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Operational<br>Products</a>
         <!--<a id="t-modelfcst" href="#modelfcst" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Model/Forecast<br>Products</a>-->
-        <!--<a id="t-research" href="#research" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Research<br>Products</a>-->
+        <a id="t-research" href="#research" class="mdl-layout__tab two-line" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Research<br>Products</a>
         <!--<a id="t-missions" href="#missions" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Missions</a>-->
         <!--<a id="t-links" href="#links" class="mdl-layout__tab" :class="{ 'is-active': activeFlag }" v-on:click="setHash">Links &amp; Tools</a>-->
         <div class="mdl-layout-spacer" style="min-width:36px;background:transparent;"></div>
@@ -81,8 +82,26 @@
       <section id="home" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- HOME content -->
-          <div class="intro">SCSTIMX<br>intro</div>
-          <div id="newsPosts" class="post-card_parent mdl-shadow--2dp">
+          <div class="intro">
+            <div>What is SCSTIMX ?</div>
+          </div>
+          <img src="test.png" style="max-width:100%;" />
+          <div class="intro">
+            <div class="contents">&nbsp;&nbsp;&nbsp;&nbsp;The <b>South China Sea Two-Island Monsoon Experiment (SCSTIMX)</b> is the field component
+              of the integrated project <b>“Interaction of convection over the Maritime Continent - SCS with large-scale flow”</b>,
+              which is proposed by Taiwan scientists to study convective and large-scale dynamics processes over the SCS
+              in cooperation with the international project <b>“Years&nbsp;of&nbsp;Maritime&nbsp;Continent” (YMC)</b> . Two
+              Intensive Observation Periods (IOPs), May–June 2018 and Dec. 2018–Jan. 2019, are planned at <b>Taiping&nbsp;Island</b>              and
+              <b>Dongsha&nbsp;Island</b> within the extended observation period (EOP) of 2017-2019. During the EOP, surface
+              weather, wind profiler, and upper-air sounding observations will be conducted regularly at the two islands.
+              During the IOPs, an integrated observing system for cloud and precipitation at both islands consisting of upper-air
+              sounding (4 times/day) and a suite of instruments including X-POL and C-POL precipitation radars (at Taping&nbsp;Island),
+              microwave rain radars, ceilometers, disdrometer, and passive microwave radiometer is proposed. The atmospheric
+              condition will also be observed with oceanic measurements from existing buoys around Dongsha&nbsp;Island and
+              other places in the SCS, buoys to be deployed near Taiping&nbsp;Island, and in-situ measurements from research
+              vessels, for air-sea interaction studies.</div>
+          </div>
+          <div v-if="false" id="newsPosts" class="post-card_parent mdl-shadow--2dp">
             <h2 class="title">News</h2>
             <div class="message" v-cloak v-if="showMessage">{{ message }}</div>
             <div class="post-container" v-show="!showMessage">
@@ -125,7 +144,7 @@
       <section id="operational" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- OPERATIONAL content -->
-          <div id="operShow">
+          <div id="operShow" class="prodShow">
             <!--<div class="prod-type"><prod-type v-model="type" placeholder="Select product type" :options="products" :close-on-select="true" group-label="cat" group-value="types"  track-by="label" label="label"></prod-type></div>-->
             <div class="opt-container">
               <div class="prod-type">
@@ -160,7 +179,28 @@
       <section id="research" class="mdl-layout__tab-panel" v-cloak>
         <div class="wait-tabs page-content">
           <!-- Your content goes here -->
-          res
+          <div id="resShow" class="prodShow">
+            <!--<div class="prod-type"><prod-type v-model="type" placeholder="Select product type" :options="products" :close-on-select="true" group-label="cat" group-value="types"  track-by="label" label="label"></prod-type></div>-->
+            <div class="opt-container">
+              <div class="prod-type">
+                <prod-type ref="type" v-model="type" :options="products" placeholder="Select product type" :allow-empty="false" track-by="label"
+                  label="label" :searchable="false"></prod-type>
+              </div>
+              <div class="date-time">
+                <date-time ref="date" v-model="date" :options="availDates" :close-on-select="false" :show-labels="false" :internal-search="false"
+                  :allow-empty="false" @open="syncQuery" @search-change="compDate" @select="updateQuery"></date-time>
+              </div>
+              <div class="date-time">
+                <date-time ref="time" v-model="time" :placeholder="timePlaceholder" :options="availTimes" :show-labels="false" :searchable="true"
+                  @open="listPosition"></date-time>
+              </div>
+            </div>
+            <div class="img-container">
+              <div v-show="loading" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+              <div v-cloak v-show="!show" v-html="message" class="message"></div>
+              <img ref="img" v-show="show" @load="toTop" @error="imgBroken" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+            </div>
+          </div>
         </div>
       </section>
       <section id="missions" class="mdl-layout__tab-panel" v-cloak>

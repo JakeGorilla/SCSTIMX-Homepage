@@ -17,6 +17,7 @@
 
 html {
   font-size: 15px;
+  overflow-y: scroll;
 }
 
 body {
@@ -329,14 +330,28 @@ section {
 }
 
 .intro {
+  padding: 16px 32px;
   font-size: 36px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 360px;
+  /*align-items: center;*/
+  /*text-align: center;*/
+  /*height: 360px;*/
   line-height: 1.2;
   /*color: rgba(250, 250, 250, 0.89);*/
+}
+
+.intro div {
+  margin: 16px 0 16px;
+}
+
+.intro div.contents {
+  word-wrap: break-word;
+  line-height: 1.8;
+  margin-left: 48px;
+  font-size: 18px;
+  width: 88%;
 }
 
 .post-container {
@@ -551,38 +566,38 @@ footer.mdl-mini-footer {
   width: auto;
 }
 
-#operShow {
+.prodShow {
   box-sizing: border-box;
   padding: 16px;
   min-height: calc(100vh - 112px - 88px);
   background-color: rgba(255, 240, 222, 0.5);
 }
 
-#operShow .opt-container {
+.prodShow .opt-container {
   display: flex;
   flex-wrap: wrap;
 }
 
-#operShow .prod-type {
+.prodShow .prod-type {
   display: inline-flex;
   flex: 2 1 300px;
 }
 
-#operShow .date-time {
+.prodShow .date-time {
   display: inline-flex;
   flex: 1 20000 150px;
 }
 
-#operShow .img-container {
+.prodShow .img-container {
   flex: 1;
   text-align: center;
 }
 
-#operShow .mdl-progress {
+.prodShow .mdl-progress {
   width: 100%;
 }
 
-#operShow .img-container .message {
+.prodShow .img-container .message {
   font-size: 30px;
   line-height: 1.4;
   color: rgba(0, 0, 0, 0.66);
@@ -592,7 +607,7 @@ footer.mdl-mini-footer {
   justify-content: center;
 }
 
-#operShow .img-container img {
+.prodShow .img-container img {
   max-width: 100%;
 }
 

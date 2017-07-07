@@ -1638,6 +1638,303 @@ var operShow = new Vue({
   },
 });
 
+var resShow = new Vue({
+  el: '#resShow',
+  data: {
+    baseUrl: 'http://140.110.147.101:8080/narlabs/rest/data/',
+    type: '',
+    date: '',
+    time: '',
+    availDates: [],
+    show: false,
+    loading: false,
+    timePlaceholder: 'Select Type first',
+    message: '<strong class="red">Type</strong> to search <strong>date</strong> and <strong>time</strong>.<br>Choose a <strong>product</strong> to show.'
+  },
+  created: function () {
+    var res = new Date();
+    if (res.getHours() < 1) res.setDate(res.getDate() - 1);
+    var year = res.getFullYear().toString();
+    var mon = this.pad(res.getMonth() + 1);
+    var day = this.pad(res.getDate());
+    res = year + '/' + mon + '/' + day;
+    this.date = res;
+  },
+  computed: {
+    availTimes: function () {
+      if (this.type && this.date) {
+        var res = TTFRI_dataDayTime[this.type.url];
+        this.timePlaceholder = 'Select time';
+        if (res.indexOf(this.time) == -1) this.time = '';
+        if ((new Date(Date.parse(this.date))).toLocaleDateString() === (new Date()).toLocaleDateString()) {
+          var thisHour = (new Date()).getHours();
+          var thisMinute = (new Date()).getMinutes();
+          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { var hour = parseInt(str.split(':')[0]); var minute = parseInt(str.split(':')[1]); return hour < thisHour || hour == thisHour && minute <= thisMinute });
+          if (res.length === 0) {
+            this.time = '';
+          } else if (res.indexOf(this.time) == -1) {
+            var target = res[res.length - 1];
+            var hour = parseInt(target.split(':')[0]);
+            var minute = parseInt(target.split(':')[1]);
+            this.time = thisHour > hour ? target : thisMinute - minute > 24 ? target : res[res.length - 2];
+          }
+        } else if (this.time === '' || !this.time) this.time = res[res.length - 1];
+        return res;
+      } else {
+        this.timePlaceholder = 'Select Type first';
+        this.time = '';
+        return [];
+      }
+    },
+    products: function () {
+      function flatten(data) {
+        var res = [];
+        var path = [''];
+        var visited = [];
+        var node = data; // is onject
+        var parentNodes = [];
+        while (path.length > 0) {
+          // console.log(path.join('/'));
+          if (node.list) {
+            // leaf node
+            if (node.list != 'OBSERVATION/CWB-R/Taiwan/Land' &&
+              node.list != 'OBSERVATION/CWB-R/Taiwan/Land-N' &&
+              node.list != 'OBSERVATION/CWB-R/Chiku' &&
+              node.list != 'OBSERVATION/CWB-S/High/Light' &&
+              node.list != 'OBSERVATION/CWB-S/High/Color' &&
+              node.list != 'MODE/CWB-W/New-W' &&
+              node.list != 'MODE/CWB-RF/I' &&
+              node.list != 'MODE/CWB-RF/II') {
+              res.push({
+                label: path.join('/'),
+                url: node.list
+              });
+            }
+            path.pop();
+            node = parentNodes.pop();
+          } else {
+            var index = [];
+            var layer = node.children.map(function (child) {
+              return child['description'];
+            }).filter(function (value, i) {
+              path.push(value);
+              if (visited.indexOf(path.join('/')) == -1) {
+                index.push(i);
+                path.pop();
+                return true;
+              } else {
+                path.pop();
+                return false;
+              }
+            });
+            // console.log(layer);
+            // console.log(index);
+            if (layer.length > 0) {
+              path.push(layer[0]);
+              parentNodes.push(node);
+              node = node.children[index[0]];
+              visited.push(path.join('/'));
+            } else {
+              path.pop();
+              node = parentNodes.pop();
+            }
+          }
+        }
+        return res;
+      };
+      var res = [];
+      for (cat in TTFRI_dataTree) {
+        // res.push({
+        //   cat: TTFRI_dataTree[cat].description,
+        //   types: flatten(TTFRI_dataTree[cat])
+        // });
+        res = res.concat(flatten(TTFRI_dataTree[cat]));
+      }
+      return res;
+    }
+  },
+  methods: {
+    compDate: function (searchQuery) {
+      // update list according to searchQuery;
+      if (this.$refs.date.$refs.search.value != searchQuery) return;
+      searchQuery.trim();
+      var thisHour = new Date();
+      var thisYear = thisHour.getFullYear();
+      var thisMon = thisHour.getMonth() + 1;
+      var thisDay = thisHour.getDate();
+      thisHour = thisHour.getHours();
+      var searchDate = Date.parse(searchQuery);
+      var match = searchQuery.match(/(\d{4})(?:\/?(\d{0,2}))?/);
+      if (searchDate && searchQuery.includes('/') && !searchQuery.match(/\/$/)) {
+        // console.log('A')
+        searchDate = new Date(searchDate);
+        var year = searchDate.getFullYear();
+        if (year > 2013 && year <= thisYear) {
+          // console.log('A1')
+          var mon = searchDate.getMonth() + 1;
+          var lastDay = new Date(year, mon, 0);
+          lastDay = lastDay.getDate();
+          if (year < thisYear || mon < thisMon) {
+            // console.log('A11')
+            this.availDates = new Array(lastDay + 2);
+            this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
+            for (var i = 1; i < this.availDates.length - 1; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i);
+            }
+            this.availDates[this.availDates.length - 1] = year.toString() + '/' + this.pad(mon + 1) + '/';
+          } else if (mon == thisMon) {
+            // console.log('A12')
+            lastDay = thisDay;
+            this.availDates = new Array(lastDay + 1);
+            this.availDates[0] = year.toString() + '/' + this.pad(mon - 1) + '/';
+            for (var i = 1; i < this.availDates.length; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i);
+            }
+          }
+        }
+      } else if (match) {
+        // console.log('B')
+        var year = parseInt(match[1]);
+        var mon;
+        var ymGood = false;
+        var ymEdge = false;
+        if (year > 2013 && year <= thisYear) {
+          if (match.length == 3) {
+            // console.log('B1')
+            mon = parseInt(match[2]);
+            if (mon > 0 && mon < 13) {
+              ymGood = (year === thisYear ? mon <= thisMon : true);
+              ymEdge = (year === thisYear ? mon === thisMon : false);
+            }
+          }
+          if (ymGood) {
+            var lastDay = new Date(year, mon, 0);
+            lastDay = ymEdge ? thisDay : lastDay.getDate();
+            this.availDates = new Array(lastDay);
+            for (var i = 0; i < this.availDates.length; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(mon) + '/' + this.pad(i + 1);
+            }
+          } else {
+            this.availDates = new Array(12);
+            for (var i = 0; i < 12; i++) {
+              this.availDates[i] = year.toString() + '/' + this.pad(i + 1);
+            }
+          }
+        }
+      } else {
+        this.availDates = new Array(thisYear - 2013);
+        for (var i = 0; i < this.availDates.length; i++) {
+          this.availDates[i] = (2014 + i).toString() + '/';
+        }
+      }
+      // highlight date entry according to searchQuery
+      this.$nextTick(function () {
+        for (var i = 0; i < this.availDates.length; i++) {
+          var optDate = this.availDates[i];
+          var simpleOpt = optDate.replace(/\D/g, '');
+          var simpleQuery = searchQuery.replace(/\D/g, '');
+          if (optDate.match(searchQuery) || simpleOpt.match(simpleQuery)) {
+            this.$refs.date.pointer = i;
+            this.$refs.date.$refs.list.scrollTop = parseInt(this.$refs.date.pointerPosition - (this.$refs.date.visibleElements - 1) * this.$refs.date.optionHeight / 2);
+            break;
+          }
+        }
+      });
+    },
+    syncQuery: function (val, close) {
+      val = val ? val : this.date;
+      close = close ? close : false;
+
+      this.$refs.date.$refs.search.focus();
+      var a = this.$refs.date.$refs.search;
+      if (IE < 0 || IE > 11) {
+        this.$nextTick(function () {
+          var event = new Event('input', {
+            'bubbles': true,
+            'cancelable': true
+          });
+          a.value = val;
+          a.dispatchEvent(event);
+        });
+      } else {
+        // User using IE!!!!!!! FXXK
+        // this.$refs.date.updateSearch(val);
+        this.$refs.date.$refs.search.value = val;
+        console.log([this.$refs.date.$refs.search.value, val]);
+        this.compDate(val);
+      }
+      if (close) this.$refs.date.deactivate();
+    },
+    updateQuery: function (selectedOption) {
+      if (selectedOption.match(/\d{4}\/\d\d\/\d\d/)) this.syncQuery(selectedOption, true);
+      else this.syncQuery(selectedOption);
+    },
+    listPosition: function () {
+      // highlight time entry according to this.time
+      this.$nextTick(function () {
+        for (var i = 0; i < this.availTimes.length; i++) {
+          var optTime = this.availTimes[i];
+          var simpleOpt = optTime.replace(/\D/g, '');
+          var simpleQuery = this.time.replace(/\D/g, '');
+          if (optTime.match(this.time) || simpleOpt.match(simpleQuery)) {
+            this.$refs.time.pointer = i;
+            this.$refs.time.$refs.list.scrollTop = parseInt(this.$refs.time.pointerPosition - (this.$refs.time.visibleElements - 1) * this.$refs.time.optionHeight / 2);
+            break;
+          }
+        }
+      });
+    },
+    updateImg: function () {
+      if (this.type && this.date && this.time) {
+        if (Date.parse(this.date) && !this.date.match(/\/$/) && Date.parse(this.date + ' ' + this.time)) {
+          this.loading = true;
+          var date = new Date(Date.parse(this.date + ' ' + this.time));
+          var year = date.getFullYear().toString();
+          var mon = this.pad(date.getMonth() + 1);
+          var day = this.pad(date.getDate());
+          var hour = this.pad(date.getHours());
+          var min = this.pad(date.getMinutes());
+          var url = this.baseUrl + this.type.url + '/' + year + '-' + mon + '-' + day + '-' + hour + min + '.jpg';
+          this.$refs.img.src = url;
+          this.show = true;
+        }
+        //  else { this.show = false; this.clearImg() }
+      }
+      //  else { this.show = false; this.clearImg() }
+    },
+    pad: function (num) {
+      return num < 10 ? '0' + num.toString() : num.toString();
+    },
+    clearImg: function () { this.$refs.img.src = imgPlaceholder; },
+    toTop: function () {
+      this.loading = false;
+      this.$refs.type.$el.scrollIntoView();
+    },
+    imgBroken: function () {
+      this.show = false;
+      this.clearImg();
+      this.loading = false;
+      this.message = '<strong>Data unavailable</strong>.<br>Try again with another <strong>date</strong> or <strong>time</strong>.';
+    }
+  },
+  watch: {
+    type: function () {
+      this.updateImg()
+    },
+    date: function () {
+      this.updateImg()
+    },
+    time: function () {
+      if (!this.time && this.time != '') this.time = '';
+      this.updateImg()
+    }
+  },
+  components: {
+    'prod-type': VueMultiselect.Multiselect,
+    'date-time': VueMultiselect.Multiselect,
+  },
+});
+
 
 setTimeout(function () {
   document.body.scrollIntoView();
