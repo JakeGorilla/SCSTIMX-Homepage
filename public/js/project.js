@@ -143,7 +143,7 @@ stateManager.auth = new Vue({
 });
 
 // oldURL,newURL patch for ie9+
-if (!window.HashChangeEvent) (function () {
+if (!window.HashChangeEvent)(function () {
   var lastURL = document.URL;
   window.addEventListener('hashchange', function (event) {
     Object.defineProperty(event, 'oldURL', {
@@ -246,8 +246,7 @@ function Check_IE_Version() {
     if (re.exec(ua) !== null) {
       rv = parseFloat(RegExp.$1);
     }
-  }
-  else if (navigator.appName == "Netscape") {
+  } else if (navigator.appName == "Netscape") {
     /// in IE 11 the navigator.appVersion says 'trident'
     /// in Edge the navigator.appVersion does not say trident
     if (navigator.appVersion.indexOf('Trident') === -1) rv = 12;
@@ -896,11 +895,11 @@ var newsPosts = new Vue({
       });
       this.rawPosts = tmp;
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got add');
       this.rawPosts.push(dataSnapshot);
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/ ) {
       console.log('got removed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -916,7 +915,7 @@ var newsPosts = new Vue({
         }
       }
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got changed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -997,8 +996,8 @@ Vue.component(
       <div class="mdl-list__item mdl-list__item--two-line">\
         <span class="mdl-list__item-primary-content">\
           <i class="material-icons mdl-list__item-icon">picture_as_pdf</i>\
-          <span class="mdl-list__item-title">'+ '{{ file.title }}' + '</span>\
-          <span class="mdl-list__item-sub-title">'+ '{{ (new Date(file.time)).toLocaleDateString() }}' + '</span>\
+          <span class="mdl-list__item-title">' + '{{ file.title }}' + '</span>\
+          <span class="mdl-list__item-sub-title">' + '{{ (new Date(file.time)).toLocaleDateString() }}' + '</span>\
         </span>\
         <span class="mdl-list__item-secondary-content">\
           <span class="mdl-list__item-secondary-info">Download</span>\
@@ -1053,11 +1052,11 @@ var briefingContainer = new Vue({
       });
       this.rawPosts = tmp;
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_added', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got add');
       this.rawPosts.push(dataSnapshot);
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_removed', function (dataSnapshot /*, keyOfTheRemovedOne*/ ) {
       console.log('got removed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -1073,7 +1072,7 @@ var briefingContainer = new Vue({
         }
       }
     }, this);
-    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/) {
+    this.refToPosts.limitToLast(this.mostShow).on('child_changed', function (dataSnapshot /*, keyOfThePrecedingOne*/ ) {
       console.log('got changed');
       var index = this.postKeys.indexOf(dataSnapshot.key);
       if (index >= 0) {
@@ -1192,135 +1191,135 @@ var briefingContainer = new Vue({
 
 
 var TTFRI_dataTree = [{
-  "name": "OBSERVATION",
-  "description": "觀測",
-  "children": [{
-    "name": "CWB-R",
-    "description": "CWB雷達",
+    "name": "OBSERVATION",
+    "description": "觀測",
     "children": [{
-      "name": "Taiwan",
-      "description": "全台灣",
-      "children": [{
-        "name": "Land",
-        "description": "無地形",
-        "list": "OBSERVATION/CWB-R/Taiwan/Land"
+        "name": "CWB-R",
+        "description": "CWB雷達",
+        "children": [{
+            "name": "Taiwan",
+            "description": "全台灣",
+            "children": [{
+                "name": "Land",
+                "description": "無地形",
+                "list": "OBSERVATION/CWB-R/Taiwan/Land"
+              },
+              {
+                "name": "Land-N",
+                "description": "有地形",
+                "list": "OBSERVATION/CWB-R/Taiwan/Land-N"
+              }
+            ]
+          },
+          {
+            "name": "Chiku",
+            "description": "七股",
+            "list": "OBSERVATION/CWB-R/Chiku"
+          }
+        ]
       },
       {
-        "name": "Land-N",
-        "description": "有地形",
-        "list": "OBSERVATION/CWB-R/Taiwan/Land-N"
+        "name": "CWB-S",
+        "description": "CWB衛星",
+        "children": [{
+            "name": "Taiwan",
+            "description": "台灣",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/Taiwan/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/Taiwan/Color"
+              }
+            ]
+          },
+          {
+            "name": "East-Asia",
+            "description": "東亞",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/East-Asia/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/East-Asia/Color"
+              }
+            ]
+          },
+          {
+            "name": "High",
+            "description": "高解析",
+            "children": [{
+                "name": "Light",
+                "description": "可見光",
+                "list": "OBSERVATION/CWB-S/High/Light"
+              },
+              {
+                "name": "Color",
+                "description": "色調強化",
+                "list": "OBSERVATION/CWB-S/High/Color"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CWB-RF",
+        "description": "CWB雨量",
+        "children": [{
+            "name": "Small",
+            "description": "小間距",
+            "list": "OBSERVATION/CWB-RF/Small"
+          },
+          {
+            "name": "Large",
+            "description": "大間距",
+            "list": "OBSERVATION/CWB-RF/Large"
+          }
+        ]
       }
-      ]
-    },
-    {
-      "name": "Chiku",
-      "description": "七股",
-      "list": "OBSERVATION/CWB-R/Chiku"
-    }
     ]
   },
   {
-    "name": "CWB-S",
-    "description": "CWB衛星",
+    "name": "MODE",
+    "description": "模式",
     "children": [{
-      "name": "Taiwan",
-      "description": "台灣",
-      "children": [{
-        "name": "Light",
-        "description": "可見光",
-        "list": "OBSERVATION/CWB-S/Taiwan/Light"
+        "name": "CWB-W",
+        "description": "CWB天氣圖",
+        "children": [{
+            "name": "New-W",
+            "description": "最新天氣圖",
+            "list": "MODE/CWB-W/New-W"
+          },
+          {
+            "name": "Land-W",
+            "description": "地面天氣圖",
+            "list": "MODE/CWB-W/Land-W"
+          }
+        ]
       },
       {
-        "name": "Color",
-        "description": "色調強化",
-        "list": "OBSERVATION/CWB-S/Taiwan/Color"
+        "name": "CWB-RF",
+        "description": "CWB定量降水預報",
+        "children": [{
+            "name": "I",
+            "description": "定量降雨預報(I)",
+            "list": "MODE/CWB-RF/I"
+          },
+          {
+            "name": "II",
+            "description": "定量降雨預報(II)",
+            "list": "MODE/CWB-RF/II"
+          }
+        ]
       }
-      ]
-    },
-    {
-      "name": "East-Asia",
-      "description": "東亞",
-      "children": [{
-        "name": "Light",
-        "description": "可見光",
-        "list": "OBSERVATION/CWB-S/East-Asia/Light"
-      },
-      {
-        "name": "Color",
-        "description": "色調強化",
-        "list": "OBSERVATION/CWB-S/East-Asia/Color"
-      }
-      ]
-    },
-    {
-      "name": "High",
-      "description": "高解析",
-      "children": [{
-        "name": "Light",
-        "description": "可見光",
-        "list": "OBSERVATION/CWB-S/High/Light"
-      },
-      {
-        "name": "Color",
-        "description": "色調強化",
-        "list": "OBSERVATION/CWB-S/High/Color"
-      }
-      ]
-    }
-    ]
-  },
-  {
-    "name": "CWB-RF",
-    "description": "CWB雨量",
-    "children": [{
-      "name": "Small",
-      "description": "小間距",
-      "list": "OBSERVATION/CWB-RF/Small"
-    },
-    {
-      "name": "Large",
-      "description": "大間距",
-      "list": "OBSERVATION/CWB-RF/Large"
-    }
     ]
   }
-  ]
-},
-{
-  "name": "MODE",
-  "description": "模式",
-  "children": [{
-    "name": "CWB-W",
-    "description": "CWB天氣圖",
-    "children": [{
-      "name": "New-W",
-      "description": "最新天氣圖",
-      "list": "MODE/CWB-W/New-W"
-    },
-    {
-      "name": "Land-W",
-      "description": "地面天氣圖",
-      "list": "MODE/CWB-W/Land-W"
-    }
-    ]
-  },
-  {
-    "name": "CWB-RF",
-    "description": "CWB定量降水預報",
-    "children": [{
-      "name": "I",
-      "description": "定量降雨預報(I)",
-      "list": "MODE/CWB-RF/I"
-    },
-    {
-      "name": "II",
-      "description": "定量降雨預報(II)",
-      "list": "MODE/CWB-RF/II"
-    }
-    ]
-  }
-  ]
-}
 ];
 
 var TTFRI_dataDayTime = {
@@ -1372,7 +1371,11 @@ var operShow = new Vue({
         if ((new Date(Date.parse(this.date))).toLocaleDateString() === (new Date()).toLocaleDateString()) {
           var thisHour = (new Date()).getHours();
           var thisMinute = (new Date()).getMinutes();
-          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { var hour = parseInt(str.split(':')[0]); var minute = parseInt(str.split(':')[1]); return hour < thisHour || hour == thisHour && minute <= thisMinute });
+          res = TTFRI_dataDayTime[this.type.url].filter(function (str) {
+            var hour = parseInt(str.split(':')[0]);
+            var minute = parseInt(str.split(':')[1]);
+            return hour < thisHour || hour == thisHour && minute <= thisMinute
+          });
           if (res.length === 0) {
             this.time = '';
           } else if (res.indexOf(this.time) == -1) {
@@ -1608,7 +1611,9 @@ var operShow = new Vue({
     pad: function (num) {
       return num < 10 ? '0' + num.toString() : num.toString();
     },
-    clearImg: function () { this.$refs.img.src = imgPlaceholder; },
+    clearImg: function () {
+      this.$refs.img.src = imgPlaceholder;
+    },
     toTop: function () {
       this.loading = false;
       this.$refs.type.$el.scrollIntoView();
@@ -1649,7 +1654,28 @@ var resShow = new Vue({
     show: false,
     loading: false,
     timePlaceholder: 'Select Type first',
-    message: '<strong class="red">Type</strong> to search <strong>date</strong> and <strong>time</strong>.<br>Choose a <strong>product</strong> to show.'
+    message: '<strong class="red">Type</strong> to search <strong>date</strong> and <strong>time</strong>.<br>Choose a <strong>product</strong> to show.',
+    dataTable: [{
+        'name': 'CL31',
+        'description': 'CL31 Ceilometer',
+        'list': 'cl31'
+      },
+      {
+        'name': 'Microwave',
+        'description': 'MP3000A Microwave Radiometer',
+        'list': 'microwave'
+      },
+      {
+        'name': 'SkewT',
+        'description': 'Skew T - log P',
+        'list': 'skewt'
+      }
+    ],
+    timeTable: {
+      'cl31': ['00:00'],
+      'microwave': ['00:00'],
+      'skewt':['00:00']
+    }
   },
   created: function () {
     var res = new Date();
@@ -1663,13 +1689,17 @@ var resShow = new Vue({
   computed: {
     availTimes: function () {
       if (this.type && this.date) {
-        var res = TTFRI_dataDayTime[this.type.url];
+        var res = this.timeTable[this.type.url];
         this.timePlaceholder = 'Select time';
         if (res.indexOf(this.time) == -1) this.time = '';
         if ((new Date(Date.parse(this.date))).toLocaleDateString() === (new Date()).toLocaleDateString()) {
           var thisHour = (new Date()).getHours();
           var thisMinute = (new Date()).getMinutes();
-          res = TTFRI_dataDayTime[this.type.url].filter(function (str) { var hour = parseInt(str.split(':')[0]); var minute = parseInt(str.split(':')[1]); return hour < thisHour || hour == thisHour && minute <= thisMinute });
+          res = this.timeTable[this.type.url].filter(function (str) {
+            var hour = parseInt(str.split(':')[0]);
+            var minute = parseInt(str.split(':')[1]);
+            return hour < thisHour || hour == thisHour && minute <= thisMinute
+          });
           if (res.length === 0) {
             this.time = '';
           } else if (res.indexOf(this.time) == -1) {
@@ -1687,69 +1717,64 @@ var resShow = new Vue({
       }
     },
     products: function () {
-      function flatten(data) {
-        var res = [];
-        var path = [''];
-        var visited = [];
-        var node = data; // is onject
-        var parentNodes = [];
-        while (path.length > 0) {
-          // console.log(path.join('/'));
-          if (node.list) {
-            // leaf node
-            if (node.list != 'OBSERVATION/CWB-R/Taiwan/Land' &&
-              node.list != 'OBSERVATION/CWB-R/Taiwan/Land-N' &&
-              node.list != 'OBSERVATION/CWB-R/Chiku' &&
-              node.list != 'OBSERVATION/CWB-S/High/Light' &&
-              node.list != 'OBSERVATION/CWB-S/High/Color' &&
-              node.list != 'MODE/CWB-W/New-W' &&
-              node.list != 'MODE/CWB-RF/I' &&
-              node.list != 'MODE/CWB-RF/II') {
-              res.push({
-                label: path.join('/'),
-                url: node.list
-              });
-            }
-            path.pop();
-            node = parentNodes.pop();
-          } else {
-            var index = [];
-            var layer = node.children.map(function (child) {
-              return child['description'];
-            }).filter(function (value, i) {
-              path.push(value);
-              if (visited.indexOf(path.join('/')) == -1) {
-                index.push(i);
-                path.pop();
-                return true;
-              } else {
-                path.pop();
-                return false;
-              }
-            });
-            // console.log(layer);
-            // console.log(index);
-            if (layer.length > 0) {
-              path.push(layer[0]);
-              parentNodes.push(node);
-              node = node.children[index[0]];
-              visited.push(path.join('/'));
-            } else {
-              path.pop();
-              node = parentNodes.pop();
-            }
-          }
-        }
-        return res;
-      };
+      // function flatten(data) {
+      //   var res = [];
+      //   var path = [''];
+      //   var visited = [];
+      //   var node = Object.assign({}, data); // is onject
+      //   var parentNodes = [];
+      //   while (path.length > 0) {
+      //     // console.log(path.join('/'));
+      //     if (node.list || !node.children) {
+      //       // leaf node
+      //       res.push({
+      //         label: path.join('/'),
+      //         url: node.list
+      //       });
+      //       path.pop();
+      //       node = parentNodes.pop();
+      //     } else {
+      //       var index = [];
+      //       var layer = node.children.map(function (child) {
+      //         return child['description'];
+      //       }).filter(function (value, i) {
+      //         path.push(value);
+      //         if (visited.indexOf(path.join('/')) == -1) {
+      //           index.push(i);
+      //           path.pop();
+      //           return true;
+      //         } else {
+      //           path.pop();
+      //           return false;
+      //         }
+      //       });
+      //       // console.log(layer);
+      //       // console.log(index);
+      //       if (layer.length > 0) {
+      //         path.push(layer[0]);
+      //         parentNodes.push(node);
+      //         node = node.children[index[0]];
+      //         visited.push(path.join('/'));
+      //       } else {
+      //         path.pop();
+      //         node = parentNodes.pop();
+      //       }
+      //     }
+      //   }
+      //   return res;
+      // };
       var res = [];
-      for (cat in TTFRI_dataTree) {
-        // res.push({
-        //   cat: TTFRI_dataTree[cat].description,
-        //   types: flatten(TTFRI_dataTree[cat])
-        // });
-        res = res.concat(flatten(TTFRI_dataTree[cat]));
-      }
+      // for (cat in this.dataTable) {
+      //   // res.push({
+      //   //   cat: this.dataTable[cat].description,
+      //   //   types: flatten(this.dataTable[cat])
+      //   // });
+      //   res = res.concat(flatten(this.dataTable));
+      // }
+      // return res;
+      this.dataTable.forEach(function (cat) {
+        res.push({label:cat.description,url:cat.list});
+      })
       return res;
     }
   },
@@ -1894,7 +1919,7 @@ var resShow = new Vue({
           var day = this.pad(date.getDate());
           var hour = this.pad(date.getHours());
           var min = this.pad(date.getMinutes());
-          var url = this.baseUrl + this.type.url + '/' + year + '-' + mon + '-' + day + '-' + hour + min + '.jpg';
+          var url = this.baseUrl + this.type.url + '/' + year + '-' + mon + '-' + day + '-' + hour + min + '.png';
           this.$refs.img.src = url;
           this.show = true;
         }
@@ -1905,7 +1930,9 @@ var resShow = new Vue({
     pad: function (num) {
       return num < 10 ? '0' + num.toString() : num.toString();
     },
-    clearImg: function () { this.$refs.img.src = imgPlaceholder; },
+    clearImg: function () {
+      this.$refs.img.src = imgPlaceholder;
+    },
     toTop: function () {
       this.loading = false;
       this.$refs.type.$el.scrollIntoView();
