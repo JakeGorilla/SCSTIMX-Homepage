@@ -1641,7 +1641,7 @@ var operShow = new Vue({
 var resShow = new Vue({
   el: '#resShow',
   data: {
-    baseUrl: 'http://140.110.147.101:8080/narlabs/rest/data/',
+    baseUrl: 'img/resprod/',
     type: '',
     date: '',
     time: '',
