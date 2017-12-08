@@ -3,7 +3,12 @@
     "rules": "database.rules.json"
   },
   "hosting": {
-    "public": "public"
+    "public": "public",
+    "redirects": [{
+      "source": "/:all*",
+      "destination": "https://scstimx.as.ntu.edu.tw/:all*",
+      "type": 301
+    }]
     // ,"redirects": [
     //   {
     //     "source": "**",
